@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import type { FormConfig, Question, RoutingRule } from "@/lib/formBuilderTypes";
-import { DEFAULT_FORM, FORM_PROPERTIES } from "@/lib/formBuilderConstants";
 import { Star, CheckCircle, ChevronRight, AlertCircle } from "lucide-react";
 
 // Star rating interactive helper matching LivePreview
@@ -92,14 +91,6 @@ export default function GuestFormPage() {
     return link;
   }, [form?.routing.reviewLink]);
 
-  // Parse fallback details from slug
-  const fallbackProperty = useMemo(() => {
-    if (!slug) return { id: "silvassa", name: "Treat Resort Silvassa" };
-    const propId = slug.split("-")[0].toLowerCase();
-    const found = FORM_PROPERTIES.find(p => p.id === propId);
-    return found || { id: "silvassa", name: "Treat Resort Silvassa" };
-  }, [slug]);
-
   // Fetch form details
   useEffect(() => {
     if (!slug) return;
@@ -109,12 +100,7 @@ export default function GuestFormPage() {
         setLoading(true);
         const res = await fetch(`/api/forms?slug=${slug}`);
         if (!res.ok) {
-          // If form not found in DB, use the DEFAULT_FORM template with slug property overrides
-          const customDefault: FormConfig = JSON.parse(JSON.stringify(DEFAULT_FORM));
-          customDefault.settings.propertyId = fallbackProperty.id;
-          customDefault.settings.propertyName = fallbackProperty.name;
-          customDefault.routing.gmEmail = `gm.${fallbackProperty.id}@treatresorts.com`;
-          setForm(customDefault);
+          setForm(null);
           setLoading(false);
           return;
         }
@@ -122,17 +108,14 @@ export default function GuestFormPage() {
         setForm(data);
       } catch (err: any) {
         console.error("Failed to load form config:", err);
-        const customDefault: FormConfig = JSON.parse(JSON.stringify(DEFAULT_FORM));
-        customDefault.settings.propertyId = fallbackProperty.id;
-        customDefault.settings.propertyName = fallbackProperty.name;
-        setForm(customDefault);
+        setForm(null);
       } finally {
         setLoading(false);
       }
     }
 
     loadForm();
-  }, [slug, fallbackProperty]);
+  }, [slug]);
 
   // Handle answers input change
   const handleAnswerChange = (questionId: string, value: any) => {

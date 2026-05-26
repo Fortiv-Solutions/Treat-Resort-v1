@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type Role } from "@/lib/data";
+import type { DashboardPayload } from "@/lib/dashboardData";
 import Sidebar from "@/components/Sidebar";
 import FeedbackModule from "@/components/FeedbackModule";
 import InboxModule from "@/components/InboxModule";
@@ -12,16 +13,27 @@ type Module = "feedback" | "inbox" | "finance";
 
 const MODULE_META: Record<Module, { title: string; subtitle: string; icon: typeof LayoutDashboard }> = {
   feedback: { title: "Guest Feedback & Reviews", subtitle: "Automated feedback collection, Google review funneling, and complaint alerts", icon: LayoutDashboard },
-  inbox:    { title: "Unified Email Inbox",       subtitle: "All 12 properties - centralized email management and response tracking",   icon: Inbox },
-  finance:  { title: "Finance Intelligence",      subtitle: "Revenue, occupancy, receivables, and Tally ERP reporting across properties", icon: TrendingUp },
+  inbox:    { title: "Unified Email Inbox",       subtitle: "Email thread management from Supabase",   icon: Inbox },
+  finance:  { title: "Finance Intelligence",      subtitle: "Revenue, occupancy, receivables, and Tally metadata from Supabase", icon: TrendingUp },
 };
 
 export default function Dashboard() {
   const [activeModule, setActiveModule] = useState<Module>("feedback");
   const [role, setRole] = useState<Role>("MD");
+  const [dashboardData, setDashboardData] = useState<DashboardPayload | null>(null);
 
   const meta = MODULE_META[activeModule];
   const Icon = meta.icon;
+  const dateLabel = new Date().toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/dashboard")
+      .then(response => response.ok ? response.json() : null)
+      .then(data => { if (active) setDashboardData(data); })
+      .catch(() => { if (active) setDashboardData(null); });
+    return () => { active = false; };
+  }, []);
 
   return (
     <div className="app-shell" style={{ minHeight: "100vh", background: "var(--bg)" }}>
@@ -142,7 +154,7 @@ export default function Dashboard() {
               fontSize: "12px", fontWeight: 600, color: "var(--text-2)",
               whiteSpace: "nowrap", letterSpacing: "0.02em",
             }}>
-              May 2026
+              {dateLabel}
             </div>
           </div>
         </header>
@@ -153,10 +165,10 @@ export default function Dashboard() {
           width: "100%",
         }}>
           {activeModule === "feedback"
-            ? <FeedbackModule key={role} role={role} />
+            ? <FeedbackModule key={role} role={role} data={dashboardData} />
             : activeModule === "inbox"
-            ? <InboxModule    key={role} role={role} />
-            : <FinanceModule  key={role} role={role} />
+            ? <InboxModule    key={role} role={role} data={dashboardData} />
+            : <FinanceModule  key={role} role={role} data={dashboardData} />
           }
         </main>
       </div>

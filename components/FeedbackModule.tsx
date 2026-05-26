@@ -3,9 +3,10 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import {
-  type Role, PROPERTIES, FEEDBACK_FEED,
+  type Role, PROPERTIES,
   type PropertyStatus, type FeedbackSentiment,
 } from "@/lib/data";
+import type { DashboardPayload } from "@/lib/dashboardData";
 import StatCard from "./StatCard";
 import PerformanceChart from "./PerformanceChart";
 import {
@@ -153,18 +154,21 @@ function BusinessKPIs({
 }
 
 /* ── Module ──────────────────────────────────────────── */
-interface Props { role: Role; }
+interface Props { role: Role; data: DashboardPayload | null; }
 
-export default function FeedbackModule({ role }: Props) {
+export default function FeedbackModule({ role, data }: Props) {
   const [sortCol, setSortCol]   = useState("checkouts");
   const [sortDir, setSortDir]   = useState<"asc"|"desc">("desc");
   const [feedLimit, setFeedLimit] = useState(5);
   const [resolvedIds, setResolvedIds] = useState<Set<number>>(new Set());
   const [assignedIds, setAssignedIds] = useState<Set<number>>(new Set());
 
+  const dbProperties = data?.properties ?? PROPERTIES;
+  const dbFeedback = data?.feedback ?? [];
+
   const allProps = role === "MD"
-    ? PROPERTIES
-    : PROPERTIES.filter(p => p.id === ROLE_MAP[role]);
+    ? dbProperties
+    : dbProperties.filter(p => p.id === ROLE_MAP[role]);
 
   const sorted = [...allProps].sort((a, b) => {
     const k = sortCol as keyof typeof a;
@@ -178,16 +182,16 @@ export default function FeedbackModule({ role }: Props) {
   const totalComplaints  = allProps.reduce((s, p) => s + p.negativeComplaints, 0);
   const feedbackPct      = totalCheckouts > 0 ? (totalFeedback / totalCheckouts) * 100 : 0;
   const automationPct    = feedbackPct;
-  const complaintRecovery = totalComplaints > 0 ? Math.round((totalComplaints - 3) / totalComplaints * 100) : 100;
-
   const visibleFeed = (role === "MD"
-    ? FEEDBACK_FEED
-    : FEEDBACK_FEED.filter(f => f.propertyId === ROLE_MAP[role])
+    ? dbFeedback
+    : dbFeedback.filter(f => f.propertyId === ROLE_MAP[role])
   ).slice(0, feedLimit);
 
   const totalFeedSource = role === "MD"
-    ? FEEDBACK_FEED
-    : FEEDBACK_FEED.filter(f => f.propertyId === ROLE_MAP[role]);
+    ? dbFeedback
+    : dbFeedback.filter(f => f.propertyId === ROLE_MAP[role]);
+  const resolvedFeedback = totalFeedSource.filter(entry => entry.responseStatus === "Resolved").length;
+  const complaintRecovery = totalFeedSource.length > 0 ? Math.round((resolvedFeedback / totalFeedSource.length) * 100) : 0;
 
   function toggleSort(col: string) {
     if (sortCol === col) setSortDir(d => d === "desc" ? "asc" : "desc");
@@ -202,7 +206,7 @@ export default function FeedbackModule({ role }: Props) {
   const TABLE_COLS = [
     { key: "name",               label: "Property",    sortable: false, w: "160px" },
     { key: "occupancyRate",      label: "Occ %",       sortable: true,  w: "60px"  },
-    { key: "checkouts",          label: "Checkouts",   sortable: true,  w: "80px"  },
+    { key: "checkouts",          label: "Submissions", sortable: true,  w: "90px"  },
     { key: "responseRate",       label: "Response",    sortable: true,  w: "110px" },
     { key: "googleReviews",      label: "Reviews",     sortable: true,  w: "70px"  },
     { key: "avgRating",          label: "Avg ★",       sortable: true,  w: "60px"  },
@@ -222,7 +226,7 @@ export default function FeedbackModule({ role }: Props) {
           automationPct={automationPct}
           reviewsGenerated={totalReviews}
           complaintRecovery={complaintRecovery}
-          repeatGuestEst={22}
+          repeatGuestEst={0}
         />
       </div>
 
@@ -236,9 +240,8 @@ export default function FeedbackModule({ role }: Props) {
         overflow: "hidden",
       }}>
         <StatCard
-          title="Total Checkouts"   value={totalCheckouts} subtitle="May 2026 · all properties"
+          title="Submissions"       value={totalCheckouts} subtitle="Last 30 days from Supabase"
           icon={Hotel}              accent="gold"
-          trend={{ label: "+18 vs April avg", direction: "up", positive: true }}
           delay={0}
         />
         <StatCard
@@ -250,7 +253,6 @@ export default function FeedbackModule({ role }: Props) {
         <StatCard
           title="Google Reviews"    value={totalReviews}   subtitle="via automated WhatsApp flow"
           icon={Star}               accent="green"
-          trend={{ label: "+12 vs last month", direction: "up", positive: true }}
           delay={120}
         />
         <StatCard
@@ -284,7 +286,7 @@ export default function FeedbackModule({ role }: Props) {
           <SatelliteMap properties={allProps} />
         </div>
         <div className="anim-fade-up" style={{ animationDelay: "200ms" }}>
-          <PerformanceChart />
+          <PerformanceChart properties={allProps} />
         </div>
       </div>
 
@@ -296,7 +298,7 @@ export default function FeedbackModule({ role }: Props) {
           <div style={{ padding: "12px 16px 10px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-1)" }}>Property Performance</h2>
-              <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>May 2026 · click headers to sort</p>
+              <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>Supabase aggregates · click headers to sort</p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               {role === "MD" && (
@@ -306,7 +308,7 @@ export default function FeedbackModule({ role }: Props) {
               )}
               <span style={{ fontSize: "10.5px", color: "var(--text-3)", display: "flex", alignItems: "center", gap: "3px" }}>
                 <RefreshCw size={10} color="var(--text-3)" />
-                Live data
+                Backend data
               </span>
             </div>
           </div>
@@ -433,11 +435,11 @@ export default function FeedbackModule({ role }: Props) {
           <div style={{ padding: "12px 16px 10px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-1)" }}>Live Feedback</h2>
-              <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>WhatsApp automated · real-time</p>
+              <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>From vw_live_feedback_feed</p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#059669", animation: "pulse-dot 2s infinite" }} />
-              <span style={{ fontSize: "10.5px", color: "var(--text-3)" }}>Live</span>
+              <span style={{ fontSize: "10.5px", color: "var(--text-3)" }}>Backend</span>
             </div>
           </div>
 
@@ -446,10 +448,9 @@ export default function FeedbackModule({ role }: Props) {
               <div style={{ padding: "32px 20px", textAlign: "center" }}>
                 <CheckCircle2 size={28} color="#059669" style={{ margin: "0 auto 8px" }} />
                 <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-1)", margin: "0 0 4px" }}>All clear</p>
-                <p style={{ fontSize: "12px", color: "var(--text-3)", margin: 0 }}>No unresolved complaints in the last 48 hours.</p>
+                <p style={{ fontSize: "12px", color: "var(--text-3)", margin: 0 }}>No feedback submissions are available yet.</p>
               </div>
             ) : visibleFeed.map((entry, i) => {
-              const isHighRating  = entry.rating >= 4;
               const sentStyle     = SENTIMENT_STYLE[entry.sentiment];
               const isResolved    = resolvedIds.has(entry.id);
               const isAssigned    = assignedIds.has(entry.id);
@@ -541,7 +542,7 @@ export default function FeedbackModule({ role }: Props) {
                         <MessageSquare size={11} color="#059669" /> WhatsApp
                       </button>
                       <button
-                        onClick={() => { const p = PROPERTIES.find(x => x.id === entry.propertyId); if (p) window.alert(`Calling GM: ${p.gmName}`); }}
+                        onClick={() => { const p = dbProperties.find(x => x.id === entry.propertyId); if (p) window.alert(`Calling GM: ${p.gmName}`); }}
                         style={{
                           display: "inline-flex", alignItems: "center", gap: "4px",
                           padding: "4px 9px", borderRadius: "5px", border: "1px solid #E5E7EB",

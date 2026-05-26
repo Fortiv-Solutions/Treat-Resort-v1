@@ -1,8 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { FormConfig } from "@/lib/formBuilderTypes";
-import { FORM_PROPERTIES } from "@/lib/formBuilderConstants";
-import { GM_EMAILS } from "@/lib/formBuilderConstants";
 
 interface Props {
   form: FormConfig;
@@ -30,20 +29,64 @@ function inputStyle(focused?: boolean): React.CSSProperties {
   };
 }
 
+type PropertyOption = {
+  id: string;
+  name: string;
+  gm_email: string;
+  whatsapp_number: string | null;
+  google_review_link: string | null;
+};
+
 export default function FormSettingsSection({ form, updateForm }: Props) {
   const s = form.settings;
+  const [properties, setProperties] = useState<PropertyOption[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/properties")
+      .then(response => response.ok ? response.json() : [])
+      .then((rows: PropertyOption[]) => {
+        if (!active) return;
+        setProperties(rows);
+        if (!s.propertyId && rows[0]) {
+          updateForm(prev => ({
+            ...prev,
+            settings: {
+              ...prev.settings,
+              propertyId: rows[0].id,
+              propertyName: rows[0].name,
+            },
+            routing: {
+              ...prev.routing,
+              gmEmail: rows[0].gm_email,
+              reviewLink: rows[0].google_review_link ?? prev.routing.reviewLink,
+              whatsappNumber: rows[0].whatsapp_number ?? prev.routing.whatsappNumber,
+            },
+          }));
+        }
+      })
+      .catch(() => {
+        if (active) setProperties([]);
+      });
+    return () => { active = false; };
+  }, [s.propertyId, updateForm]);
 
   function setField<K extends keyof typeof s>(key: K, value: typeof s[K]) {
     updateForm(prev => ({ ...prev, settings: { ...prev.settings, [key]: value } }));
   }
 
   function handlePropertyChange(id: string) {
-    const prop = FORM_PROPERTIES.find(p => p.id === id);
+    const prop = properties.find(p => p.id === id);
     if (!prop) return;
     updateForm(prev => ({
       ...prev,
       settings: { ...prev.settings, propertyId: id, propertyName: prop.name },
-      routing: { ...prev.routing, gmEmail: GM_EMAILS[id] ?? "" },
+      routing: {
+        ...prev.routing,
+        gmEmail: prop.gm_email,
+        reviewLink: prop.google_review_link ?? prev.routing.reviewLink,
+        whatsappNumber: prop.whatsapp_number ?? prev.routing.whatsappNumber,
+      },
     }));
   }
 
@@ -56,9 +99,15 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
         <select
           value={s.propertyId}
           onChange={e => handlePropertyChange(e.target.value)}
+          disabled={properties.length === 0}
           style={{ ...inputStyle(), cursor: "pointer" }}
         >
-          {FORM_PROPERTIES.map(p => (
+          {properties.length === 0 && (
+            <option value="" style={{ background: "#1B4332", color: "#fff" }}>
+              No active properties in database
+            </option>
+          )}
+          {properties.map(p => (
             <option key={p.id} value={p.id} style={{ background: "#1B4332", color: "#fff" }}>
               {p.name}
             </option>

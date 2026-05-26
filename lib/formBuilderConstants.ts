@@ -1,35 +1,5 @@
 import type { QuestionType, FormConfig } from "./formBuilderTypes";
 
-export const FORM_PROPERTIES = [
-  { id: "silvassa",      name: "Treat Resort Silvassa" },
-  { id: "dahanu",        name: "Treat Beach Resort Dahanu" },
-  { id: "kumbhalgarh",  name: "Treat Resort Kumbhalgarh" },
-  { id: "sambhajinagar",name: "Treat Imperial Sambhajinagar" },
-  { id: "jimcorbett",   name: "Treat Imperial Jim Corbett" },
-  { id: "pushkar",      name: "Treat Resort Pushkar" },
-  { id: "udaipur",      name: "Treat Imperial Udaipur" },
-  { id: "rajkot",       name: "Treat Resort Rajkot" },
-  { id: "pune",         name: "Treat Resort Pune" },
-  { id: "nashik",       name: "Treat Resort Nashik" },
-  { id: "surat",        name: "Treat Resort Surat" },
-  { id: "ahmedabad",    name: "Treat Resort Ahmedabad" },
-];
-
-export const GM_EMAILS: Record<string, string> = {
-  silvassa:      "gm.silvassa@treatresorts.com",
-  dahanu:        "gm.dahanu@treatresorts.com",
-  kumbhalgarh:   "gm.kumbhalgarh@treatresorts.com",
-  sambhajinagar: "gm.sambhajinagar@treatresorts.com",
-  jimcorbett:    "gm.jimcorbett@treatresorts.com",
-  pushkar:       "gm.pushkar@treatresorts.com",
-  udaipur:       "gm.udaipur@treatresorts.com",
-  rajkot:        "gm.rajkot@treatresorts.com",
-  pune:          "gm.pune@treatresorts.com",
-  nashik:        "gm.nashik@treatresorts.com",
-  surat:         "gm.surat@treatresorts.com",
-  ahmedabad:     "gm.ahmedabad@treatresorts.com",
-};
-
 export interface QuestionTypeMeta {
   label: string;
   description: string;
@@ -55,8 +25,8 @@ export const DEFAULT_FORM: FormConfig = {
   settings: {
     title: "Tell Us About Your Stay",
     description: "Your feedback helps us deliver an exceptional experience for every guest.",
-    propertyId: "silvassa",
-    propertyName: "Treat Resort Silvassa",
+    propertyId: "",
+    propertyName: "",
     language: "English",
     collectGuestName: true,
     collectGuestEmail: true,
@@ -137,8 +107,8 @@ export const DEFAULT_FORM: FormConfig = {
       },
     ],
     reviewLink: "",
-    gmEmail: "gm.silvassa@treatresorts.com",
-    mdEmail: "md@treatresorts.com",
+    gmEmail: "",
+    mdEmail: "",
     whatsappNumber: "",
   },
   branding: {

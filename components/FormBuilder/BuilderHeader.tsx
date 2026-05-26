@@ -41,7 +41,7 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
             ? "Form saved & synced with n8n!" 
             : resData.n8n?.message.includes("No webhook") 
             ? "Form saved successfully!" 
-            : `Form saved locally (${resData.n8n?.message})`,
+            : `Form saved to database (${resData.n8n?.message})`,
           resData.n8n?.success || resData.n8n?.message.includes("No") ? "success" : "info"
         );
       } else {

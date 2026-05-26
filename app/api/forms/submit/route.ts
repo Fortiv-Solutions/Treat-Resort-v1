@@ -1,68 +1,96 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import type { FormConfig } from "@/lib/formBuilderTypes";
+import { getForms } from "@/lib/formPersistence";
+import type { QuestionType } from "@/lib/formBuilderTypes";
+import { isSupabaseConfigured, supabaseInsert } from "@/lib/supabaseRest";
 
-const DB_PATH = path.join(process.cwd(), "lib", "db", "forms-db.json");
+type SubmittedAnswer = {
+  questionId: string;
+  questionLabel: string;
+  questionType: QuestionType;
+  value: unknown;
+};
 
-function readDb() {
-  try {
-    if (!fs.existsSync(DB_PATH)) {
-      return { forms: [], submissions: [] };
-    }
-    const raw = fs.readFileSync(DB_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch (error) {
-    console.error("Failed to read local DB:", error);
-    return { forms: [], submissions: [] };
-  }
+function numericAnswer(answer: SubmittedAnswer | undefined) {
+  if (!answer) return null;
+  const parsed = Number(answer.value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
-function writeDb(data: any) {
-  try {
-    const dir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), "utf-8");
-    return true;
-  } catch (error) {
-    console.error("Failed to write local DB:", error);
-    return false;
-  }
+function answerRow(submissionId: string, answer: SubmittedAnswer) {
+  const isArray = Array.isArray(answer.value);
+  const numeric = typeof answer.value === "number" || (typeof answer.value === "string" && answer.value.trim() !== "" && Number.isFinite(Number(answer.value)))
+    ? Number(answer.value)
+    : null;
+
+  return {
+    submission_id: submissionId,
+    question_id: answer.questionId,
+    question_type: answer.questionType,
+    text_value: isArray || numeric !== null ? null : String(answer.value ?? ""),
+    numeric_value: numeric,
+    array_value: isArray ? answer.value : [],
+  };
 }
 
 export async function POST(req: Request) {
+  if (!isSupabaseConfigured()) {
+    return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
+  }
+
   try {
     const submission = await req.json();
-    const { formId, guestName, guestEmail, roomNumber, answers, routingActions } = submission;
+    const { formId, guestName, guestEmail, guestPhone, roomNumber, answers = [], routingActions = [] } = submission;
 
     if (!formId) {
       return NextResponse.json({ error: "Missing formId in submission" }, { status: 400 });
     }
 
-    const db = readDb();
-    const form: FormConfig = db.forms.find((f: FormConfig) => f.id === formId);
+    const formResult = await getForms({ id: formId });
+    if (!formResult.ok) {
+      return NextResponse.json({ error: formResult.error }, { status: formResult.status });
+    }
 
-    // Save the submission details locally in our JSON store
-    const fullSubmission = {
-      id: `s-${Math.random().toString(36).substring(2, 9)}`,
-      formId,
-      propertyName: form?.settings.propertyName ?? "Unknown Property",
-      propertyId: form?.settings.propertyId ?? "unknown",
-      guestName: guestName || "Anonymous",
-      guestEmail: guestEmail || "",
-      roomNumber: roomNumber || "",
-      answers: answers || [],
-      routingActions: routingActions || [],
-      timestamp: new Date().toISOString(),
-    };
+    const form = formResult.data[0];
+    if (!form) {
+      return NextResponse.json({ error: "Form not found" }, { status: 404 });
+    }
 
-    db.submissions.push(fullSubmission);
-    writeDb(db);
+    const submittedAnswers = answers as SubmittedAnswer[];
+    const overall = numericAnswer(submittedAnswers.find(answer => answer.questionType === "rating"));
+    const nps = numericAnswer(submittedAnswers.find(answer => answer.questionType === "nps"));
+    const reviewLinkShown = routingActions.some((action: { action?: string }) => action.action === "show_review_link");
 
-    // If there is an n8nSubmitWebhook configured on this form, forward it!
-    const webhookUrl = form?.settings.n8nSubmitWebhook;
+    const insertedSubmission = await supabaseInsert<{ id: string }>("submissions", {
+      form_id: form.id,
+      property_id: form.settings.propertyId,
+      idempotency_key: crypto.randomUUID(),
+      guest_name: guestName?.trim() || "Anonymous",
+      guest_email: guestEmail?.trim() || null,
+      guest_phone: guestPhone?.trim() || null,
+      room_number: roomNumber?.trim() || null,
+      overall_rating: overall,
+      nps_score: nps,
+      routing_actions_triggered: routingActions,
+      review_link_shown: reviewLinkShown,
+    });
+
+    if (!insertedSubmission.ok) {
+      return NextResponse.json({ error: insertedSubmission.error }, { status: insertedSubmission.status });
+    }
+
+    const submissionId = insertedSubmission.data[0]?.id;
+    if (!submissionId) {
+      return NextResponse.json({ error: "Submission insert did not return an id." }, { status: 500 });
+    }
+
+    if (submittedAnswers.length > 0) {
+      const answerInsert = await supabaseInsert("guest_answers", submittedAnswers.map(answer => answerRow(submissionId, answer)));
+      if (!answerInsert.ok) {
+        return NextResponse.json({ error: answerInsert.error }, { status: answerInsert.status });
+      }
+    }
+
+    const webhookUrl = form.settings.n8nSubmitWebhook;
     let n8nSuccess = false;
     let n8nMessage = "No webhook configured";
 
@@ -70,33 +98,38 @@ export async function POST(req: Request) {
       try {
         const response = await fetch(webhookUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             event: "guest_feedback_submitted",
-            ...fullSubmission,
+            submissionId,
+            formId: form.id,
+            propertyId: form.settings.propertyId,
+            guestName: guestName?.trim() || "Anonymous",
+            guestEmail: guestEmail?.trim() || "",
+            roomNumber: roomNumber?.trim() || "",
+            answers: submittedAnswers,
+            routingActions,
+            timestamp: new Date().toISOString(),
           }),
         });
         n8nSuccess = response.ok;
-        n8nMessage = response.ok 
-          ? "Feedback forwarded to n8n successfully" 
+        n8nMessage = response.ok
+          ? "Feedback forwarded to n8n successfully"
           : `n8n webhook returned status ${response.status}`;
-      } catch (err: any) {
-        n8nMessage = `Failed to contact n8n webhook: ${err.message}`;
-        console.error("n8n Submit webhook trigger failed:", err);
+      } catch (error) {
+        n8nMessage = `Failed to contact n8n webhook: ${error instanceof Error ? error.message : "Unknown error"}`;
       }
     }
 
     return NextResponse.json({
       success: true,
-      submissionId: fullSubmission.id,
-      n8n: {
-        success: n8nSuccess,
-        message: n8nMessage,
-      }
+      submissionId,
+      n8n: { success: n8nSuccess, message: n8nMessage },
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Unknown submission error." },
+      { status: 500 },
+    );
   }
 }

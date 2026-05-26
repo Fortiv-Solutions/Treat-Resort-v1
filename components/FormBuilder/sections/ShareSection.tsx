@@ -258,25 +258,24 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
             <span style={{ fontSize: "11px", fontWeight: 600, color: "#C9A96E" }}>📋 Submission Payload Schema</span>
             <button
               onClick={() => {
-                const samplePayload = {
+                const payloadSchema = {
                   event: "guest_feedback_submitted",
-                  id: "s-abc1234",
+                  submissionId: "<uuid-from-submissions>",
                   formId: form.id,
                   propertyName: form.settings.propertyName,
                   propertyId: form.settings.propertyId,
-                  guestName: "John Doe",
-                  guestEmail: "john.doe@example.com",
-                  roomNumber: "302",
+                  guestName: "<guest_name>",
+                  guestEmail: "<guest_email>",
+                  roomNumber: "<room_number>",
                   answers: [
-                    { questionId: "q1", questionLabel: "How would you rate your overall stay?", questionType: "rating", value: 5 },
-                    { questionId: "q4", questionLabel: "What did you enjoy most about your stay?", questionType: "textarea", value: "Great service!" }
+                    { questionId: "<question_id>", questionLabel: "<question_label>", questionType: "<question_type>", value: "<answer_value>" }
                   ],
                   routingActions: [
-                    { action: "show_review_link", triggered: true, reason: "Starred overall stay >= 4" }
+                    { action: "<routing_action>", triggered: true, reason: "<routing_reason>" }
                   ],
-                  timestamp: new Date().toISOString()
+                  timestamp: "<iso_timestamp>"
                 };
-                navigator.clipboard.writeText(JSON.stringify(samplePayload, null, 2)).then(() => {
+                navigator.clipboard.writeText(JSON.stringify(payloadSchema, null, 2)).then(() => {
                   addToast("Schema blueprint copied to clipboard!", "success");
                 });
               }}
@@ -309,13 +308,14 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
           }}>
 {`{
   "event": "guest_feedback_submitted",
-  "id": "s-abc1234",
+  "submissionId": "<uuid-from-submissions>",
   "formId": "${form.id}",
   "propertyName": "${form.settings.propertyName}",
-  "guestName": "John Doe",
-  "roomNumber": "302",
+  "propertyId": "${form.settings.propertyId}",
+  "guestName": "<guest_name>",
+  "roomNumber": "<room_number>",
   "answers": [
-    { "questionId": "q1", "value": 5 }
+    { "questionId": "<question_id>", "value": "<answer_value>" }
   ]
 }`}
           </pre>

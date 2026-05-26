@@ -239,8 +239,7 @@ img, svg {
 }
 
 .app-topbar input,
-.app-topbar button,
-.app-topbar [style*="May 2026"] {
+.app-topbar button {
   border-radius: var(--radius-md) !important;
 }
 

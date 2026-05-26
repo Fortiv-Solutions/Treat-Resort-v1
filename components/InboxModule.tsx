@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import {
-  type Role, EMAILS, type Email,
+  type Role, type Email,
   type EmailPriority, type EmailCategory, type EmailStatus,
 } from "@/lib/data";
+import type { DashboardPayload } from "@/lib/dashboardData";
 import StatCard from "./StatCard";
 import {
   Mail, Clock, AlertCircle, Timer,
@@ -55,8 +56,8 @@ function InboxKPIs({
   const kpis = [
     { icon: DollarSign, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", color: "#7C3AED", bg: "#F5F3FF" },
     { icon: Clock,      label: "Avg Response SLA",     value: `${avgSLA}h`,    sub: "target: under 2h",         color: avgSLA > 2 ? "#DC2626" : "#059669", bg: avgSLA > 2 ? "#FEF2F2" : "#ECFDF5" },
-    { icon: AlertTriangle, label: "Revenue at Risk",   value: revenueAtRisk,   sub: "from unresolved complaints", color: "#DC2626", bg: "#FEF2F2" },
-    { icon: Zap,        label: "Escalations Prevented", value: `${escalationsPrevented}`, sub: "this month via quick response", color: "#D97706", bg: "#FFFBEB" },
+    { icon: AlertTriangle, label: "Urgent Open",       value: revenueAtRisk,   sub: "urgent unread threads", color: "#DC2626", bg: "#FEF2F2" },
+    { icon: Zap,        label: "Replied Threads",       value: `${escalationsPrevented}`, sub: "status from email_threads", color: "#D97706", bg: "#FFFBEB" },
   ];
 
   return (
@@ -285,15 +286,16 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
 }
 
 /* ── Main Module ─────────────────────────────────────── */
-interface InboxModuleProps { role: Role; }
+interface InboxModuleProps { role: Role; data: DashboardPayload | null; }
 
-export default function InboxModule({ role }: InboxModuleProps) {
+export default function InboxModule({ role, data }: InboxModuleProps) {
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [filterPri, setFilterPri] = useState<EmailPriority | "All">("All");
   const [filterCat, setFilterCat] = useState<EmailCategory | "All">("All");
   const [snoozedIds, setSnoozedIds] = useState<Set<number>>(new Set());
 
-  const allScope = role === "MD" ? EMAILS : EMAILS.filter(e => e.propertyId === ROLE_MAP[role]);
+  const dbEmails = data?.emails ?? [];
+  const allScope = role === "MD" ? dbEmails : dbEmails.filter(e => e.propertyId === ROLE_MAP[role]);
 
   const visibleEmails = allScope
     .filter(e => !snoozedIds.has(e.id))
@@ -303,9 +305,13 @@ export default function InboxModule({ role }: InboxModuleProps) {
   const unread      = allScope.filter(e => e.status === "Unread").length;
   const highPriUr   = allScope.filter(e => e.status === "Unread" && e.priority === "Urgent").length;
   const pending2h   = allScope.filter(e => e.status === "Unread" && e.receivedHoursAgo >= 2);
-  const avgResp     = 3.2;
+  const pendingUnread = allScope.filter(e => e.status === "Unread");
+  const avgResp = pendingUnread.length
+    ? Math.round((pendingUnread.reduce((sum, email) => sum + email.receivedHoursAgo, 0) / pendingUnread.length) * 10) / 10
+    : 0;
   const leadEmails  = allScope.filter(e => e.category === "Wedding Lead" || e.category === "Booking Inquiry");
-  const urgentRevenue = "₹8,000";
+  const urgentUnread = allScope.filter(e => e.status === "Unread" && e.priority === "Urgent").length;
+  const repliedThreads = allScope.filter(e => e.status === "Replied").length;
 
   return (
     <div className="module-stack inbox-module" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -315,8 +321,8 @@ export default function InboxModule({ role }: InboxModuleProps) {
         <InboxKPIs
           leadsSaved={leadEmails.filter(e => e.status === "Replied" || e.status === "Read").length}
           avgSLA={avgResp}
-          revenueAtRisk={urgentRevenue}
-          escalationsPrevented={7}
+          revenueAtRisk={String(urgentUnread)}
+          escalationsPrevented={repliedThreads}
         />
       </div>
 
@@ -327,12 +333,11 @@ export default function InboxModule({ role }: InboxModuleProps) {
         border: "1px solid var(--border)", overflow: "hidden",
       }}>
         <StatCard
-          title="Total Emails Today"
+          title="Email Threads"
           value={allScope.length}
-          subtitle="Across all properties"
+          subtitle="From email_threads"
           icon={Mail}
           accent="gold"
-          trend={{ label: "+2 from yesterday", direction: "up", positive: true }}
           delay={0}
         />
         <StatCard

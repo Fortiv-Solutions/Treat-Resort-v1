@@ -1,91 +1,51 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import type { FormConfig } from "@/lib/formBuilderTypes";
-
-const DB_PATH = path.join(process.cwd(), "lib", "db", "forms-db.json");
-
-function readDb() {
-  try {
-    if (!fs.existsSync(DB_PATH)) {
-      return { forms: [], submissions: [] };
-    }
-    const raw = fs.readFileSync(DB_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch (error) {
-    console.error("Failed to read local DB:", error);
-    return { forms: [], submissions: [] };
-  }
-}
-
-function writeDb(data: any) {
-  try {
-    const dir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), "utf-8");
-    return true;
-  } catch (error) {
-    console.error("Failed to write local DB:", error);
-    return false;
-  }
-}
+import { getForms, saveForm } from "@/lib/formPersistence";
+import { isSupabaseConfigured } from "@/lib/supabaseRest";
 
 export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-    const slug = searchParams.get("slug");
-    const db = readDb();
-
-    if (id) {
-      const form = db.forms.find((f: FormConfig) => f.id === id);
-      if (!form) return NextResponse.json({ error: "Form not found" }, { status: 404 });
-      return NextResponse.json(form);
-    }
-
-    if (slug) {
-      const form = db.forms.find((f: FormConfig) => `${f.settings.propertyId}-${f.id}` === slug);
-      if (!form) return NextResponse.json({ error: "Form not found" }, { status: 404 });
-      return NextResponse.json(form);
-    }
-
-    return NextResponse.json(db.forms);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!isSupabaseConfigured()) {
+    return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
   }
+
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  const slug = searchParams.get("slug");
+  const result = await getForms({ id, slug });
+
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
+
+  if (id || slug) {
+    const form = result.data[0];
+    if (!form) return NextResponse.json({ error: "Form not found" }, { status: 404 });
+    return NextResponse.json(form);
+  }
+
+  return NextResponse.json(result.data);
 }
 
 export async function POST(req: Request) {
+  if (!isSupabaseConfigured()) {
+    return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
+  }
+
   try {
     const form: FormConfig = await req.json();
-    if (!form || !form.settings) {
+    if (!form?.settings) {
       return NextResponse.json({ error: "Invalid form configuration payload" }, { status: 400 });
     }
-
-    const db = readDb();
-    
-    // Generate a unique ID if it's a new form
-    if (form.id === "new" || !form.id) {
-      form.id = Math.random().toString(36).substring(2, 9);
+    if (!form.settings.propertyId) {
+      return NextResponse.json({ error: "Select an active property before saving this form." }, { status: 400 });
     }
 
-    // Check if form already exists
-    const index = db.forms.findIndex((f: FormConfig) => f.id === form.id);
-    if (index >= 0) {
-      db.forms[index] = form;
-    } else {
-      db.forms.push(form);
+    const saved = await saveForm(form);
+    if (!saved.ok) {
+      return NextResponse.json({ error: saved.error }, { status: saved.status });
     }
 
-    const success = writeDb(db);
-    if (!success) {
-      return NextResponse.json({ error: "Failed to persist form details locally" }, { status: 500 });
-    }
-
-    // Forward to n8n webhook if configured
-    const webhookUrl = form.settings.n8nSaveWebhook;
+    const webhookUrl = saved.data.settings.n8nSaveWebhook;
     let n8nSuccess = false;
     let n8nMessage = "No webhook configured";
 
@@ -93,34 +53,31 @@ export async function POST(req: Request) {
       try {
         const response = await fetch(webhookUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             event: "form_saved",
             timestamp: new Date().toISOString(),
-            form,
+            form: saved.data,
           }),
         });
         n8nSuccess = response.ok;
-        n8nMessage = response.ok 
-          ? "Form forwarded to n8n successfully" 
+        n8nMessage = response.ok
+          ? "Form forwarded to n8n successfully"
           : `n8n webhook returned status ${response.status}`;
-      } catch (err: any) {
-        n8nMessage = `Failed to contact n8n: ${err.message}`;
-        console.error("n8n Save webhook trigger failed:", err);
+      } catch (error) {
+        n8nMessage = `Failed to contact n8n: ${error instanceof Error ? error.message : "Unknown error"}`;
       }
     }
 
     return NextResponse.json({
       success: true,
-      form,
-      n8n: {
-        success: n8nSuccess,
-        message: n8nMessage,
-      }
+      form: saved.data,
+      n8n: { success: n8nSuccess, message: n8nMessage },
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Unknown form save error." },
+      { status: 500 },
+    );
   }
 }

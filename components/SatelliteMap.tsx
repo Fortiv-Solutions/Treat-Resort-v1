@@ -157,7 +157,7 @@ function SummaryCard({ properties }: { properties: Property[] }) {
       </div>
       <div style={{ padding: "10px 14px" }}>
         {(Object.entries(counts) as [PropertyStatus, number][]).map(([status, count]) => {
-          const pct = Math.round((count / properties.length) * 100);
+          const pct = properties.length ? Math.round((count / properties.length) * 100) : 0;
           return (
             <div key={status} style={{ marginBottom: "8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
@@ -253,7 +253,10 @@ export default function SatelliteMap({ properties }: { properties: Property[] })
 
           {/* Property markers */}
           {properties.map(prop => {
-            const coords = COORDS[prop.id];
+            const coords: [number, number] | undefined =
+              prop.latitude != null && prop.longitude != null
+                ? [prop.latitude, prop.longitude]
+                : COORDS[prop.id];
             if (!coords) return null;
             const pin = PIN[prop.status];
             const isSelected = selected?.id === prop.id;
@@ -280,7 +283,7 @@ export default function SatelliteMap({ properties }: { properties: Property[] })
                   className="property-tooltip"
                 >
                   <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", fontWeight: 600 }}>
-                    {SHORT[prop.id]} · {prop.status}
+                    {SHORT[prop.id] ?? prop.name} · {prop.status}
                   </span>
                 </Tooltip>
               </CircleMarker>
@@ -330,7 +333,7 @@ export default function SatelliteMap({ properties }: { properties: Property[] })
             >
               <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: pin.fill, flexShrink: 0 }} />
               <span style={{ fontSize: "11px", fontWeight: active ? 700 : 500, color: active ? "#FFFFFF" : "rgba(255,255,255,0.45)", whiteSpace: "nowrap" }}>
-                {SHORT[prop.id]}
+                {SHORT[prop.id] ?? prop.name}
               </span>
             </button>
           );
