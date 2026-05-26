@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($content = Get-Content \"C:\\\\Users\\\\Admin\\\\.claude\\\\projects\\\\d--Downloads-treat-dashboard\\\\cd0c6184-f4e0-455e-8784-405ce7cd4067.jsonl\" -Raw; $matches = [regex]::Matches\\($content, '\"data\":\"\\(iVBORw0KGgo[^\"]{100,}\\)\"'\\); for \\($i = 0; $i -lt $matches.Count; $i++\\) { $data = $matches[$i].Groups[1].Value; $bytes = [Convert]::FromBase64String\\($data\\); [System.IO.File]::WriteAllBytes\\(\"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\img_all_$i.png\", $bytes\\); Write-Host \"Saved img_all_$i.png \\($\\($bytes.Length\\) bytes\\)\" })",
+      "Bash(Get-ChildItem -Path \"d:\\\\Downloads\\\\treat-dashboard\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"d:\\\\Downloads\\\\treat-dashboard\" -Recurse -File | Select-Object FullName | Sort-Object FullName | ForEach-Object { $_.FullName })",
+      "PowerShell(head -10)",
+      "WebFetch(domain:treatresorts.com)",
+      "Bash(python skills/ui-ux-pro-max/scripts/search.py \"luxury hospitality hotel resort management dashboard\" --design-system -p \"Treat Hotels & Resorts Dashboard\" -f markdown)",
+      "Bash(python search.py \"luxury hospitality hotel resort management dashboard\" --design-system -p \"Treat Hotels & Resorts Dashboard\" -f markdown)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\Admin\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\" -Recurse -Filter \"*.py\")",
+      "Bash(python search.py \"luxury hospitality hotel resort management dashboard\" --design-system -p \"Treat Hotels Resorts\" -f markdown)"
+    ]
+  }
+}

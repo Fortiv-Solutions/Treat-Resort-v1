@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 \"C:\\\\Users\\\\Admin\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"luxury hotel hospitality management dashboard premium minimal\" --design-system -p \"Treat Dashboard\" -f markdown)",
+      "Bash(py \"C:\\\\Users\\\\Admin\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"luxury hotel hospitality management dashboard premium minimal\" --design-system -p \"Treat Dashboard\" -f markdown)",
+      "Bash(npx next *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(find /mnt/c -name \"chrome.exe\" 2>/dev/null | head -3 *)",
+      "Read(//mnt/**)",
+      "Bash(wait)",
+      "Bash(echo \"PID=$!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3456/form-builder)",
+      "Bash(chromium-cli screenshot *)",
+      "Bash(echo \"exit:$?\")",
+      "Read(//usr/**)",
+      "Bash(node -e \"require\\('playwright'\\)\")",
+      "Bash(npx playwright *)",
+      "Bash(node -e ' *)",
+      "Read(//c/tmp/**)",
+      "Bash(ls /tmp/*.png /tmp/*.jpg /tmp/*.jpeg 2>/dev/null | head -20; ls \"C:/Users/Admin/AppData/Local/Temp/\"*.png 2>/dev/null | head -10)",
+      "Read(//c/Users/Admin/AppData/Local/Temp/**)",
+      "Bash(find \"C:/Users/Admin\" -name \"*.png\" -newer \"C:/Users/Admin/AppData/Local/Temp/NotifyIconGeneratedAumid_746696783808038382.png\" 2>/dev/null | head -20)",
+      "Read(//c/Users/Admin/**)",
+      "Bash(grep -v \"Local\\\\\\\\\\\\\\\\Microsoft\\\\\\\\|Local\\\\\\\\\\\\\\\\Packages\")",
+      "Bash(xxd \"C:/Users/Admin/AppData/Local/Temp/a1d81ff7-c8a7-44b9-a59e-29fe260f4278.tmp\")",
+      "Bash(cp \"C:/Users/Admin/AppData/Local/Temp/08dc0ee6-71a1-432f-853a-0ca004fdbe42.tmp\" \"C:/tmp/candidate1.png\")",
+      "Bash(cp \"C:/Users/Admin/AppData/Local/Temp/c4e67e71-e722-4691-8f28-52193504822d.tmp\" \"C:/tmp/candidate2.png\")",
+      "PowerShell(robocopy $env:TEMP \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\logo_check\" \"63a480fc-c637-4204-be90-008cab6bbda9.tmp\" /R:0 /W:0 2>&1)",
+      "PowerShell($content = Get-Content \"C:\\\\Users\\\\Admin\\\\.claude\\\\projects\\\\d--Downloads-treat-dashboard\\\\cd0c6184-f4e0-455e-8784-405ce7cd4067.jsonl\" -Raw; $matches = [regex]::Matches\\($content, '\"data\":\"\\(iVBORw0KGgo[^\"]{100,}\\)\"'\\); Write-Host \"Found $\\($matches.Count\\) base64 PNG images\"; for \\($i = 0; $i -lt $matches.Count; $i++\\) { $data = $matches[$i].Groups[1].Value; $bytes = [Convert]::FromBase64String\\($data\\); Write-Host \"Image $i`: $\\($bytes.Length\\) bytes\" })",
+      "PowerShell($content = Get-Content \"C:\\\\Users\\\\Admin\\\\.claude\\\\projects\\\\d--Downloads-treat-dashboard\\\\cd0c6184-f4e0-455e-8784-405ce7cd4067.jsonl\" -Raw; $matches = [regex]::Matches\\($content, '\"data\":\"\\(iVBORw0KGgo[^\"]{100,}\\)\"'\\); $imgs = @\\(13, 14\\); foreach \\($i in $imgs\\) { $data = $matches[$i].Groups[1].Value; $bytes = [Convert]::FromBase64String\\($data\\); [System.IO.File]::WriteAllBytes\\(\"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\img_$i.png\", $bytes\\); Write-Host \"Saved img_$i.png \\($\\($bytes.Length\\) bytes\\)\" })"
+    ]
+  }
+}
