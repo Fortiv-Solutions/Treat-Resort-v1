@@ -7,18 +7,52 @@ import Link from "next/link";
 
 interface Props {
   form: FormConfig;
+  updateForm?: (updater: (prev: FormConfig) => FormConfig) => void;
   addToast: (msg: string, type?: Toast["type"]) => void;
 }
 
-export default function BuilderHeader({ form, addToast }: Props) {
+export default function BuilderHeader({ form, updateForm, addToast }: Props) {
   const [saving, setSaving] = useState(false);
 
-  function handleSave() {
+  async function handleSave() {
     setSaving(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/forms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server returned status ${response.status}`);
+      }
+
+      const resData = await response.json();
+      if (resData.success) {
+        // Update client-side form ID with the database generated/assigned ID
+        if (resData.form?.id && updateForm) {
+          updateForm(prev => ({ ...prev, id: resData.form.id }));
+        }
+
+        addToast(
+          resData.n8n?.success 
+            ? "Form saved & synced with n8n!" 
+            : resData.n8n?.message.includes("No webhook") 
+            ? "Form saved successfully!" 
+            : `Form saved locally (${resData.n8n?.message})`,
+          resData.n8n?.success || resData.n8n?.message.includes("No") ? "success" : "info"
+        );
+      } else {
+        throw new Error(resData.error || "Unknown saving error");
+      }
+    } catch (error: any) {
+      console.error("Save failed:", error);
+      addToast(`Failed to save: ${error.message}`, "error");
+    } finally {
       setSaving(false);
-      addToast("Form saved successfully", "success");
-    }, 900);
+    }
   }
 
   function handleExport() {

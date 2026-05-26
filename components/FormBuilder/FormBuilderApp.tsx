@@ -26,7 +26,7 @@ type SectionKey = (typeof SECTIONS)[number]["key"];
 
 export default function FormBuilderApp() {
   const [form, setForm] = useState<FormConfig>(DEFAULT_FORM);
-  const [openSection, setOpenSection] = useState<SectionKey>("settings");
+  const [openSection, setOpenSection] = useState<SectionKey | null>("settings");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const uid = useId();
 
@@ -45,7 +45,7 @@ export default function FormBuilderApp() {
   }, []);
 
   const toggleSection = useCallback((key: SectionKey) => {
-    setOpenSection(prev => prev === key ? key : key);
+    setOpenSection(prev => prev === key ? null : key);
   }, []);
 
   return (
@@ -56,7 +56,7 @@ export default function FormBuilderApp() {
       flexDirection: "column",
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     }}>
-      <BuilderHeader form={form} addToast={addToast} />
+      <BuilderHeader form={form} updateForm={updateForm} addToast={addToast} />
 
       {/* Two-panel content */}
       <div style={{
@@ -104,7 +104,7 @@ export default function FormBuilderApp() {
                   <BrandingSection form={form} updateForm={updateForm} />
                 )}
                 {sec.key === "share" && (
-                  <ShareSection form={form} addToast={addToast} />
+                  <ShareSection form={form} updateForm={updateForm} addToast={addToast} />
                 )}
               </CollapsibleSection>
             );

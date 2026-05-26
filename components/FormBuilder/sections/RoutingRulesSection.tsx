@@ -134,7 +134,7 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
                   </div>
 
                   {/* Rule body */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr auto 80px", gap: "6px", alignItems: "center" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: rule.condition === "between" ? "1fr auto 120px" : "1fr auto 80px", gap: "6px", alignItems: "center" }}>
                     {/* Question */}
                     <select value={rule.questionId} onChange={e => updateRule(rule.id, { questionId: e.target.value })}
                       style={{ ...iStyle(), cursor: "pointer" }}>
@@ -154,12 +154,32 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
                     </select>
 
                     {/* Value */}
-                    <input type="number" min={0} max={10} value={rule.value}
-                      onChange={e => updateRule(rule.id, { value: Number(e.target.value) })}
-                      style={{ ...iStyle(), textAlign: "center" }}
-                      onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-                      onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
-                    />
+                    {rule.condition === "between" ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                        <input type="number" min={0} max={10} value={rule.value}
+                          onChange={e => updateRule(rule.id, { value: Number(e.target.value) })}
+                          placeholder="Min"
+                          style={{ ...iStyle(), width: "48px", padding: "7px 4px", textAlign: "center" }}
+                          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
+                          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                        />
+                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}>-</span>
+                        <input type="number" min={0} max={10} value={rule.value2 ?? 5}
+                          onChange={e => updateRule(rule.id, { value2: Number(e.target.value) })}
+                          placeholder="Max"
+                          style={{ ...iStyle(), width: "48px", padding: "7px 4px", textAlign: "center" }}
+                          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
+                          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                        />
+                      </div>
+                    ) : (
+                      <input type="number" min={0} max={10} value={rule.value}
+                        onChange={e => updateRule(rule.id, { value: Number(e.target.value) })}
+                        style={{ ...iStyle(), textAlign: "center" }}
+                        onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
+                        onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                      />
+                    )}
                   </div>
 
                   {/* Action */}

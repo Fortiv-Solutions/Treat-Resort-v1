@@ -1,0 +1,329 @@
+{
+  "forms": [
+    {
+      "id": "new",
+      "settings": {
+        "title": "Tell Us About Your Stay",
+        "description": "Your feedback helps us deliver an exceptional experience for every guest.",
+        "propertyId": "silvassa",
+        "propertyName": "Treat Resort Silvassa",
+        "language": "English",
+        "collectGuestName": true,
+        "collectGuestEmail": true,
+        "collectRoomNumber": true,
+        "expiresAt": "",
+        "isActive": true,
+        "n8nSaveWebhook": "",
+        "n8nSubmitWebhook": ""
+      },
+      "questions": [
+        {
+          "id": "q1",
+          "type": "rating",
+          "label": "How would you rate your overall stay?",
+          "required": true,
+          "minRating": 1,
+          "maxRating": 5,
+          "lowLabel": "Poor",
+          "highLabel": "Excellent"
+        },
+        {
+          "id": "q2",
+          "type": "rating",
+          "label": "How was the cleanliness of your room?",
+          "required": true,
+          "minRating": 1,
+          "maxRating": 5,
+          "lowLabel": "Poor",
+          "highLabel": "Excellent"
+        },
+        {
+          "id": "q3",
+          "type": "rating",
+          "label": "How would you rate our staff's hospitality?",
+          "required": true,
+          "minRating": 1,
+          "maxRating": 5,
+          "lowLabel": "Unfriendly",
+          "highLabel": "Outstanding"
+        },
+        {
+          "id": "q4",
+          "type": "textarea",
+          "label": "What did you enjoy most about your stay?",
+          "placeholder": "Tell us what made your experience memorable…",
+          "required": false
+        },
+        {
+          "id": "q5",
+          "type": "textarea",
+          "label": "Is there anything we could have done better?",
+          "placeholder": "Your suggestions help us improve…",
+          "required": false
+        },
+        {
+          "id": "q6",
+          "type": "yesno",
+          "label": "Would you recommend Treat Resorts to friends and family?",
+          "required": true
+        }
+      ],
+      "routing": {
+        "enabled": true,
+        "rules": [
+          {
+            "id": "r1",
+            "condition": "gte",
+            "value": 4,
+            "action": "show_review_link",
+            "questionId": "q1"
+          },
+          {
+            "id": "r2",
+            "condition": "lte",
+            "value": 3,
+            "action": "alert_gm_md",
+            "questionId": "q1"
+          }
+        ],
+        "reviewLink": "https://g.page/r/silvassa-review",
+        "gmEmail": "gm.silvassa@treatresorts.com",
+        "mdEmail": "md@treatresorts.com",
+        "whatsappNumber": ""
+      },
+      "branding": {
+        "logoUrl": "",
+        "primaryColor": "#1B4332",
+        "accentColor": "#C9A96E",
+        "bgColor": "#FAF8F5",
+        "headerText": "Treat Hotels & Resorts",
+        "thankYouTitle": "Thank You for Your Feedback!",
+        "thankYouMessage": "Your experience matters deeply to us. We look forward to welcoming you again.",
+        "showPropertyName": true,
+        "fontFamily": "Inter"
+      }
+    }
+  ],
+  "submissions": [
+    {
+      "id": "s-3rery2a",
+      "formId": "new",
+      "propertyName": "Treat Resort Silvassa",
+      "propertyId": "silvassa",
+      "guestName": "Anonymous",
+      "guestEmail": "",
+      "roomNumber": "",
+      "answers": [
+        {
+          "questionId": "q1",
+          "questionLabel": "How would you rate your overall stay?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q2",
+          "questionLabel": "How was the cleanliness of your room?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q3",
+          "questionLabel": "How would you rate our staff's hospitality?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q4",
+          "questionLabel": "What did you enjoy most about your stay?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q5",
+          "questionLabel": "Is there anything we could have done better?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q6",
+          "questionLabel": "Would you recommend Treat Resorts to friends and family?",
+          "questionType": "yesno",
+          "value": "Yes"
+        }
+      ],
+      "routingActions": [
+        {
+          "action": "show_review_link",
+          "triggered": true,
+          "reason": "Evaluated Rule for q1: 5 matching condition gte (4)"
+        }
+      ],
+      "timestamp": "2026-05-26T11:14:05.162Z"
+    },
+    {
+      "id": "s-9ppjmse",
+      "formId": "new",
+      "propertyName": "Treat Resort Silvassa",
+      "propertyId": "silvassa",
+      "guestName": "Anonymous",
+      "guestEmail": "",
+      "roomNumber": "",
+      "answers": [
+        {
+          "questionId": "q1",
+          "questionLabel": "How would you rate your overall stay?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q2",
+          "questionLabel": "How was the cleanliness of your room?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q3",
+          "questionLabel": "How would you rate our staff's hospitality?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q4",
+          "questionLabel": "What did you enjoy most about your stay?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q5",
+          "questionLabel": "Is there anything we could have done better?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q6",
+          "questionLabel": "Would you recommend Treat Resorts to friends and family?",
+          "questionType": "yesno",
+          "value": "Yes"
+        }
+      ],
+      "routingActions": [
+        {
+          "action": "show_review_link",
+          "triggered": true,
+          "reason": "Evaluated Rule for q1: 5 matching condition gte (4)"
+        }
+      ],
+      "timestamp": "2026-05-26T11:17:56.523Z"
+    },
+    {
+      "id": "s-pzypwmt",
+      "formId": "new",
+      "propertyName": "Treat Resort Silvassa",
+      "propertyId": "silvassa",
+      "guestName": "Anonymous",
+      "guestEmail": "",
+      "roomNumber": "",
+      "answers": [
+        {
+          "questionId": "q1",
+          "questionLabel": "How would you rate your overall stay?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q2",
+          "questionLabel": "How was the cleanliness of your room?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q3",
+          "questionLabel": "How would you rate our staff's hospitality?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q4",
+          "questionLabel": "What did you enjoy most about your stay?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q5",
+          "questionLabel": "Is there anything we could have done better?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q6",
+          "questionLabel": "Would you recommend Treat Resorts to friends and family?",
+          "questionType": "yesno",
+          "value": "Yes"
+        }
+      ],
+      "routingActions": [
+        {
+          "action": "show_review_link",
+          "triggered": true,
+          "reason": "Evaluated Rule for q1: 5 matching condition gte (4)"
+        }
+      ],
+      "timestamp": "2026-05-26T11:22:51.695Z"
+    },
+    {
+      "id": "s-y03tx56",
+      "formId": "new",
+      "propertyName": "Treat Resort Silvassa",
+      "propertyId": "silvassa",
+      "guestName": "Anonymous",
+      "guestEmail": "",
+      "roomNumber": "",
+      "answers": [
+        {
+          "questionId": "q1",
+          "questionLabel": "How would you rate your overall stay?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q2",
+          "questionLabel": "How was the cleanliness of your room?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q3",
+          "questionLabel": "How would you rate our staff's hospitality?",
+          "questionType": "rating",
+          "value": 5
+        },
+        {
+          "questionId": "q4",
+          "questionLabel": "What did you enjoy most about your stay?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q5",
+          "questionLabel": "Is there anything we could have done better?",
+          "questionType": "textarea",
+          "value": ""
+        },
+        {
+          "questionId": "q6",
+          "questionLabel": "Would you recommend Treat Resorts to friends and family?",
+          "questionType": "yesno",
+          "value": "Yes"
+        }
+      ],
+      "routingActions": [
+        {
+          "action": "show_review_link",
+          "triggered": true,
+          "reason": "Evaluated Rule for q1: 5 matching condition gte (4)"
+        }
+      ],
+      "timestamp": "2026-05-26T11:24:42.424Z"
+    }
+  ]
+}

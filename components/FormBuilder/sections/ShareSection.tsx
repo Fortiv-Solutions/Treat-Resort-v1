@@ -6,10 +6,11 @@ import { Copy, Check, ExternalLink, QrCode, Code2 } from "lucide-react";
 
 interface Props {
   form: FormConfig;
+  updateForm?: (updater: (prev: FormConfig) => FormConfig) => void;
   addToast: (msg: string, type?: Toast["type"]) => void;
 }
 
-export default function ShareSection({ form, addToast }: Props) {
+export default function ShareSection({ form, updateForm, addToast }: Props) {
   const [copied, setCopied] = useState<"link" | "embed" | null>(null);
 
   const slug = `${form.settings.propertyId}-${form.id}`;
@@ -169,6 +170,156 @@ export default function ShareSection({ form, addToast }: Props) {
             <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginTop: "2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</div>
           </div>
         ))}
+      </div>
+
+      {/* n8n Backend Integration */}
+      <div style={{
+        marginTop: "12px",
+        padding: "16px",
+        borderRadius: "12px",
+        background: "rgba(201,169,110,0.04)",
+        border: "1px solid rgba(201,169,110,0.15)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "12px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "16px" }}>🔌</span>
+          <div>
+            <h4 style={{ fontSize: "13px", fontWeight: 700, color: "#FFFFFF", margin: 0 }}>n8n Webhook Integration</h4>
+            <p style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.4)", margin: "1px 0 0" }}>Connect your form to your n8n workflow server</p>
+          </div>
+        </div>
+
+        {/* Save Webhook Input */}
+        <div>
+          <div style={{ fontSize: "10.5px", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "5px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+            n8n Save Webhook URL
+          </div>
+          <input
+            type="text"
+            value={form.settings.n8nSaveWebhook ?? ""}
+            onChange={e => {
+              updateForm?.(prev => ({
+                ...prev,
+                settings: { ...prev.settings, n8nSaveWebhook: e.target.value }
+              }));
+            }}
+            placeholder="https://n8n.yourdomain.com/webhook/..."
+            style={{
+              padding: "9px 12px",
+              background: "rgba(0,0,0,0.2)",
+              border: "1.5px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px", fontSize: "12px",
+              color: "#FFFFFF", outline: "none",
+              fontFamily: "'Inter', sans-serif",
+              width: "100%",
+              boxSizing: "border-box"
+            }}
+          />
+        </div>
+
+        {/* Submit Webhook Input */}
+        <div>
+          <div style={{ fontSize: "10.5px", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "5px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+            n8n Submission Webhook URL
+          </div>
+          <input
+            type="text"
+            value={form.settings.n8nSubmitWebhook ?? ""}
+            onChange={e => {
+              updateForm?.(prev => ({
+                ...prev,
+                settings: { ...prev.settings, n8nSubmitWebhook: e.target.value }
+              }));
+            }}
+            placeholder="https://n8n.yourdomain.com/webhook/..."
+            style={{
+              padding: "9px 12px",
+              background: "rgba(0,0,0,0.2)",
+              border: "1.5px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px", fontSize: "12px",
+              color: "#FFFFFF", outline: "none",
+              fontFamily: "'Inter', sans-serif",
+              width: "100%",
+              boxSizing: "border-box"
+            }}
+          />
+        </div>
+
+        {/* Interactive Blueprint Drawer */}
+        <div style={{
+          background: "rgba(0,0,0,0.18)",
+          borderRadius: "8px",
+          border: "1px solid rgba(255,255,255,0.06)",
+          padding: "10px",
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "11px", fontWeight: 600, color: "#C9A96E" }}>📋 Submission Payload Schema</span>
+            <button
+              onClick={() => {
+                const samplePayload = {
+                  event: "guest_feedback_submitted",
+                  id: "s-abc1234",
+                  formId: form.id,
+                  propertyName: form.settings.propertyName,
+                  propertyId: form.settings.propertyId,
+                  guestName: "John Doe",
+                  guestEmail: "john.doe@example.com",
+                  roomNumber: "302",
+                  answers: [
+                    { questionId: "q1", questionLabel: "How would you rate your overall stay?", questionType: "rating", value: 5 },
+                    { questionId: "q4", questionLabel: "What did you enjoy most about your stay?", questionType: "textarea", value: "Great service!" }
+                  ],
+                  routingActions: [
+                    { action: "show_review_link", triggered: true, reason: "Starred overall stay >= 4" }
+                  ],
+                  timestamp: new Date().toISOString()
+                };
+                navigator.clipboard.writeText(JSON.stringify(samplePayload, null, 2)).then(() => {
+                  addToast("Schema blueprint copied to clipboard!", "success");
+                });
+              }}
+              style={{
+                background: "rgba(201,169,110,0.15)",
+                border: "1px solid rgba(201,169,110,0.25)",
+                color: "#C9A96E",
+                fontSize: "9px",
+                padding: "3px 6px",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}
+            >
+              Copy Schema
+            </button>
+          </div>
+          <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.35)", marginTop: "4px", marginBottom: "8px", lineHeight: "1.3" }}>
+            Copy this schema payload blueprint to configure your Webhook Start node in n8n easily.
+          </p>
+          <pre style={{
+            margin: 0,
+            fontSize: "9.5px",
+            color: "rgba(255,255,255,0.55)",
+            background: "rgba(0,0,0,0.3)",
+            padding: "8px",
+            borderRadius: "6px",
+            overflowX: "auto",
+            maxHeight: "140px",
+            fontFamily: "monospace",
+          }}>
+{`{
+  "event": "guest_feedback_submitted",
+  "id": "s-abc1234",
+  "formId": "${form.id}",
+  "propertyName": "${form.settings.propertyName}",
+  "guestName": "John Doe",
+  "roomNumber": "302",
+  "answers": [
+    { "questionId": "q1", "value": 5 }
+  ]
+}`}
+          </pre>
+        </div>
       </div>
     </div>
   );

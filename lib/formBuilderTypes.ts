@@ -70,6 +70,8 @@ export interface FormSettings {
   collectRoomNumber: boolean;
   expiresAt: string;
   isActive: boolean;
+  n8nSaveWebhook?: string;
+  n8nSubmitWebhook?: string;
 }
 
 export interface FormConfig {

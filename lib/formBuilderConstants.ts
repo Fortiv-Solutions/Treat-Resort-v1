@@ -63,6 +63,8 @@ export const DEFAULT_FORM: FormConfig = {
     collectRoomNumber: true,
     expiresAt: "",
     isActive: true,
+    n8nSaveWebhook: "",
+    n8nSubmitWebhook: "",
   },
   questions: [
     {
