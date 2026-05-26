@@ -150,6 +150,6 @@ export const DEFAULT_FORM: FormConfig = {
     thankYouTitle: "Thank You for Your Feedback!",
     thankYouMessage: "Your experience matters deeply to us. We look forward to welcoming you again.",
     showPropertyName: true,
-    fontFamily: "Inter",
+    fontFamily: "Professional Sans",
   },
 };

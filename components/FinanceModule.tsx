@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { Fragment, useState, useMemo, useEffect } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell,
@@ -146,15 +146,12 @@ function GreetingBanner({ role, selectedDate, totalRev, avgOcc }: {
 
   return (
     <div style={{
-      background: "linear-gradient(135deg, #0f2a20 0%, #1B4332 50%, #2d6a4f 100%)",
-      borderRadius: "16px", padding: "24px 28px",
+      background: "linear-gradient(135deg, #111827 0%, #1f2937 100%)",
+      borderRadius: "8px", padding: "22px 24px",
       display: "flex", justifyContent: "space-between", alignItems: "center",
       position: "relative", overflow: "hidden",
+      border: "1px solid rgba(255,255,255,0.08)",
     }}>
-      {/* Decorative blobs */}
-      <div style={{ position: "absolute", top: "-40px", right: "320px", width: "160px", height: "160px", borderRadius: "50%", background: "rgba(201,169,110,0.07)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: "-50px", right: "120px", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(201,169,110,0.05)", pointerEvents: "none" }} />
-
       <div>
         <p style={{ margin: "0 0 4px", fontSize: "12px", color: "rgba(201,169,110,0.65)", fontWeight: 500, letterSpacing: "0.04em" }}>{dateStr}</p>
         <h1 style={{ margin: "0 0 6px", fontSize: "26px", fontWeight: 900, color: "#fff", letterSpacing: "-0.02em" }}>
@@ -238,13 +235,11 @@ function HeroRevenueCard({ totalRev, propertyFilter, setPropertyFilter, entityFi
 
   return (
     <div style={{
-      background: "linear-gradient(145deg, #1B4332 0%, #122d22 100%)",
-      borderRadius: "16px", padding: "22px",
+      background: "linear-gradient(145deg, #111827 0%, #1f2937 100%)",
+      borderRadius: "8px", padding: "20px",
       position: "relative", overflow: "visible",
+      border: "1px solid rgba(255,255,255,0.08)",
     }}>
-      {/* Decorative */}
-      <div style={{ position: "absolute", top: "-20px", right: "-20px", width: "120px", height: "120px", borderRadius: "50%", background: "rgba(201,169,110,0.08)", pointerEvents: "none" }} />
-
       {/* Top row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "18px" }}>
         <div>
@@ -649,7 +644,7 @@ function RevenueTrendChart({ dateRange, setDateRange }: { dateRange: DateRange; 
         ))}
       </div>
 
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={200} minWidth={1} minHeight={1}>
         <LineChart data={data} margin={{ top: 5, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" vertical={false} />
           <XAxis dataKey="date" tick={{ fontSize: 10, fill: "var(--text-3)" }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
@@ -674,7 +669,7 @@ function RevenueMixDonut() {
       <p style={{ fontSize: "11px", color: "var(--text-3)", margin: "0 0 12px" }}>Breakdown by category</p>
 
       <div style={{ position: "relative", height: "160px" }}>
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
           <PieChart>
             <Pie data={REVENUE_MIX} cx="50%" cy="50%" innerRadius={48} outerRadius={70} paddingAngle={2} dataKey="value"
               onMouseEnter={(_, idx) => setActiveIdx(idx)}
@@ -776,8 +771,8 @@ function PropertyTable({ properties, expandedId, setExpandedId }: {
           </thead>
           <tbody>
             {sorted.map(prop => (
-              <>
-                <tr key={prop.id} className={`trow clickable${expandedId === prop.id ? " active" : ""}`}
+              <Fragment key={prop.id}>
+                <tr className={`trow clickable${expandedId === prop.id ? " active" : ""}`}
                   onClick={() => setExpandedId(expandedId === prop.id ? null : prop.id)}
                   style={{ borderBottom: "1px solid var(--border)" }}>
                   <td style={{ padding: "11px 12px" }}>
@@ -834,7 +829,7 @@ function PropertyTable({ properties, expandedId, setExpandedId }: {
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
             <tr style={{ background: "rgba(201,169,110,0.06)", borderTop: "2px solid rgba(201,169,110,0.25)" }}>
               <td style={{ padding: "12px", fontSize: "12px", fontWeight: 700, color: "var(--text-1)" }}>Total — {properties.length} Properties</td>
@@ -985,7 +980,7 @@ function ExpenseRevenueChart() {
     <div className="glass-card" style={{ padding: "20px" }}>
       <SectionHeader title="Expense vs Revenue" subtitle="Gross margin by category · current month" />
       <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "24px", alignItems: "center" }}>
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={200} minWidth={1} minHeight={1}>
           <BarChart data={EXPENSE_DATA} layout="vertical" margin={{ top: 0, right: 60, bottom: 0, left: 16 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" horizontal={false} />
             <XAxis type="number" tickFormatter={fmtK} tick={{ fontSize: 10, fill: "var(--text-3)" }} tickLine={false} axisLine={false} />
@@ -1163,13 +1158,13 @@ export default function FinanceModule({ role }: { role: string }) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+    <div className="finance-module" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
       {/* ① Greeting Banner */}
       {!isGM && <GreetingBanner role={role} selectedDate={selectedDate} totalRev={totalRev} avgOcc={avgOcc} />}
 
       {/* ② 3-column dashboard grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "280px 1fr 280px", gap: "16px", alignItems: "start" }}>
+      <div className="finance-dashboard-grid" style={{ display: "grid", gridTemplateColumns: "280px 1fr 280px", gap: "16px", alignItems: "start" }}>
 
         {/* LEFT — Hero card + entity breakdown */}
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>

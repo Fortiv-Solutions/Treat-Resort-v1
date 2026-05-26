@@ -89,7 +89,7 @@ export default function PerformanceChart() {
         {[
           { label: "Occupancy",      color: "#1B4332" },
           { label: "Response Rate",  color: "#C9A96E" },
-          { label: "Review Score",   color: "#3B82F6" },
+          { label: "Review Score",   color: "var(--teal)" },
         ].map(({ label, color }) => (
           <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <span style={{ width: "10px", height: "10px", borderRadius: "3px", background: color, display: "inline-block" }} />
@@ -98,7 +98,7 @@ export default function PerformanceChart() {
         ))}
       </div>
 
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={200} minWidth={1} minHeight={1}>
         <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="gradOcc" x1="0" y1="0" x2="0" y2="1">
@@ -110,8 +110,8 @@ export default function PerformanceChart() {
               <stop offset="95%" stopColor="#C9A96E" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="gradRev" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="#3B82F6" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+              <stop offset="5%"  stopColor="var(--teal)" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="var(--teal)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="4 4" stroke="rgba(0,0,0,0.05)" vertical={false} />
@@ -120,7 +120,7 @@ export default function PerformanceChart() {
           <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(201,169,110,0.2)", strokeWidth: 2 }} />
           <Area type="monotone" dataKey="occupancy"    name="Occupancy"     stroke="#1B4332" strokeWidth={2.5} fill="url(#gradOcc)"  dot={false} activeDot={{ r: 5, fill: "#1B4332", strokeWidth: 0 }} />
           <Area type="monotone" dataKey="responseRate" name="Response Rate" stroke="#C9A96E" strokeWidth={2.5} fill="url(#gradResp)" dot={false} activeDot={{ r: 5, fill: "#C9A96E", strokeWidth: 0 }} />
-          <Area type="monotone" dataKey="reviewScore"  name="Review Score"  stroke="#3B82F6" strokeWidth={2}   fill="url(#gradRev)"  dot={false} activeDot={{ r: 5, fill: "#3B82F6", strokeWidth: 0 }} />
+          <Area type="monotone" dataKey="reviewScore"  name="Review Score"  stroke="var(--teal)" strokeWidth={2}   fill="url(#gradRev)"  dot={false} activeDot={{ r: 5, fill: "var(--teal)", strokeWidth: 0 }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

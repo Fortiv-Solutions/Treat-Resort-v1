@@ -46,7 +46,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
 
   /* Keep --sidebar-current-w in sync so main area margin animates correctly */
   useEffect(() => {
-    const w = collapsed ? "72px" : "240px";
+    const w = collapsed ? "72px" : "248px";
     document.documentElement.style.setProperty("--sidebar-current-w", w);
   }, [collapsed]);
 
@@ -68,7 +68,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
           width: "42px", height: "42px", borderRadius: "10px",
           background: "var(--green-800)", border: "none", cursor: "pointer",
           alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+          boxShadow: "0 10px 24px rgba(7,21,15,0.28)",
         }}
         className="mobile-hamburger"
       >
@@ -87,7 +87,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
       {/* Sidebar */}
       <aside
         className={`sidebar${mobileOpen ? " mobile-open" : ""}`}
-        style={{ width: isCollapsed ? "72px" : "240px" }}
+        style={{ width: isCollapsed ? "72px" : "248px" }}
       >
         {/* Logo */}
         <div style={{
@@ -432,10 +432,10 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
               <>
                 <div style={{ flex: 1, textAlign: "left", minWidth: 0 }}>
                   <div style={{ fontSize: "12px", fontWeight: 600, color: "rgba(255,255,255,0.85)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {currentRole?.label.split(" — ")[1] ?? currentRole?.label}
+                    {currentRole?.label.split(" - ")[1] ?? currentRole?.label}
                   </div>
                   <div style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.35)", marginTop: "1px" }}>
-                    {currentRole?.label.split(" — ")[0]}
+                    {currentRole?.label.split(" - ")[0]}
                   </div>
                 </div>
                 <ChevronDown size={13} color="rgba(255,255,255,0.4)" style={{ transform: roleOpen ? "rotate(180deg)" : "none", transition: "transform 200ms ease" }} />
@@ -447,7 +447,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
           {roleOpen && !isCollapsed && (
             <div style={{
               position: "absolute", bottom: "calc(100% - 8px)", left: "12px", right: "12px",
-              background: "linear-gradient(160deg, #1e5040, #122d22)",
+              background: "linear-gradient(160deg, var(--green-800), var(--green-950))",
               border: "1px solid rgba(201,169,110,0.2)",
               borderRadius: "12px", overflow: "hidden",
               boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
@@ -482,10 +482,10 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
                   </span>
                   <div>
                     <div style={{ fontSize: "12px", fontWeight: r.value === role ? 600 : 400, color: r.value === role ? "#C9A96E" : "rgba(255,255,255,0.7)" }}>
-                      {r.label.split(" — ")[1] ?? r.label}
+                      {r.label.split(" - ")[1] ?? r.label}
                     </div>
                     <div style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.3)" }}>
-                      {r.label.split(" — ")[0]}
+                      {r.label.split(" - ")[0]}
                     </div>
                   </div>
                 </button>

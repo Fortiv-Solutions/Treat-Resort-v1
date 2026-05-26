@@ -1,10 +1,10 @@
 export type Role = "MD" | "GM_SILVASSA" | "GM_DAHANU" | "GM_KUMBHALGARH";
 
 export const ROLES: { label: string; value: Role }[] = [
-  { label: "MD View — Aditya", value: "MD" },
-  { label: "GM View — Silvassa", value: "GM_SILVASSA" },
-  { label: "GM View — Dahanu", value: "GM_DAHANU" },
-  { label: "GM View — Kumbhalgarh", value: "GM_KUMBHALGARH" },
+  { label: "MD View - Aditya", value: "MD" },
+  { label: "GM View - Silvassa", value: "GM_SILVASSA" },
+  { label: "GM View - Dahanu", value: "GM_DAHANU" },
+  { label: "GM View - Kumbhalgarh", value: "GM_KUMBHALGARH" },
 ];
 
 export type PropertyStatus = "Excellent" | "Good" | "Needs Attention";

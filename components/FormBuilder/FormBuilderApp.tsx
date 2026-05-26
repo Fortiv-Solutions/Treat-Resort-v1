@@ -49,7 +49,7 @@ export default function FormBuilderApp() {
   }, []);
 
   return (
-    <div style={{
+    <div className="form-builder-shell" style={{
       minHeight: "100vh",
       background: "linear-gradient(160deg, #0f2a20 0%, #1B4332 40%, #1e3a2f 100%)",
       display: "flex",
@@ -69,7 +69,7 @@ export default function FormBuilderApp() {
         margin: "0 auto",
         padding: "24px 24px 32px",
         alignItems: "start",
-      }} className="fb-grid">
+        }} className="fb-grid">
 
         {/* Left builder panel */}
         <div style={{

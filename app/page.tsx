@@ -11,9 +11,9 @@ import { LayoutDashboard, Inbox, Bell, Search, TrendingUp } from "lucide-react";
 type Module = "feedback" | "inbox" | "finance";
 
 const MODULE_META: Record<Module, { title: string; subtitle: string; icon: typeof LayoutDashboard }> = {
-  feedback: { title: "Guest Feedback & Reviews", subtitle: "Automated feedback collection, Google review funnelling & complaint alerts", icon: LayoutDashboard },
-  inbox:    { title: "Unified Email Inbox",       subtitle: "All 12 properties · centralized email management & response tracking",    icon: Inbox },
-  finance:  { title: "Finance Intelligence",      subtitle: "Revenue · occupancy · receivables · all 12 properties from Tally ERP",   icon: TrendingUp },
+  feedback: { title: "Guest Feedback & Reviews", subtitle: "Automated feedback collection, Google review funneling, and complaint alerts", icon: LayoutDashboard },
+  inbox:    { title: "Unified Email Inbox",       subtitle: "All 12 properties - centralized email management and response tracking",   icon: Inbox },
+  finance:  { title: "Finance Intelligence",      subtitle: "Revenue, occupancy, receivables, and Tally ERP reporting across properties", icon: TrendingUp },
 };
 
 export default function Dashboard() {
@@ -24,7 +24,7 @@ export default function Dashboard() {
   const Icon = meta.icon;
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
+    <div className="app-shell" style={{ minHeight: "100vh", background: "var(--bg)" }}>
 
       {/* ── Sidebar ── */}
       <Sidebar
@@ -36,18 +36,19 @@ export default function Dashboard() {
 
       {/* ── Main ── */}
       <div style={{
-        flex: 1,
         marginLeft: "var(--sidebar-current-w)",
         minWidth: 0,
         display: "flex",
         flexDirection: "column",
+        minHeight: "100vh",
+        width: "calc(100% - var(--sidebar-current-w))",
         transition: "margin-left var(--dur-slow) var(--ease-out-expo)",
       }} className="main-area">
 
         {/* Top Header */}
-        <header style={{
+        <header className="app-topbar" style={{
           position: "sticky", top: 0, zIndex: 200,
-          background: "rgba(246,242,234,0.92)",
+          background: "rgba(255,250,240,0.88)",
           backdropFilter: "blur(20px) saturate(160%)",
           WebkitBackdropFilter: "blur(20px) saturate(160%)",
           borderBottom: "1px solid var(--border-soft)",
@@ -62,7 +63,7 @@ export default function Dashboard() {
           <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
             <div style={{
               width: "40px", height: "40px", borderRadius: "11px",
-              background: "linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%)",
+              background: "linear-gradient(135deg, var(--green-900) 0%, var(--green-700) 100%)",
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
               boxShadow: "0 2px 8px rgba(27,67,50,0.25)",
@@ -70,6 +71,9 @@ export default function Dashboard() {
               <Icon size={17} color="#C9A96E" />
             </div>
             <div style={{ minWidth: 0 }}>
+              <p className="brand-kicker" style={{ marginBottom: "2px" }}>
+                Treat Operations
+              </p>
               <h1 style={{
                 fontSize: "14px", fontWeight: 700, color: "var(--text-1)",
                 lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis",
@@ -102,7 +106,7 @@ export default function Dashboard() {
             >
               <Search size={13} color="var(--text-3)" />
               <input
-                placeholder="Search…"
+                placeholder="Search..."
                 style={{
                   border: "none", background: "transparent", outline: "none",
                   fontSize: "13px", color: "var(--text-1)", width: "130px",
@@ -119,6 +123,7 @@ export default function Dashboard() {
               cursor: "pointer", position: "relative",
               transition: "border-color 150ms, background 150ms, box-shadow 150ms",
             }}
+              aria-label="Open notifications"
               onMouseEnter={e => { e.currentTarget.style.borderColor = "#C9A96E"; e.currentTarget.style.background = "#FFFFFF"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(201,169,110,0.15)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.boxShadow = "none"; }}
             >
@@ -143,9 +148,9 @@ export default function Dashboard() {
         </header>
 
         {/* Page Content */}
-        <main style={{
+        <main className="app-main" style={{
           flex: 1, padding: "28px 32px",
-          maxWidth: "1400px", width: "100%", margin: "0 auto",
+          width: "100%",
         }}>
           {activeModule === "feedback"
             ? <FeedbackModule key={role} role={role} />
@@ -159,10 +164,17 @@ export default function Dashboard() {
       {/* Responsive sidebar margin */}
       <style>{`
         @media (max-width: 1023px) {
-          .main-area { margin-left: var(--sidebar-w-col) !important; }
+          .main-area {
+            margin-left: var(--sidebar-w-col) !important;
+            width: calc(100% - var(--sidebar-w-col)) !important;
+          }
         }
         @media (max-width: 767px) {
-          .main-area { margin-left: 0 !important; padding-top: 68px; }
+          .main-area {
+            margin-left: 0 !important;
+            width: 100% !important;
+            padding-top: 68px;
+          }
         }
       `}</style>
     </div>

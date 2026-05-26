@@ -308,7 +308,7 @@ export default function InboxModule({ role }: InboxModuleProps) {
   const urgentRevenue = "₹8,000";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="module-stack inbox-module" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
 
       {/* Business KPIs */}
       <div className="anim-fade-up" style={{ animationDelay: "0ms" }}>

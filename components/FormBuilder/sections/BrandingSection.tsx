@@ -94,7 +94,7 @@ export default function BrandingSection({ form, updateForm }: Props) {
         <FieldLabel>Font Family</FieldLabel>
         <select value={b.fontFamily} onChange={e => setB("fontFamily", e.target.value)}
           style={{ ...iStyle(), cursor: "pointer" }}>
-          {["Inter", "Playfair Display", "Cormorant Garamond", "Lato", "Poppins"].map(f => (
+          {["Professional Sans", "Aptos", "Segoe UI", "Helvetica Neue"].map(f => (
             <option key={f} value={f} style={{ background: "#1a3d2c" }}>{f}</option>
           ))}
         </select>

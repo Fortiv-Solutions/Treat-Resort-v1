@@ -15,6 +15,7 @@ function StarRating({ max = 5, value, onChange }: { max?: number; value: number;
       {Array.from({ length: max }, (_, i) => i + 1).map(i => (
         <button
           key={i}
+          aria-label={`Set rating to ${i}`}
           onMouseEnter={() => setHover(i)}
           onMouseLeave={() => setHover(0)}
           onClick={() => onChange(i)}
@@ -37,7 +38,7 @@ function NPSRow({ value, onChange }: { value: number; onChange: (v: number) => v
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <div style={{ display: "flex", gap: "3px" }}>
         {Array.from({ length: 11 }, (_, i) => i).map(i => (
-          <button key={i} onClick={() => onChange(i)} style={{
+          <button key={i} aria-label={`Set score to ${i}`} onClick={() => onChange(i)} style={{
             flex: 1, padding: "7px 0", borderRadius: "6px", border: "none", cursor: "pointer",
             background: value === i ? "#1B4332" : "#F3F4F6",
             color: value === i ? "#C9A96E" : "#6B7280",

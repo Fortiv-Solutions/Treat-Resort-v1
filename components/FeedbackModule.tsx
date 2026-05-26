@@ -214,7 +214,7 @@ export default function FeedbackModule({ role }: Props) {
   const syncFailProps = allProps.filter(p => p.lastSync === "Sync failed");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="module-stack feedback-module" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
 
       {/* ── Business KPI strip ── */}
       <div className="anim-fade-up" style={{ animationDelay: "0ms" }}>

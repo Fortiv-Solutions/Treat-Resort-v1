@@ -315,11 +315,16 @@ export default function GuestFormPage() {
   const { branding, settings } = form;
   const primColor = branding.primaryColor || "#1B4332";
   const accColor = branding.accentColor || "#C9A96E";
-  const fontFam = branding.fontFamily === "Karla" 
-    ? "'Karla', sans-serif" 
-    : branding.fontFamily === "Inter" 
-    ? "'Inter', sans-serif" 
-    : "'Outfit', sans-serif";
+  const professionalFont =
+    "\"Aptos\", \"Segoe UI Variable Text\", \"Segoe UI\", \"Helvetica Neue\", Arial, sans-serif";
+  const fontFam =
+    branding.fontFamily === "Aptos"
+      ? "\"Aptos\", \"Segoe UI Variable Text\", \"Segoe UI\", sans-serif"
+      : branding.fontFamily === "Segoe UI"
+      ? "\"Segoe UI Variable Text\", \"Segoe UI\", sans-serif"
+      : branding.fontFamily === "Helvetica Neue"
+      ? "\"Helvetica Neue\", Arial, sans-serif"
+      : professionalFont;
 
   // Check if a specific routing action is triggered
   const hasAction = (actionName: string) => triggeredActions.some(a => a.action === actionName);
