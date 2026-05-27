@@ -54,7 +54,7 @@ export default function SettingsPage() {
             {/* Profile */}
             <div className="flex items-center gap-2.5 bg-white rounded-full p-1 pr-3.5 shadow-sm h-10">
               <div className="w-8 h-8 shrink-0 rounded-full bg-brand-green-900 flex items-center justify-center overflow-hidden">
-                <img src="https://i.pravatar.cc/150?img=11" alt="Profile" className="w-full h-full object-cover" />
+                <img src="https://ui-avatars.com/api/?name=Admin&background=0F5132&color=fff" alt="Profile" className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:flex flex-col justify-center min-w-0">
                 <div className="text-[13px] font-bold text-brand-text-1 leading-none mb-0.5">Admin</div>
@@ -100,7 +100,7 @@ export default function SettingsPage() {
 
                   <div className="flex items-center gap-6 mb-10 pb-10 border-b border-brand-border-soft">
                     <div className="w-24 h-24 rounded-full bg-brand-surface-2 overflow-hidden border-4 border-white shadow-sm shrink-0">
-                      <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" className="w-full h-full object-cover" />
+                      <img src="https://ui-avatars.com/api/?name=Admin&background=0F5132&color=fff" alt="Avatar" className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <button className="bg-white border border-brand-border-soft px-4 py-2 rounded-lg text-[13px] font-medium text-brand-text-2 hover:bg-brand-surface-2 transition-colors mb-2 shadow-sm">

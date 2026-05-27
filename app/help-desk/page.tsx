@@ -52,7 +52,7 @@ export default function HelpDeskPage() {
             {/* Profile */}
             <div className="flex items-center gap-2.5 bg-white rounded-full p-1 pr-3.5 shadow-sm h-10">
               <div className="w-8 h-8 shrink-0 rounded-full bg-brand-green-900 flex items-center justify-center overflow-hidden">
-                <img src="https://i.pravatar.cc/150?img=11" alt="Profile" className="w-full h-full object-cover" />
+                <img src="https://ui-avatars.com/api/?name=Admin&background=0F5132&color=fff" alt="Profile" className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:flex flex-col justify-center min-w-0">
                 <div className="text-[13px] font-bold text-brand-text-1 leading-none mb-0.5">Admin</div>
