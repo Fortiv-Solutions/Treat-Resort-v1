@@ -91,14 +91,8 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
         <div style={{ width: "1px", height: "20px", background: "rgba(0,0,0,0.1)" }} />
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{
-            width: "32px", height: "32px", borderRadius: "9px",
-            background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
-          }}>
-            <Sparkles size={14} color="#ffffff" strokeWidth={2.2} />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/treat-resort-logo.webp" alt="Treat Hotels & Resorts" style={{ height: "36px", width: "auto", objectFit: "contain", flexShrink: 0, filter: "brightness(0)" }} />
           <div>
             <div style={{ fontSize: "13.5px", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
               Feedback Form Builder

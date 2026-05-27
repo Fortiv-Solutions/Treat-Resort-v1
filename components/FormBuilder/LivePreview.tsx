@@ -195,43 +195,41 @@ function QuestionPreview({ q, branding, onAnswerChange }: { q: Question; brandin
 export default function LivePreview({ form }: Props) {
   const [previewPage, setPreviewPage] = useState<"form" | "thankyou">("form");
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [triggeredActions, setTriggeredActions] = useState<string[]>([]);
-  const [customMessage, setCustomMessage] = useState<string | null>(null);
-
   const { settings, branding } = form;
 
   function handleAnswerChange(id: string, val: number) {
     setAnswers(prev => ({ ...prev, [id]: val }));
   }
 
-  function handleSubmit() {
-    const actions = new Set<string>();
-    let cMsg = null;
-    
-    if (form.routing.enabled) {
-      for (const rule of form.routing.rules) {
-        const val = answers[rule.questionId];
-        if (typeof val === "number") {
-          let matches = false;
-          if (rule.condition === "gte" && val >= rule.value) matches = true;
-          if (rule.condition === "lte" && val <= rule.value) matches = true;
-          if (rule.condition === "eq" && val === rule.value) matches = true;
-          if (rule.condition === "between" && rule.value2 !== undefined && val >= rule.value && val <= rule.value2) matches = true;
+  // Evaluate rules on the fly
+  const activeActions = new Set<string>();
+  let activeCustomMessage: string | null = null;
+  
+  if (form.routing.enabled) {
+    for (const rule of form.routing.rules) {
+      const val = answers[rule.questionId];
+      if (typeof val === "number") {
+        let matches = false;
+        if (rule.condition === "gte" && val >= rule.value) matches = true;
+        if (rule.condition === "lte" && val <= rule.value) matches = true;
+        if (rule.condition === "eq" && val === rule.value) matches = true;
+        if (rule.condition === "between" && rule.value2 !== undefined && val >= rule.value && val <= rule.value2) matches = true;
 
-          if (matches) {
-            actions.add(rule.action);
-            if (rule.action === "custom_message" && rule.customMessage) {
-              cMsg = rule.customMessage;
-            }
+        if (matches) {
+          activeActions.add(rule.action);
+          if (rule.action === "custom_message" && rule.customMessage) {
+            activeCustomMessage = rule.customMessage;
           }
         }
       }
     }
-    
-    setTriggeredActions(Array.from(actions));
-    setCustomMessage(cMsg);
-    setPreviewPage("thankyou");
   }
+
+  const hasAnswers = Object.keys(answers).length > 0;
+  // Show review link if rules are met, OR if the user is just previewing the tab without interacting with the form yet
+  const showReviewLink = form.routing.enabled && form.routing.reviewLink && (activeActions.has("show_review_link") || !hasAnswers);
+  const showCustomMessage = activeCustomMessage || (!hasAnswers && form.routing.enabled && form.routing.rules.some(r => r.action === "custom_message" && r.customMessage));
+  const previewCustomMessage = activeCustomMessage || (form.routing.rules.find(r => r.action === "custom_message")?.customMessage);
 
   return (
     <div>
@@ -293,9 +291,19 @@ export default function LivePreview({ form }: Props) {
                 )}
                 {!branding.logoUrl && (
                   <div style={{ marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <div style={{ width: "28px", height: "28px", borderRadius: "7px", background: branding.accentColor, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Star size={13} color={branding.primaryColor} fill={branding.primaryColor} />
-                    </div>
+                    <div style={{ 
+                      width: "32px", height: "32px", 
+                      backgroundColor: branding.accentColor,
+                      WebkitMaskImage: `url(/treat-resort-logo.webp)`,
+                      WebkitMaskSize: "contain",
+                      WebkitMaskRepeat: "no-repeat",
+                      WebkitMaskPosition: "center",
+                      maskImage: `url(/treat-resort-logo.webp)`,
+                      maskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      flexShrink: 0
+                    }} />
                     <span style={{ fontSize: "12.5px", fontWeight: 700, color: branding.accentColor, fontFamily: branding.fontFamily + ", Inter, sans-serif" }}>
                       {branding.headerText}
                     </span>
@@ -374,7 +382,7 @@ export default function LivePreview({ form }: Props) {
 
                 {form.questions.length > 0 && (
                   <button
-                    onClick={handleSubmit}
+                    onClick={() => setPreviewPage("thankyou")}
                     style={{
                       width: "100%", marginTop: "14px", padding: "14px",
                       borderRadius: "12px", border: "none", cursor: "pointer",
@@ -414,18 +422,18 @@ export default function LivePreview({ form }: Props) {
                 {branding.thankYouMessage}
               </p>
 
-              {customMessage && (
+              {showCustomMessage && previewCustomMessage && (
                 <div style={{
                   background: "#EFF6FF", border: "1px solid #BFDBFE",
                   borderRadius: "12px", padding: "14px 16px", width: "100%", marginBottom: "16px"
                 }}>
                   <p style={{ fontSize: "12.5px", color: "#1D4ED8", margin: 0, fontWeight: 500 }}>
-                    {customMessage}
+                    {previewCustomMessage}
                   </p>
                 </div>
               )}
 
-              {form.routing.enabled && form.routing.reviewLink && triggeredActions.includes("show_review_link") && (
+              {showReviewLink && (
                 <div style={{
                   background: "#ECFDF5", border: "1px solid #A7F3D0",
                   borderRadius: "12px", padding: "14px 16px", width: "100%",
@@ -437,13 +445,13 @@ export default function LivePreview({ form }: Props) {
                   <p style={{ fontSize: "11.5px", color: "#059669", margin: "0 0 10px" }}>
                     Share your thoughts on Google — it helps other travellers find us!
                   </p>
-                  <button style={{
+                  <a href={form.routing.reviewLink} target="_blank" rel="noopener noreferrer" style={{
                     width: "100%", padding: "9px", borderRadius: "9px", border: "none",
-                    background: "#059669", color: "#FFFFFF",
-                    fontSize: "12.5px", fontWeight: 700, cursor: "pointer",
+                    background: "#059669", color: "#FFFFFF", textDecoration: "none",
+                    fontSize: "12.5px", fontWeight: 700, cursor: "pointer", display: "block"
                   }}>
                     Write a Google Review ★
-                  </button>
+                  </a>
                 </div>
               )}
 

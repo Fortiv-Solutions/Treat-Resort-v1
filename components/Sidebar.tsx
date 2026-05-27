@@ -83,25 +83,26 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
               className="bg-transparent border-none p-0 flex items-center justify-center cursor-pointer group"
               aria-label="Expand sidebar"
             >
-              <div className="w-12 h-12 rounded-xl bg-brand-green-700 flex items-center justify-center shadow-md overflow-hidden group-hover:bg-brand-green-800 transition-colors">
-                <img
-                  src="/treat-resort-logo.webp"
-                  alt="Treat Hotels & Resorts"
-                  className="w-8 h-8 object-contain brightness-0 invert"
-                />
-              </div>
+              <img
+                src="/treat-resort-logo.webp"
+                alt="Treat Hotels & Resorts"
+                className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
+                style={{ filter: "brightness(0)" }}
+              />
             </button>
           ) : (
             <>
               <div className="overflow-hidden flex-1 min-w-0 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-green-700 flex items-center justify-center shrink-0 shadow-md">
-                  <img
-                    src="/treat-resort-logo.webp"
-                    alt="Logo"
-                    className="w-7 h-7 object-contain brightness-0 invert"
-                  />
+                <img
+                  src="/treat-resort-logo.webp"
+                  alt="Logo"
+                  className="h-9 w-auto object-contain shrink-0"
+                  style={{ filter: "brightness(0)" }}
+                />
+                <div className="flex flex-col min-w-0 justify-center mt-0.5">
+                  <span className="font-extrabold text-[14.5px] leading-tight tracking-tight text-slate-900 truncate">Treat Hotels</span>
+                  <span className="font-bold text-[12px] leading-tight tracking-tight text-slate-500 truncate">& Resorts</span>
                 </div>
-                <span className="font-extrabold text-[22px] tracking-tight text-brand-green-700">Treat</span>
               </div>
               <button
                 onClick={() => setCollapsed(true)}
