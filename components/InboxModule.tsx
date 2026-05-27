@@ -18,33 +18,33 @@ const ROLE_MAP: Record<Role, string> = {
   MD: "", GM_SILVASSA: "silvassa", GM_DAHANU: "dahanu", GM_KUMBHALGARH: "kumbhalgarh",
 };
 
-const PRI_STYLE: Record<EmailPriority, { bg: string; color: string; label: string; dot: string }> = {
-  Urgent: { bg: "#FEF2F2", color: "#991B1B", label: "Urgent",  dot: "#DC2626" },
-  Normal: { bg: "#FFFBEB", color: "#92400E", label: "Normal",  dot: "#D97706" },
-  FYI:    { bg: "#F3F4F6", color: "#6B7280", label: "FYI",     dot: "#9CA3AF" },
+const PRI_STYLE: Record<EmailPriority, { badge: string; dot: string }> = {
+  Urgent: { badge: "badge-red",   dot: "bg-red-500" },
+  Normal: { badge: "badge-amber", dot: "bg-amber-500" },
+  FYI:    { badge: "badge-gray",  dot: "bg-gray-400" },
 };
 
-const CAT_STYLE: Record<EmailCategory, { bg: string; color: string }> = {
-  "Booking Inquiry": { bg: "#EFF6FF", color: "#1D4ED8" },
-  "Wedding Lead":    { bg: "#F5F3FF", color: "#7C3AED" },
-  "Guest Complaint": { bg: "#FEF2F2", color: "#DC2626" },
-  "Vendor":          { bg: "#F3F4F6", color: "#6B7280" },
-  "Finance":         { bg: "#ECFDF5", color: "#065F46" },
-  "General":         { bg: "#F8FAFC", color: "#475569" },
+const CAT_STYLE: Record<EmailCategory, { badge: string }> = {
+  "Booking Inquiry": { badge: "badge-blue" },
+  "Wedding Lead":    { badge: "badge-purple" },
+  "Guest Complaint": { badge: "badge-red" },
+  "Vendor":          { badge: "badge-gray" },
+  "Finance":         { badge: "badge-emerald" },
+  "General":         { badge: "badge-gray" },
 };
 
-const STATUS_STYLE: Record<EmailStatus, { color: string; weight: number }> = {
-  Unread:    { color: "#111827", weight: 700 },
-  Read:      { color: "#6B7280", weight: 400 },
-  Replied:   { color: "#059669", weight: 600 },
-  Escalated: { color: "#DC2626", weight: 700 },
+const STATUS_STYLE: Record<EmailStatus, { color: string; weight: string }> = {
+  Unread:    { color: "text-brand-text-1", weight: "font-bold" },
+  Read:      { color: "text-brand-text-3", weight: "font-medium" },
+  Replied:   { color: "text-emerald-700",  weight: "font-semibold" },
+  Escalated: { color: "text-red-700",      weight: "font-bold" },
 };
 
-const AI_SENTIMENT_STYLE: Record<string, { bg: string; color: string; dot: string }> = {
-  Positive: { bg: "#ECFDF5", color: "#065F46", dot: "#059669" },
-  Neutral:  { bg: "#F3F4F6", color: "#6B7280", dot: "#9CA3AF" },
-  Negative: { bg: "#FEF2F2", color: "#991B1B", dot: "#DC2626" },
-  Critical: { bg: "#FEF2F2", color: "#7F1D1D", dot: "#DC2626" },
+const AI_SENTIMENT_STYLE: Record<string, { badge: string; dot: string }> = {
+  Positive: { badge: "badge-emerald", dot: "bg-emerald-500" },
+  Neutral:  { badge: "badge-gray",    dot: "bg-gray-400" },
+  Negative: { badge: "badge-red",     dot: "bg-red-500" },
+  Critical: { badge: "badge-red",     dot: "bg-red-700" },
 };
 
 /* ── Inbox Business KPIs ─────────────────────────────── */
@@ -54,31 +54,23 @@ function InboxKPIs({
   leadsSaved: number; avgSLA: number; revenueAtRisk: string; escalationsPrevented: number;
 }) {
   const kpis = [
-    { icon: DollarSign, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", color: "#7C3AED", bg: "#F5F3FF" },
-    { icon: Clock,      label: "Avg Response SLA",     value: `${avgSLA}h`,    sub: "target: under 2h",         color: avgSLA > 2 ? "#DC2626" : "#059669", bg: avgSLA > 2 ? "#FEF2F2" : "#ECFDF5" },
-    { icon: AlertTriangle, label: "Urgent Open",       value: revenueAtRisk,   sub: "urgent unread threads", color: "#DC2626", bg: "#FEF2F2" },
-    { icon: Zap,        label: "Replied Threads",       value: `${escalationsPrevented}`, sub: "status from email_threads", color: "#D97706", bg: "#FFFBEB" },
+    { icon: DollarSign, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", colorClass: "text-purple-600", bgClass: "bg-purple-50" },
+    { icon: Clock,      label: "Avg Response SLA",     value: `${avgSLA}h`,    sub: "target: under 2h",         colorClass: avgSLA > 2 ? "text-red-600" : "text-emerald-600", bgClass: avgSLA > 2 ? "bg-red-50" : "bg-emerald-50" },
+    { icon: AlertTriangle, label: "Urgent Open",       value: revenueAtRisk,   sub: "urgent unread threads", colorClass: "text-red-600", bgClass: "bg-red-50" },
+    { icon: Zap,        label: "Replied Threads",       value: `${escalationsPrevented}`, sub: "status from email_threads", colorClass: "text-amber-600", bgClass: "bg-amber-50" },
   ];
 
   return (
-    <div style={{
-      display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-      background: "#FFFFFF", border: "1px solid var(--border)",
-      borderRadius: "10px", overflow: "hidden",
-    }} className="biz-kpi-grid">
-      {kpis.map(({ icon: Icon, label, value, sub, color, bg }, i) => (
-        <div key={label} style={{
-          padding: "12px 16px",
-          borderRight: i < kpis.length - 1 ? "1px solid var(--border)" : "none",
-          display: "flex", alignItems: "center", gap: "12px",
-        }}>
-          <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <Icon size={15} color={color} />
+    <div className="grid grid-cols-2 md:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden">
+      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }, i) => (
+        <div key={label} className={`p-4 flex items-center gap-3 ${i < kpis.length - 1 ? "border-r border-brand-border-soft" : ""}`}>
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${bgClass}`}>
+            <Icon className={`w-4 h-4 ${colorClass}`} />
           </div>
-          <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: "10px", fontWeight: 600, color: "var(--text-3)", textTransform: "uppercase", letterSpacing: "0.06em", margin: 0 }}>{label}</p>
-            <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-1)", lineHeight: 1.2, margin: "2px 0 0", fontVariantNumeric: "tabular-nums" }}>{value}</p>
-            <p style={{ fontSize: "10.5px", color: "var(--text-3)", margin: 0 }}>{sub}</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold text-brand-text-3 uppercase tracking-wider mb-0.5">{label}</p>
+            <p className="text-xl font-bold text-brand-text-1 leading-tight tabular-nums">{value}</p>
+            <p className="text-[11px] text-brand-text-3 mt-0.5 truncate">{sub}</p>
           </div>
         </div>
       ))}
@@ -103,86 +95,54 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
     <>
       <div
         onClick={onClose}
-        style={{
-          position: "fixed", inset: 0, zIndex: 490,
-          background: "rgba(15,42,32,0.3)",
-          animation: "fadeIn 200ms ease both",
-        }}
+        className="fixed inset-0 z-[490] bg-brand-green-950/40 backdrop-blur-sm animate-fade-in"
       />
-      <aside
-        className="anim-slide-right"
-        style={{
-          position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 500,
-          width: "min(480px, 100vw)",
-          background: "#FFFFFF",
-          display: "flex", flexDirection: "column",
-          boxShadow: "-4px 0 32px rgba(0,0,0,0.12)",
-          borderLeft: "1px solid var(--border)",
-        }}
-      >
+      <aside className="fixed inset-y-0 right-0 z-[500] w-full md:w-[480px] bg-white flex flex-col shadow-2xl border-l border-brand-border anim-slide-right">
         {/* Header */}
-        <div style={{
-          background: "linear-gradient(160deg, #1e5040 0%, #1B4332 100%)",
-          padding: "18px 20px 14px", flexShrink: 0,
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: "flex", gap: "5px", marginBottom: "8px", flexWrap: "wrap" }}>
-                <span className="badge" style={{ background: PRI_STYLE[email.priority].bg, color: PRI_STYLE[email.priority].color }}>
-                  {email.priority}
-                </span>
-                <span className="badge" style={{ background: CAT_STYLE[email.category].bg, color: CAT_STYLE[email.category].color }}>
-                  {email.category}
-                </span>
+        <div className="bg-gradient-to-br from-brand-green-900 to-brand-green-950 p-5 shrink-0 relative">
+          <div className="flex justify-between items-start gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex gap-2 mb-3 flex-wrap">
+                <span className={PRI_STYLE[email.priority].badge}>{email.priority}</span>
+                <span className={CAT_STYLE[email.category].badge}>{email.category}</span>
               </div>
-              <h3 style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "14px", lineHeight: 1.4 }}>{email.subject}</h3>
+              <h3 className="text-white font-bold text-base leading-snug">{email.subject}</h3>
             </div>
             <button
               onClick={onClose}
-              style={{
-                background: "rgba(255,255,255,0.1)", border: "none", cursor: "pointer",
-                width: "30px", height: "30px", borderRadius: "7px",
-                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+              className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0 hover:bg-white/20 transition-colors"
             >
-              <X size={14} color="rgba(255,255,255,0.8)" />
+              <X className="w-4 h-4 text-white/80" />
             </button>
           </div>
-          <div style={{ marginTop: "10px", fontSize: "12px", color: "rgba(255,255,255,0.55)" }}>
-            <span style={{ color: "#C9A96E", fontWeight: 600 }}>{email.from}</span>
+          <div className="mt-3 text-[13px] text-white/60">
+            <span className="text-brand-gold font-semibold">{email.from}</span>
             {" · "}{email.property.replace("Treat ", "")} · {email.received}
           </div>
           {email.lastUpdatedBy && (
-            <div style={{ marginTop: "4px", fontSize: "10.5px", color: "rgba(255,255,255,0.35)" }}>
+            <div className="mt-1 text-xs text-white/40">
               {email.lastUpdatedBy}
             </div>
           )}
         </div>
 
         {/* AI Insight bar */}
-        <div style={{
-          padding: "10px 20px",
-          background: "#F8FAFC",
-          borderBottom: "1px solid var(--border)",
-          display: "flex", gap: "10px", alignItems: "flex-start",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
-            <Sparkles size={12} color="#7C3AED" />
-            <span style={{ fontSize: "10.5px", fontWeight: 700, color: "#7C3AED", textTransform: "uppercase", letterSpacing: "0.05em" }}>AI</span>
+        <div className="px-5 py-3 bg-brand-surface-2 border-b border-brand-border flex gap-3 items-start">
+          <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+            <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+            <span className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">AI</span>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: "12px", color: "var(--text-1)", margin: "0 0 4px", fontWeight: 500 }}>{email.aiNote}</p>
-            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-              <span style={{ padding: "1px 6px", borderRadius: "3px", fontSize: "10.5px", fontWeight: 600, background: aiStyle.bg, color: aiStyle.color }}>
-                <span style={{ display: "inline-block", width: "5px", height: "5px", borderRadius: "50%", background: aiStyle.dot, marginRight: "4px", verticalAlign: "middle" }} />
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] text-brand-text-1 mb-2 font-medium leading-snug">{email.aiNote}</p>
+            <div className="flex gap-2 flex-wrap">
+              <span className={aiStyle.badge}>
+                <span className={`w-1.5 h-1.5 rounded-full inline-block ${aiStyle.dot}`} />
                 {email.aiSentiment}
               </span>
-              <span style={{ padding: "1px 6px", borderRadius: "3px", fontSize: "10.5px", fontWeight: 600, background: "#EFF6FF", color: "#1D4ED8" }}>
-                {email.aiCategoryConf}% confidence · {email.category}
+              <span className="badge-blue">
+                {email.aiCategoryConf}% conf · {email.category}
               </span>
-              <span style={{ padding: "1px 6px", borderRadius: "3px", fontSize: "10.5px", fontWeight: 700, background: email.aiScore >= 70 ? "#F5F3FF" : "#F3F4F6", color: email.aiScore >= 70 ? "#7C3AED" : "#6B7280" }}>
+              <span className={email.aiScore >= 70 ? "badge-purple" : "badge-gray"}>
                 Score {email.aiScore}/100
               </span>
             </div>
@@ -190,43 +150,28 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
         </div>
 
         {/* Body */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "18px 20px" }}>
-          <pre style={{
-            fontFamily: "'Inter', sans-serif", fontSize: "13px",
-            color: "var(--text-2)", lineHeight: 1.7,
-            whiteSpace: "pre-wrap", wordBreak: "break-word", margin: 0,
-          }}>
+        <div className="flex-1 overflow-y-auto p-5 md:p-6">
+          <pre className="font-sans text-sm text-brand-text-2 leading-relaxed whitespace-pre-wrap break-words">
             {email.body}
           </pre>
         </div>
 
         {/* Internal note */}
-        <div style={{ padding: "12px 20px", borderTop: "1px solid var(--border)", background: "#FFFBEB" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "6px" }}>
-            <StickyNote size={11} color="#D97706" />
-            <span style={{ fontSize: "11px", fontWeight: 600, color: "#92400E" }}>Internal Note</span>
+        <div className="p-5 border-t border-brand-border-soft bg-amber-50/50">
+          <div className="flex items-center gap-1.5 mb-2">
+            <StickyNote className="w-3.5 h-3.5 text-amber-600" />
+            <span className="text-xs font-bold text-amber-800">Internal Note</span>
           </div>
-          <div style={{ display: "flex", gap: "6px" }}>
+          <div className="flex gap-2">
             <input
               value={note}
               onChange={e => setNote(e.target.value)}
               placeholder="Add a note for your team…"
-              style={{
-                flex: 1, padding: "6px 10px", border: "1px solid #FCD34D",
-                borderRadius: "6px", fontSize: "12px", color: "var(--text-1)",
-                background: "#FFFFFF", outline: "none", fontFamily: "'Inter', sans-serif",
-              }}
-              onFocus={e => (e.currentTarget.style.borderColor = "#C9A96E")}
-              onBlur={e => (e.currentTarget.style.borderColor = "#FCD34D")}
+              className="flex-1 px-3 py-2 rounded-lg border border-amber-300 bg-white text-[13px] text-brand-text-1 outline-none transition-colors focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
             />
             <button
               onClick={saveNote}
-              style={{
-                padding: "6px 12px", background: noteSaved ? "#059669" : "#1B4332",
-                color: "#FFFFFF", border: "none", borderRadius: "6px", cursor: "pointer",
-                fontSize: "11.5px", fontWeight: 600, fontFamily: "'Inter', sans-serif",
-                transition: "background 200ms ease",
-              }}
+              className={`px-4 py-2 rounded-lg text-[13px] font-bold text-white transition-colors ${noteSaved ? "bg-emerald-600" : "bg-brand-green-900 hover:bg-brand-green-800"}`}
             >
               {noteSaved ? "Saved!" : "Save"}
             </button>
@@ -234,45 +179,17 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
         </div>
 
         {/* Actions */}
-        <div style={{
-          padding: "14px 20px", borderTop: "1px solid var(--border)",
-          background: "#FAFAFA", flexShrink: 0,
-          display: "flex", gap: "8px", flexWrap: "wrap",
-        }}>
-          <button style={{
-            display: "flex", alignItems: "center", gap: "6px",
-            padding: "9px 18px", background: "#1B4332",
-            color: "#C9A96E", border: "none", borderRadius: "8px",
-            cursor: "pointer", fontWeight: 600, fontSize: "12.5px",
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            <Reply size={13} /> Reply
+        <div className="p-4 md:p-5 border-t border-brand-border bg-brand-surface-2 shrink-0 flex gap-2.5 flex-wrap items-center">
+          <button className="flex items-center gap-2 px-4 py-2 bg-brand-green-900 text-brand-gold rounded-lg font-bold text-[13px] hover:bg-brand-green-800 transition-colors shadow-sm">
+            <Reply className="w-4 h-4" /> Reply
           </button>
-          <button style={{
-            display: "flex", alignItems: "center", gap: "6px",
-            padding: "9px 14px", background: "#FEF2F2",
-            color: "#DC2626", border: "1px solid #FECACA", borderRadius: "8px",
-            cursor: "pointer", fontWeight: 600, fontSize: "12.5px",
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            <ArrowUpCircle size={13} /> Escalate
+          <button className="flex items-center gap-2 px-3.5 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg font-bold text-[13px] hover:bg-red-100 transition-colors shadow-sm">
+            <ArrowUpCircle className="w-4 h-4" /> Escalate
           </button>
-          <button style={{
-            display: "flex", alignItems: "center", gap: "6px",
-            padding: "9px 14px", background: "#EFF6FF",
-            color: "#1D4ED8", border: "1px solid #BFDBFE", borderRadius: "8px",
-            cursor: "pointer", fontWeight: 600, fontSize: "12.5px",
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            <Bell size={13} /> Snooze
+          <button className="flex items-center gap-2 px-3.5 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg font-bold text-[13px] hover:bg-blue-100 transition-colors shadow-sm">
+            <Bell className="w-4 h-4" /> Snooze
           </button>
-          <select style={{
-            flex: 1, minWidth: "120px", padding: "9px 10px",
-            border: "1px solid var(--border)", borderRadius: "8px",
-            fontSize: "12px", color: "var(--text-2)",
-            fontFamily: "'Inter', sans-serif", background: "#FFFFFF",
-            cursor: "pointer", outline: "none",
-          }}>
+          <select className="flex-1 min-w-[120px] px-3 py-2 bg-white border border-brand-border rounded-lg text-[13px] text-brand-text-2 font-medium outline-none cursor-pointer focus:border-brand-gold">
             <option>Assign To…</option>
             <option>Preethi (Sales)</option>
             <option>Amit (Reservations)</option>
@@ -314,10 +231,10 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
   const repliedThreads = allScope.filter(e => e.status === "Replied").length;
 
   return (
-    <div className="module-stack inbox-module" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="flex flex-col gap-6 w-full">
 
       {/* Business KPIs */}
-      <div className="anim-fade-up" style={{ animationDelay: "0ms" }}>
+      <div className="anim-fade-up">
         <InboxKPIs
           leadsSaved={leadEmails.filter(e => e.status === "Replied" || e.status === "Read").length}
           avgSLA={avgResp}
@@ -327,11 +244,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
       </div>
 
       {/* Operational Stats */}
-      <div className="stat-cards-panel" style={{
-        display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-        background: "#FFFFFF", borderRadius: "10px",
-        border: "1px solid var(--border)", overflow: "hidden",
-      }}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden anim-fade-up" style={{ animationDelay: "50ms" }}>
         <StatCard
           title="Email Threads"
           value={allScope.length}
@@ -379,105 +292,88 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
 
       {/* SLA alert banner */}
       {pending2h.length > 0 && (
-        <div style={{
-          background: "#FFFBEB", border: "1px solid #FCD34D",
-          borderRadius: "8px", padding: "12px 16px",
-          display: "flex", alignItems: "flex-start", gap: "10px",
-        }}>
-          <AlertTriangle size={16} color="#D97706" style={{ flexShrink: 0, marginTop: "1px" }} />
-          <div style={{ flex: 1 }}>
-            <p style={{ fontWeight: 700, fontSize: "13px", color: "#92400E", margin: "0 0 2px" }}>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4 flex items-start gap-3 shadow-sm anim-fade-up">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-bold text-sm text-amber-900 mb-0.5">
               {pending2h.length} email{pending2h.length > 1 ? "s" : ""} pending over 2 hours
             </p>
-            <p style={{ fontSize: "12px", color: "#A16207", margin: 0 }}>
+            <p className="text-[13px] text-amber-700 mb-0 font-medium">
               {pending2h.slice(0, 3).map(e => e.property.replace("Treat ", "")).join(" · ")}
               {pending2h.length > 3 && ` · +${pending2h.length - 3} more`}
             </p>
           </div>
-          <ChevronRight size={14} color="#D97706" style={{ flexShrink: 0, marginTop: "2px" }} />
+          <ChevronRight className="w-4 h-4 text-amber-600 shrink-0 mt-1" />
         </div>
       )}
 
       {/* Filter Bar */}
-      <div className="glass-card anim-fade-up" style={{ padding: "12px 16px" }}>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-3)", letterSpacing: "0.05em", textTransform: "uppercase" }}>Filter</span>
-          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+      <div className="glass-card p-3 sm:p-4 anim-fade-up" style={{ animationDelay: "150ms" }}>
+        <div className="flex gap-4 items-center flex-wrap">
+          <span className="text-[11px] font-bold text-brand-text-3 tracking-wider uppercase">Filter</span>
+          <div className="flex gap-1.5 flex-wrap">
             {(["All", "Urgent", "Normal", "FYI"] as const).map(p => (
-              <button key={p} onClick={() => setFilterPri(p)} style={{
-                padding: "4px 10px", borderRadius: "5px", border: "1px solid",
-                fontSize: "11.5px", fontWeight: filterPri === p ? 600 : 400, cursor: "pointer",
-                background: filterPri === p
-                  ? (p === "Urgent" ? "#FEF2F2" : p === "Normal" ? "#FFFBEB" : p === "FYI" ? "#F3F4F6" : "#1B4332")
-                  : "transparent",
-                color: filterPri === p
-                  ? (p === "Urgent" ? "#991B1B" : p === "Normal" ? "#92400E" : p === "FYI" ? "#6B7280" : "#C9A96E")
-                  : "var(--text-3)",
-                borderColor: filterPri === p
-                  ? (p === "Urgent" ? "#FECACA" : p === "Normal" ? "#FDE68A" : p === "FYI" ? "#E5E7EB" : "#1B4332")
-                  : "var(--border)",
-                transition: "all 120ms ease",
-                fontFamily: "'Inter', sans-serif",
-              }}>{p}</button>
+              <button key={p} onClick={() => setFilterPri(p)} className={`px-3 py-1.5 rounded-md border text-[12px] font-semibold transition-colors focus:outline-none
+                ${filterPri === p
+                  ? (p === "Urgent" ? "bg-red-50 text-red-700 border-red-200" : p === "Normal" ? "bg-amber-50 text-amber-700 border-amber-200" : p === "FYI" ? "bg-gray-100 text-gray-700 border-gray-300" : "bg-brand-green-900 text-brand-gold border-brand-green-900")
+                  : "bg-transparent text-brand-text-3 border-brand-border hover:bg-brand-surface-2"
+                }`}>
+                {p}
+              </button>
             ))}
           </div>
-          <div style={{ width: "1px", height: "18px", background: "var(--border)" }} />
-          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+          <div className="w-[1px] h-5 bg-brand-border hidden sm:block" />
+          <div className="flex gap-1.5 flex-wrap">
             {(["All", "Booking Inquiry", "Wedding Lead", "Guest Complaint", "Vendor", "Finance"] as const).map(c => (
-              <button key={c} onClick={() => setFilterCat(c)} style={{
-                padding: "4px 10px", borderRadius: "5px", border: "1px solid",
-                fontSize: "11.5px", fontWeight: filterCat === c ? 600 : 400, cursor: "pointer",
-                background: filterCat === c ? (c === "All" ? "#1B4332" : CAT_STYLE[c as EmailCategory]?.bg ?? "#F3F4F6") : "transparent",
-                color: filterCat === c ? (c === "All" ? "#C9A96E" : CAT_STYLE[c as EmailCategory]?.color ?? "#6B7280") : "var(--text-3)",
-                borderColor: filterCat === c ? (c === "All" ? "#1B4332" : CAT_STYLE[c as EmailCategory]?.color ?? "#9CA3AF") + "44" : "var(--border)",
-                transition: "all 120ms ease",
-                fontFamily: "'Inter', sans-serif",
-              }}>{c}</button>
+              <button key={c} onClick={() => setFilterCat(c)} className={`px-3 py-1.5 rounded-md border text-[12px] font-semibold transition-colors focus:outline-none
+                ${filterCat === c
+                  ? (c === "All" ? "bg-brand-green-900 text-brand-gold border-brand-green-900" : "bg-brand-surface-3 text-brand-text-1 border-brand-border-soft")
+                  : "bg-transparent text-brand-text-3 border-brand-border hover:bg-brand-surface-2"
+                }`}>
+                {c}
+              </button>
             ))}
           </div>
         </div>
       </div>
 
       {/* Email Table */}
-      <div className="glass-card anim-fade-up" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "12px 18px 10px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "200ms" }}>
+        <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50">
           <div>
-            <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-1)" }}>Email Inbox</h2>
-            <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>Click any row to read & respond</p>
+            <h2 className="text-sm font-bold text-brand-text-1">Email Inbox</h2>
+            <p className="text-xs text-brand-text-3 mt-0.5">Click any row to read & respond</p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="flex items-center gap-3">
             {snoozedIds.size > 0 && (
               <button
                 onClick={() => setSnoozedIds(new Set())}
-                style={{ fontSize: "11px", color: "#D97706", background: "#FFFBEB", border: "1px solid #FCD34D", padding: "3px 9px", borderRadius: "5px", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontWeight: 600 }}
+                className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-md hover:bg-amber-100 transition-colors"
               >
                 {snoozedIds.size} snoozed — show all
               </button>
             )}
-            <span style={{ background: "#F5EDD9", color: "#92400E", padding: "3px 9px", borderRadius: "5px", fontSize: "11.5px", fontWeight: 600 }}>
+            <span className="badge-amber">
               {visibleEmails.length} emails
             </span>
           </div>
         </div>
 
         {visibleEmails.length === 0 ? (
-          <div style={{ padding: "40px", textAlign: "center" }}>
-            <CheckCircle2 size={28} color="#059669" style={{ margin: "0 auto 10px" }} />
-            <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-1)", margin: "0 0 4px" }}>Inbox clear</p>
-            <p style={{ fontSize: "12px", color: "var(--text-3)", margin: 0 }}>No emails match this filter. Try &quot;All&quot; to see everything.</p>
+          <div className="p-10 text-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+            <p className="text-base font-bold text-brand-text-1 mb-1">Inbox clear</p>
+            <p className="text-sm text-brand-text-3">No emails match this filter. Try &quot;All&quot; to see everything.</p>
           </div>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px" }}>
-              <thead>
-                <tr style={{ background: "var(--surface-2)" }}>
+          <div className="overflow-x-auto min-h-[400px]">
+            <table className="w-full border-collapse">
+              <thead className="sticky top-0 z-10">
+                <tr>
                   {["Priority", "AI", "Property", "Category", "From", "Subject", "Received", "Status", "Assigned", "Actions"].map(h => (
-                    <th key={h} style={{
-                      padding: "8px 12px", textAlign: "left", fontSize: "10px",
-                      fontWeight: 600, color: "var(--text-3)", letterSpacing: "0.06em",
-                      textTransform: "uppercase", borderBottom: "1px solid var(--border)",
-                      whiteSpace: "nowrap",
-                    }}>{h}</th>
+                    <th key={h} className="premium-table-header">
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -489,124 +385,104 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
                   return (
                     <tr
                       key={email.id}
-                      className={`trow clickable${isSelected ? " active" : ""}`}
+                      className={`premium-table-row ${isSelected ? "bg-brand-gold/10 border-brand-gold/20" : i % 2 === 0 ? "bg-white" : "bg-brand-surface-2"}`}
                       onClick={() => setSelectedEmail(isSelected ? null : email)}
-                      style={{ background: isSelected ? "#FEF9F0" : i % 2 === 0 ? "#FFFFFF" : "var(--surface-2)" }}
                     >
                       {/* Priority */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }}>
-                        <span className="badge" style={{ background: PRI_STYLE[email.priority].bg, color: PRI_STYLE[email.priority].color }}>
-                          <span className="pulse-dot" style={{ background: PRI_STYLE[email.priority].dot, animationPlayState: email.priority === "Urgent" && isUnread ? "running" : "paused" }} />
+                      <td className="premium-table-cell">
+                        <span className={PRI_STYLE[email.priority].badge}>
+                          <span className={`pulse-dot ${PRI_STYLE[email.priority].dot}`} style={{ animationPlayState: email.priority === "Urgent" && isUnread ? "running" : "paused" }} />
                           {email.priority}
                         </span>
                       </td>
                       {/* AI Score + Sentiment */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                          <span style={{
-                            display: "inline-flex", alignItems: "center", gap: "3px",
-                            fontSize: "10.5px", fontWeight: 700,
-                            color: email.aiScore >= 70 ? "#7C3AED" : email.aiScore >= 40 ? "#D97706" : "#6B7280",
-                          }}>
-                            <Sparkles size={9} color="currentColor" />
+                      <td className="premium-table-cell">
+                        <div className="flex flex-col gap-1 items-start">
+                          <span className={`inline-flex items-center gap-1 text-[11px] font-bold ${email.aiScore >= 70 ? "text-purple-600" : email.aiScore >= 40 ? "text-amber-600" : "text-gray-500"}`}>
+                            <Sparkles className="w-3 h-3" />
                             {email.aiScore}
                           </span>
-                          <span style={{ padding: "1px 5px", borderRadius: "3px", fontSize: "9.5px", fontWeight: 600, background: aiStyle.bg, color: aiStyle.color, width: "fit-content" }}>
+                          <span className={aiStyle.badge}>
                             {email.aiSentiment}
                           </span>
                         </div>
                       </td>
                       {/* Property */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap", maxWidth: "130px" }}>
-                        <span style={{ fontSize: "12px", color: "var(--text-2)", overflow: "hidden", textOverflow: "ellipsis", display: "block" }} title={email.property}>
+                      <td className="premium-table-cell max-w-[140px]">
+                        <span className="text-[13px] text-brand-text-2 truncate block" title={email.property}>
                           {email.property.replace("Treat ", "")}
                         </span>
                       </td>
                       {/* Category */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }}>
-                        <span className="badge" style={{ background: CAT_STYLE[email.category].bg, color: CAT_STYLE[email.category].color }}>
+                      <td className="premium-table-cell">
+                        <span className={CAT_STYLE[email.category].badge}>
                           {email.category}
                         </span>
                       </td>
                       {/* From */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }}>
-                        <div style={{ fontWeight: isUnread ? 700 : 500, color: "var(--text-1)", fontSize: "12px" }}>{email.from}</div>
-                        <div style={{ fontSize: "10.5px", color: "var(--text-3)" }}>{email.fromEmail}</div>
+                      <td className="premium-table-cell max-w-[160px]">
+                        <div className={`text-[13px] truncate ${isUnread ? "font-bold text-brand-text-1" : "font-medium text-brand-text-1"}`}>{email.from}</div>
+                        <div className="text-[11px] text-brand-text-3 truncate">{email.fromEmail}</div>
                       </td>
                       {/* Subject */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", maxWidth: "240px" }}>
-                        <span style={{
-                          fontWeight: isUnread ? 700 : 400, color: isUnread ? "var(--text-1)" : "var(--text-2)",
-                          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                          display: "block", fontSize: "12.5px",
-                        }} title={email.subject}>
+                      <td className="premium-table-cell max-w-[280px]">
+                        <span className={`truncate block text-[13px] ${isUnread ? "font-bold text-brand-text-1" : "font-medium text-brand-text-2"}`} title={email.subject}>
                           {isUnread && (
-                            <span style={{ display: "inline-block", width: "5px", height: "5px", borderRadius: "50%", background: "#1B4332", marginRight: "6px", verticalAlign: "middle" }} />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-green-900 mr-1.5 align-middle" />
                           )}
-                          {email.subject.length > 52 ? email.subject.substring(0, 52) + "…" : email.subject}
+                          {email.subject}
                         </span>
                         {/* AI note snippet */}
-                        <span style={{ fontSize: "10.5px", color: "#7C3AED", display: "block", marginTop: "1px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <span className="text-[11px] text-purple-600 block mt-0.5 truncate">
                           ✦ {email.aiNote}
                         </span>
                       </td>
                       {/* Received */}
-                      <td style={{
-                        padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap",
-                        fontSize: "11.5px",
-                        color: email.receivedHoursAgo >= 2 && isUnread ? "#DC2626" : "var(--text-3)",
-                        fontWeight: email.receivedHoursAgo >= 2 && isUnread ? 600 : 400,
-                      }}>
+                      <td className={`premium-table-cell text-xs ${email.receivedHoursAgo >= 2 && isUnread ? "text-red-600 font-bold" : "text-brand-text-3 font-medium"}`}>
                         {email.received}
                         {email.receivedHoursAgo >= 2 && isUnread && (
-                          <span style={{ display: "block", fontSize: "10px", color: "#DC2626" }}>⚠ SLA breach</span>
+                          <span className="block text-[10px] text-red-600 mt-0.5">⚠ SLA breach</span>
                         )}
                       </td>
                       {/* Status */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }}>
-                        <span style={{ fontWeight: STATUS_STYLE[email.status].weight, color: STATUS_STYLE[email.status].color, fontSize: "12px" }}>
+                      <td className="premium-table-cell">
+                        <span className={`text-[13px] ${STATUS_STYLE[email.status].weight} ${STATUS_STYLE[email.status].color}`}>
                           {email.status}
                         </span>
                       </td>
                       {/* Assigned */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap", fontSize: "11.5px", color: "var(--text-2)" }}>
+                      <td className="premium-table-cell text-xs text-brand-text-2">
                         {email.assignedTo === "Unassigned"
-                          ? <span style={{ color: "#DC2626", fontWeight: 600, fontSize: "11px" }}>⚠ Unassigned</span>
-                          : email.assignedTo
+                          ? <span className="text-red-600 font-bold">⚠ Unassigned</span>
+                          : <span className="font-medium">{email.assignedTo}</span>
                         }
                         {email.lastUpdatedBy && (
-                          <div style={{ fontSize: "9.5px", color: "var(--text-3)", marginTop: "1px" }}>{email.lastUpdatedBy.split("·")[0].trim()}</div>
+                          <div className="text-[10px] text-brand-text-3 mt-0.5">{email.lastUpdatedBy.split("·")[0].trim()}</div>
                         )}
                       </td>
                       {/* Quick actions */}
-                      <td style={{ padding: "9px 12px", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }} onClick={e => e.stopPropagation()}>
-                        <div style={{ display: "flex", gap: "4px" }}>
+                      <td className="premium-table-cell" onClick={e => e.stopPropagation()}>
+                        <div className="flex gap-1.5">
                           <button
                             onClick={() => setSelectedEmail(email)}
                             title="Reply"
-                            style={{ padding: "4px 7px", borderRadius: "5px", border: "1px solid var(--border)", background: "#FFFFFF", cursor: "pointer", display: "flex", alignItems: "center" }}
-                            onMouseEnter={e => (e.currentTarget.style.borderColor = "#1B4332")}
-                            onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
+                            className="p-1.5 rounded-md border border-brand-border bg-white hover:border-brand-green-900 hover:bg-brand-green-50 transition-colors shadow-sm"
                           >
-                            <Reply size={11} color="#1B4332" />
+                            <Reply className="w-3.5 h-3.5 text-brand-green-900" />
                           </button>
                           <button
                             onClick={() => setSnoozedIds(s => { const n = new Set(s); n.add(email.id); return n; })}
                             title="Snooze"
-                            style={{ padding: "4px 7px", borderRadius: "5px", border: "1px solid var(--border)", background: "#FFFFFF", cursor: "pointer", display: "flex", alignItems: "center" }}
-                            onMouseEnter={e => (e.currentTarget.style.borderColor = "#D97706")}
-                            onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
+                            className="p-1.5 rounded-md border border-brand-border bg-white hover:border-amber-600 hover:bg-amber-50 transition-colors shadow-sm"
                           >
-                            <Bell size={11} color="#D97706" />
+                            <Bell className="w-3.5 h-3.5 text-amber-600" />
                           </button>
                           <button
                             onClick={() => setSelectedEmail(email)}
                             title="Escalate"
-                            style={{ padding: "4px 7px", borderRadius: "5px", border: "1px solid var(--border)", background: "#FFFFFF", cursor: "pointer", display: "flex", alignItems: "center" }}
-                            onMouseEnter={e => (e.currentTarget.style.borderColor = "#DC2626")}
-                            onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
+                            className="p-1.5 rounded-md border border-brand-border bg-white hover:border-red-600 hover:bg-red-50 transition-colors shadow-sm"
                           >
-                            <ArrowUpCircle size={11} color="#DC2626" />
+                            <ArrowUpCircle className="w-3.5 h-3.5 text-red-600" />
                           </button>
                         </div>
                       </td>
@@ -623,12 +499,6 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
       {selectedEmail && (
         <SidePanel email={selectedEmail} onClose={() => setSelectedEmail(null)} />
       )}
-
-      <style>{`
-        @media (max-width: 700px) {
-          .biz-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
     </div>
   );
 }

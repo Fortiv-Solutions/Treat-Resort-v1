@@ -48,10 +48,10 @@ function entityLabel(entity: string) {
 
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
-    <div style={{ padding: "28px", textAlign: "center", color: "var(--text-3)" }}>
-      <Database size={24} color="var(--text-3)" style={{ margin: "0 auto 8px" }} />
-      <p style={{ margin: "0 0 4px", fontSize: "13px", fontWeight: 700, color: "var(--text-1)" }}>{title}</p>
-      <p style={{ margin: 0, fontSize: "12px" }}>{body}</p>
+    <div className="p-8 text-center text-brand-text-3">
+      <Database className="w-8 h-8 text-brand-border mx-auto mb-3" />
+      <p className="text-sm font-bold text-brand-text-1 mb-1">{title}</p>
+      <p className="text-[13px] m-0">{body}</p>
     </div>
   );
 }
@@ -59,8 +59,8 @@ function EmptyState({ title, body }: { title: string; body: string }) {
 function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div>
-      <h2 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-1)", margin: 0 }}>{title}</h2>
-      {subtitle && <p style={{ fontSize: "11.5px", color: "var(--text-3)", margin: "2px 0 0" }}>{subtitle}</p>}
+      <h2 className="text-sm font-bold text-brand-text-1 m-0">{title}</h2>
+      {subtitle && <p className="text-xs text-brand-text-3 mt-1 m-0">{subtitle}</p>}
     </div>
   );
 }
@@ -72,32 +72,14 @@ function KpiCard({ label, value, sub, icon: Icon }: {
   icon: typeof IndianRupee;
 }) {
   return (
-    <div style={{
-      background: "#FFFFFF",
-      border: "1px solid var(--border)",
-      borderRadius: "8px",
-      padding: "16px",
-      display: "flex",
-      alignItems: "center",
-      gap: "12px",
-      minWidth: 0,
-    }}>
-      <div style={{
-        width: "36px",
-        height: "36px",
-        borderRadius: "8px",
-        background: "#1B4332",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-      }}>
-        <Icon size={16} color="#C9A96E" />
+    <div className="bg-white border border-brand-border rounded-xl p-5 flex items-center gap-4 min-w-0 shadow-premium-sm transition-shadow hover:shadow-premium-md">
+      <div className="w-11 h-11 rounded-xl bg-brand-green-900 flex items-center justify-center shrink-0 shadow-inner">
+        <Icon className="w-5 h-5 text-brand-gold" />
       </div>
-      <div style={{ minWidth: 0 }}>
-        <p style={{ margin: "0 0 4px", fontSize: "10px", color: "var(--text-3)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</p>
-        <p style={{ margin: 0, fontSize: "22px", color: "var(--text-1)", fontWeight: 800, lineHeight: 1 }}>{value}</p>
-        <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-3)" }}>{sub}</p>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-bold text-brand-text-3 uppercase tracking-widest mb-1 truncate">{label}</p>
+        <p className="text-2xl xl:text-[28px] font-bold text-brand-text-1 leading-none tabular-nums truncate">{value}</p>
+        <p className="text-xs text-brand-text-3 mt-1.5 truncate">{sub}</p>
       </div>
     </div>
   );
@@ -117,11 +99,11 @@ function PropertyFilters({
   setEntityFilter: (value: EntityFilter) => void;
 }) {
   return (
-    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+    <div className="flex gap-2 flex-wrap">
       <select
         value={propertyFilter}
         onChange={event => setPropertyFilter(event.target.value)}
-        style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border)", background: "#FFFFFF", color: "var(--text-1)", fontSize: "12px" }}
+        className="px-3 py-2 rounded-lg border border-brand-border bg-white text-brand-text-1 text-[13px] outline-none cursor-pointer focus:border-brand-gold focus:ring-1 focus:ring-brand-gold shadow-sm"
       >
         <option value="all">All Properties</option>
         {properties.map(property => (
@@ -131,7 +113,7 @@ function PropertyFilters({
       <select
         value={entityFilter}
         onChange={event => setEntityFilter(event.target.value as EntityFilter)}
-        style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border)", background: "#FFFFFF", color: "var(--text-1)", fontSize: "12px" }}
+        className="px-3 py-2 rounded-lg border border-brand-border bg-white text-brand-text-1 text-[13px] outline-none cursor-pointer focus:border-brand-gold focus:ring-1 focus:ring-brand-gold shadow-sm"
       >
         <option value="all">All Entities</option>
         <option value="mundra">Mundra Hotels & Resorts</option>
@@ -144,77 +126,83 @@ function PropertyFilters({
 
 function RevenueTrend({ data }: { data: DashboardPayload["financeTrend"] }) {
   return (
-    <div className="glass-card" style={{ padding: "18px" }}>
+    <div className="glass-card p-5 lg:p-6 flex flex-col h-full">
       <SectionHeader title="Revenue Trend" subtitle="From finance_records grouped by record_date" />
-      {data.length === 0 ? (
-        <EmptyState title="No finance records" body="Add finance_records rows to populate the revenue trend." />
-      ) : (
-        <ResponsiveContainer width="100%" height={260} minWidth={1} minHeight={1}>
-          <LineChart data={data} margin={{ top: 18, right: 20, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
-            <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--text-3)" }} tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={fmtINR} tick={{ fontSize: 11, fill: "var(--text-3)" }} tickLine={false} axisLine={false} width={72} />
-            <Tooltip formatter={(value) => fmtINR(Number(value))} contentStyle={{ borderRadius: "8px", border: "1px solid var(--border)" }} />
-            <Line type="monotone" dataKey="totalRevenue" name="Total Revenue" stroke="#C9A96E" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" dataKey="roomRevenue" name="Room Revenue" stroke="#1B4332" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="fnbRevenue" name="F&B Revenue" stroke="#2d6a4f" strokeWidth={2} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      )}
+      <div className="flex-1 mt-6 min-h-[260px]">
+        {data.length === 0 ? (
+          <EmptyState title="No finance records" body="Add finance_records rows to populate the revenue trend." />
+        ) : (
+          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={260}>
+            <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+              <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--color-brand-text-3)", fontFamily: "var(--font-inter)" }} tickLine={false} axisLine={false} />
+              <YAxis tickFormatter={fmtINR} tick={{ fontSize: 11, fill: "var(--color-brand-text-3)", fontFamily: "var(--font-inter)" }} tickLine={false} axisLine={false} width={60} />
+              <Tooltip formatter={(value) => fmtINR(Number(value))} contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-brand-border)", fontFamily: "var(--font-inter)", fontSize: "12px" }} />
+              <Line type="monotone" dataKey="totalRevenue" name="Total Revenue" stroke="#C9A96E" strokeWidth={2.5} dot={false} />
+              <Line type="monotone" dataKey="roomRevenue" name="Room Revenue" stroke="#1B4332" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="fnbRevenue" name="F&B Revenue" stroke="#2d6a4f" strokeWidth={2} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   );
 }
 
 function RevenueMix({ data }: { data: DashboardPayload["revenueMix"] }) {
   return (
-    <div className="glass-card" style={{ padding: "18px" }}>
+    <div className="glass-card p-5 lg:p-6 flex flex-col h-full">
       <SectionHeader title="Revenue Mix" subtitle="Latest finance record per property" />
-      {data.length === 0 ? (
-        <EmptyState title="No revenue mix yet" body="Room, F&B, events, adventure, and other revenue will appear here." />
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "18px", alignItems: "center" }}>
-          <ResponsiveContainer width="100%" height={210} minWidth={1} minHeight={1}>
-            <PieChart>
-              <Pie data={data} cx="50%" cy="50%" innerRadius={54} outerRadius={84} dataKey="value" paddingAngle={2}>
-                {data.map(item => <Cell key={item.name} fill={item.color} />)}
-              </Pie>
-              <Tooltip formatter={(value) => fmtINR(Number(value))} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {data.map(item => (
-              <div key={item.name} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "12px" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: "7px", color: "var(--text-2)" }}>
-                  <span style={{ width: "9px", height: "9px", borderRadius: "3px", background: item.color }} />
-                  {item.name}
-                </span>
-                <strong style={{ color: "var(--text-1)" }}>{fmtINR(item.value)}</strong>
-              </div>
-            ))}
+      <div className="flex-1 mt-4 flex items-center justify-center">
+        {data.length === 0 ? (
+          <EmptyState title="No revenue mix yet" body="Room, F&B, events, adventure, and other revenue will appear here." />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-6 items-center w-full">
+            <ResponsiveContainer width="100%" height={210} minWidth={1} minHeight={1}>
+              <PieChart>
+                <Pie data={data} cx="50%" cy="50%" innerRadius={58} outerRadius={88} dataKey="value" paddingAngle={2}>
+                  {data.map(item => <Cell key={item.name} fill={item.color} />)}
+                </Pie>
+                <Tooltip formatter={(value) => fmtINR(Number(value))} contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-brand-border)", fontFamily: "var(--font-inter)", fontSize: "12px" }} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex flex-col gap-3">
+              {data.map(item => (
+                <div key={item.name} className="flex justify-between items-center gap-4 text-[13px]">
+                  <span className="flex items-center gap-2 text-brand-text-2 font-medium">
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: item.color }} />
+                    {item.name}
+                  </span>
+                  <strong className="text-brand-text-1 tabular-nums">{fmtINR(item.value)}</strong>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
 
 function EntitySummary({ data }: { data: DashboardPayload["entitySummary"] }) {
   return (
-    <div className="glass-card" style={{ padding: "18px" }}>
+    <div className="glass-card p-5 lg:p-6">
       <SectionHeader title="Entity Summary" subtitle="From finance_records.entity" />
-      {data.length === 0 ? (
-        <EmptyState title="No entity finance data" body="Entity totals will appear after finance records are inserted." />
-      ) : (
-        <ResponsiveContainer width="100%" height={220} minWidth={1} minHeight={1}>
-          <BarChart data={data} margin={{ top: 14, right: 16, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
-            <XAxis dataKey="entity" tickFormatter={entityLabel} tick={{ fontSize: 10, fill: "var(--text-3)" }} tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={fmtINR} tick={{ fontSize: 11, fill: "var(--text-3)" }} tickLine={false} axisLine={false} width={72} />
-            <Tooltip labelFormatter={(label) => entityLabel(String(label ?? ""))} formatter={(value) => fmtINR(Number(value))} />
-            <Bar dataKey="totalRevenue" name="Total Revenue" fill="#C9A96E" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      )}
+      <div className="mt-6 min-h-[220px]">
+        {data.length === 0 ? (
+          <EmptyState title="No entity finance data" body="Entity totals will appear after finance records are inserted." />
+        ) : (
+          <ResponsiveContainer width="100%" height={220} minWidth={1} minHeight={1}>
+            <BarChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+              <XAxis dataKey="entity" tickFormatter={entityLabel} tick={{ fontSize: 11, fill: "var(--color-brand-text-3)", fontFamily: "var(--font-inter)" }} tickLine={false} axisLine={false} />
+              <YAxis tickFormatter={fmtINR} tick={{ fontSize: 11, fill: "var(--color-brand-text-3)", fontFamily: "var(--font-inter)" }} tickLine={false} axisLine={false} width={60} />
+              <Tooltip labelFormatter={(label) => entityLabel(String(label ?? ""))} formatter={(value) => fmtINR(Number(value))} contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-brand-border)", fontFamily: "var(--font-inter)", fontSize: "12px" }} />
+              <Bar dataKey="totalRevenue" name="Total Revenue" fill="#C9A96E" radius={[4, 4, 0, 0]} maxBarSize={60} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   );
 }
@@ -254,17 +242,17 @@ function FinancePropertyTable({ properties }: { properties: FinanceProperty[] })
   ];
 
   return (
-    <div className="glass-card" style={{ overflow: "hidden" }}>
-      <div style={{ padding: "16px 18px", borderBottom: "1px solid var(--border)" }}>
+    <div className="glass-card overflow-hidden">
+      <div className="p-4 sm:p-5 border-b border-brand-border-soft bg-white/50">
         <SectionHeader title="Property Finance Records" subtitle="Latest finance record per property" />
       </div>
       {sorted.length === 0 ? (
         <EmptyState title="No property finance rows" body="Insert finance_records rows to populate this table." />
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
-            <thead>
-              <tr style={{ background: "var(--surface-2)" }}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead className="bg-brand-surface-2 border-b border-brand-border">
+              <tr>
                 {headers.map(header => {
                   const active = sortKey === header.key;
                   const Icon = active && sortDir === "asc" ? ChevronUp : ChevronDown;
@@ -272,20 +260,11 @@ function FinancePropertyTable({ properties }: { properties: FinanceProperty[] })
                     <th
                       key={header.key}
                       onClick={() => toggle(header.key)}
-                      style={{
-                        padding: "9px 12px",
-                        textAlign: header.right ? "right" : "left",
-                        fontSize: "10px",
-                        color: "var(--text-3)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
-                      }}
+                      className={`px-4 py-3 text-[10px] sm:text-xs font-semibold text-brand-text-3 uppercase tracking-wider cursor-pointer select-none whitespace-nowrap ${header.right ? "text-right" : "text-left"}`}
                     >
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                      <span className={`inline-flex items-center gap-1.5 ${header.right ? "justify-end w-full" : ""}`}>
                         {header.label}
-                        <Icon size={10} color={active ? "var(--gold)" : "#CBD5E1"} />
+                        <Icon className={`w-3 h-3 ${active ? "text-brand-gold" : "text-brand-border"}`} />
                       </span>
                     </th>
                   );
@@ -294,17 +273,17 @@ function FinancePropertyTable({ properties }: { properties: FinanceProperty[] })
             </thead>
             <tbody>
               {sorted.map((property, index) => (
-                <tr key={property.id} style={{ background: index % 2 === 0 ? "#FFFFFF" : "var(--surface-2)" }}>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", fontWeight: 700, color: "var(--text-1)" }}>{property.name}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", color: "var(--text-2)" }}>{entityLabel(property.entity)}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right" }}>{property.rooms}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right" }}>{pct(property.occ)}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right" }}>{fmtINR(property.roomRev)}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right" }}>{fmtINR(property.fnbRev)}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right" }}>{fmtINR(property.eventsRev)}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right", fontWeight: 800, color: "var(--text-1)" }}>{fmtINR(property.totalRev)}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right" }}>{fmtINR(property.adr)}</td>
-                  <td style={{ padding: "11px 12px", borderTop: "1px solid var(--border)", textAlign: "right" }}>{fmtINR(property.revpar)}</td>
+                <tr key={property.id} className={`premium-table-row ${index % 2 === 0 ? "bg-white" : "bg-brand-surface-2"}`}>
+                  <td className="premium-table-cell font-bold text-brand-text-1">{property.name}</td>
+                  <td className="premium-table-cell text-brand-text-2">{entityLabel(property.entity)}</td>
+                  <td className="premium-table-cell text-right tabular-nums">{property.rooms}</td>
+                  <td className="premium-table-cell text-right tabular-nums text-emerald-700 font-medium">{pct(property.occ)}</td>
+                  <td className="premium-table-cell text-right tabular-nums text-brand-text-2">{fmtINR(property.roomRev)}</td>
+                  <td className="premium-table-cell text-right tabular-nums text-brand-text-2">{fmtINR(property.fnbRev)}</td>
+                  <td className="premium-table-cell text-right tabular-nums text-brand-text-2">{fmtINR(property.eventsRev)}</td>
+                  <td className="premium-table-cell text-right tabular-nums font-bold text-brand-green-900 bg-brand-gold/5">{fmtINR(property.totalRev)}</td>
+                  <td className="premium-table-cell text-right tabular-nums text-brand-text-2">{fmtINR(property.adr)}</td>
+                  <td className="premium-table-cell text-right tabular-nums text-brand-text-2">{fmtINR(property.revpar)}</td>
                 </tr>
               ))}
             </tbody>
@@ -317,28 +296,24 @@ function FinancePropertyTable({ properties }: { properties: FinanceProperty[] })
 
 function TallyImports({ imports }: { imports: DashboardPayload["latestTallyImports"] }) {
   return (
-    <div className="glass-card" style={{ padding: "18px" }}>
+    <div className="glass-card p-5 lg:p-6">
       <SectionHeader title="Latest Tally Imports" subtitle="From finance_records.tally_file_name and tally_received_at" />
       {imports.length === 0 ? (
         <EmptyState title="No Tally import metadata" body="When finance_records include tally file metadata, it will be listed here." />
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "14px" }}>
+        <div className="flex flex-col gap-3 mt-5">
           {imports.map(item => (
-            <div key={`${item.property}-${item.fileName}-${item.receivedAt}`} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              padding: "10px 12px",
-              borderRadius: "8px",
-              border: "1px solid var(--border)",
-              background: "var(--surface-2)",
-            }}>
-              <FileText size={14} color="#1B4332" />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ margin: 0, fontSize: "12.5px", fontWeight: 700, color: "var(--text-1)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.fileName}</p>
-                <p style={{ margin: "2px 0 0", fontSize: "11px", color: "var(--text-3)" }}>{item.property} · {item.source}</p>
+            <div key={`${item.property}-${item.fileName}-${item.receivedAt}`} className="flex items-center gap-4 p-3 rounded-xl border border-brand-border-soft bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                <FileText className="w-5 h-5 text-emerald-700" />
               </div>
-              <span style={{ fontSize: "11px", color: "var(--text-3)", whiteSpace: "nowrap" }}>{item.receivedAt}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-bold text-brand-text-1 truncate m-0">{item.fileName}</p>
+                <p className="text-[11px] text-brand-text-3 m-0 mt-0.5 truncate">{item.property} · {item.source}</p>
+              </div>
+              <span className="text-xs font-medium text-brand-text-3 whitespace-nowrap bg-brand-surface-2 px-2.5 py-1 rounded-md border border-brand-border-soft">
+                {item.receivedAt}
+              </span>
             </div>
           ))}
         </div>
@@ -370,8 +345,8 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
   const totalOutstanding = data?.financeKpis.outstandingReceivables ?? 0;
 
   return (
-    <div className="finance-module" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-      <div className="glass-card" style={{ padding: "16px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+    <div className="flex flex-col gap-6 w-full">
+      <div className="glass-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 anim-fade-up">
         <SectionHeader
           title="Finance Intelligence"
           subtitle={data?.configured ? "Connected to Supabase finance_records" : "Waiting for Supabase environment variables"}
@@ -387,31 +362,29 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
         )}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "12px" }} className="finance-kpi-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 anim-fade-up" style={{ animationDelay: "50ms" }}>
         <KpiCard label="Total Revenue" value={fmtINR(totalRevenue)} sub={`${properties.length} property records`} icon={IndianRupee} />
         <KpiCard label="Occupancy" value={pct(avgOccupancy)} sub={`${occupiedRooms}/${totalRooms} rooms`} icon={Building2} />
         <KpiCard label="ADR" value={fmtINR(avgAdr)} sub="Average daily rate" icon={Landmark} />
         <KpiCard label="Receivables" value={fmtINR(totalOutstanding)} sub="Outstanding receivables" icon={PieIcon} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.4fr) minmax(320px, 0.8fr)", gap: "12px" }} className="finance-chart-grid">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 anim-fade-up" style={{ animationDelay: "100ms" }}>
         <RevenueTrend data={data?.financeTrend ?? []} />
         <RevenueMix data={data?.revenueMix ?? []} />
       </div>
 
-      <EntitySummary data={data?.entitySummary ?? []} />
-      <FinancePropertyTable properties={properties} />
-      <TallyImports imports={data?.latestTallyImports ?? []} />
-
-      <style>{`
-        @media (max-width: 1100px) {
-          .finance-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-          .finance-chart-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 640px) {
-          .finance-kpi-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
+      <div className="anim-fade-up" style={{ animationDelay: "150ms" }}>
+        <EntitySummary data={data?.entitySummary ?? []} />
+      </div>
+      
+      <div className="anim-fade-up" style={{ animationDelay: "200ms" }}>
+        <FinancePropertyTable properties={properties} />
+      </div>
+      
+      <div className="anim-fade-up" style={{ animationDelay: "250ms" }}>
+        <TallyImports imports={data?.latestTallyImports ?? []} />
+      </div>
     </div>
   );
 }

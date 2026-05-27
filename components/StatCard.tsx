@@ -40,29 +40,29 @@ function useCountUp(target: number, duration = 1000, delay = 0) {
 }
 
 const ACCENT_LINE: Record<string, string> = {
-  gold:  "#C9A96E",
-  green: "#059669",
-  amber: "#D97706",
-  red:   "#DC2626",
+  gold:  "bg-brand-gold",
+  green: "bg-emerald-600",
+  amber: "bg-amber-600",
+  red:   "bg-red-600",
 };
 
-const ICON_STYLE: Record<string, { bg: string; color: string }> = {
-  gold:  { bg: "#1B4332", color: "#C9A96E" },
-  green: { bg: "#065F46", color: "#FFFFFF" },
-  amber: { bg: "#92400E", color: "#FFFFFF" },
-  red:   { bg: "#991B1B", color: "#FFFFFF" },
+const ICON_STYLE: Record<string, string> = {
+  gold:  "bg-brand-green-800 text-brand-gold",
+  green: "bg-emerald-800 text-white",
+  amber: "bg-amber-800 text-white",
+  red:   "bg-red-800 text-white",
 };
 
-const TREND_GOOD = { bg: "#ECFDF5", text: "#065F46" };
-const TREND_BAD  = { bg: "#FEF2F2", text: "#991B1B" };
+const TREND_GOOD = "badge-emerald";
+const TREND_BAD  = "badge-red";
 
 export default function StatCard({
   title, value, subtitle, icon: Icon,
   accent = "gold", trend,
   animateNumber = true, delay = 0,
 }: StatCardProps) {
-  const accentColor = ACCENT_LINE[accent];
-  const iconStyle   = ICON_STYLE[accent];
+  const accentLineClass = ACCENT_LINE[accent];
+  const iconClass = ICON_STYLE[accent];
 
   const numTarget = typeof value === "number"
     ? value
@@ -75,7 +75,7 @@ export default function StatCard({
   const trendIsGood = trend
     ? (trend.direction === "up" && trend.positive) || (trend.direction === "down" && !trend.positive)
     : true;
-  const trendStyle = trend ? (trendIsGood ? TREND_GOOD : TREND_BAD) : TREND_GOOD;
+  const trendClass = trend ? (trendIsGood ? TREND_GOOD : TREND_BAD) : TREND_GOOD;
 
   const TrendIcon = trend?.direction === "up"
     ? TrendingUp
@@ -85,57 +85,34 @@ export default function StatCard({
 
   return (
     <div
-      className="stat-cell anim-fade-up"
-      style={{ position: "relative", animationDelay: `${delay}ms` }}
+      className="relative flex flex-col justify-between overflow-hidden border-r border-brand-border-soft last:border-r-0 hover:bg-brand-gold/5 transition-colors duration-200 cursor-default group"
+      style={{ animationDelay: `${delay}ms` }}
     >
       {/* Accent top line */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "2px",
-        background: accentColor,
-      }} />
+      <div className={`absolute top-0 left-0 right-0 h-0.5 ${accentLineClass}`} />
 
       {/* Cell body */}
-      <div style={{ padding: "18px 20px 12px" }}>
-
+      <div className="p-5 pb-4">
         {/* Label + icon row */}
-        <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-          gap: "10px", marginBottom: "14px",
-        }}>
-          <p style={{
-            fontSize: "10.5px", fontWeight: 600, letterSpacing: "0.08em",
-            textTransform: "uppercase", color: "var(--text-3)", lineHeight: 1,
-            paddingTop: "4px", margin: 0,
-          }}>
+        <div className="flex justify-between items-start gap-3 mb-4">
+          <p className="text-[10.5px] font-semibold tracking-[0.08em] uppercase text-brand-text-3 leading-none pt-1">
             {title}
           </p>
-          <div style={{
-            width: "34px", height: "34px", borderRadius: "8px",
-            background: iconStyle.bg,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
-          }}>
-            <Icon size={16} color={iconStyle.color} strokeWidth={2} />
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${iconClass} shadow-sm group-hover:shadow-md transition-shadow`}>
+            <Icon className="w-4 h-4" strokeWidth={2} />
           </div>
         </div>
 
         {/* Value */}
-        <div style={{ display: "flex", alignItems: "baseline", gap: "2px", lineHeight: 1 }}>
-          <span style={{
-            fontSize: "48px", fontWeight: 700, color: "var(--text-1)",
-            fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em",
-            fontFamily: "'Inter', sans-serif",
-            lineHeight: 1,
-          }}>
+        <div className="flex items-baseline gap-1 leading-none">
+          <span className="text-4xl lg:text-[40px] xl:text-[44px] font-bold text-brand-text-1 tabular-nums tracking-tight">
             {typeof value === "number"
               ? (animateNumber ? animated : value).toLocaleString()
               : animated.toLocaleString()
             }
           </span>
           {suffix && (
-            <span style={{
-              fontSize: "20px", fontWeight: 600, color: "var(--text-3)", marginLeft: "2px",
-            }}>
+            <span className="text-xl font-semibold text-brand-text-3 ml-0.5">
               {suffix}
             </span>
           )}
@@ -143,41 +120,26 @@ export default function StatCard({
 
         {/* Subtitle */}
         {subtitle && (
-          <p style={{
-            fontSize: "12px", color: "var(--text-3)", marginTop: "5px",
-            fontWeight: 400, lineHeight: 1.4,
-          }}>
+          <p className="text-xs text-brand-text-3 mt-1.5 font-medium leading-snug line-clamp-1">
             {subtitle}
           </p>
         )}
       </div>
 
       {/* Trend row */}
-      <div style={{
-        margin: "0 20px",
-        paddingTop: "10px",
-        paddingBottom: "14px",
-        borderTop: "1px solid var(--border)",
-        display: "flex", alignItems: "center", gap: "6px",
-      }}>
+      <div className="mx-5 pt-3 pb-4 border-t border-brand-border-soft flex items-center gap-2">
         {trend ? (
           <>
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: "3px",
-              padding: "2px 8px", borderRadius: "4px",
-              fontSize: "11px", fontWeight: 600,
-              background: trendStyle.bg,
-              color: trendStyle.text,
-            }}>
-              <TrendIcon size={11} strokeWidth={2.5} />
+            <span className={trendClass}>
+              <TrendIcon className="w-3 h-3" strokeWidth={2.5} />
               {trend.label.split(" ")[0]}
             </span>
-            <span style={{ fontSize: "11px", color: "var(--text-3)" }}>
+            <span className="text-xs text-brand-text-3 truncate">
               {trend.label.split(" ").slice(1).join(" ")}
             </span>
           </>
         ) : (
-          <span style={{ fontSize: "11px", color: "var(--text-3)" }}>— No data</span>
+          <span className="text-xs text-brand-text-3">— No data</span>
         )}
       </div>
     </div>

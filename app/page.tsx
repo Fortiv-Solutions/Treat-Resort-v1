@@ -36,8 +36,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="app-shell" style={{ minHeight: "100vh", background: "var(--bg)" }}>
-
+    <div className="min-h-screen bg-brand-bg flex">
       {/* ── Sidebar ── */}
       <Sidebar
         activeModule={activeModule}
@@ -47,123 +46,56 @@ export default function Dashboard() {
       />
 
       {/* ── Main ── */}
-      <div style={{
-        marginLeft: "var(--sidebar-current-w)",
-        minWidth: 0,
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        width: "calc(100% - var(--sidebar-current-w))",
-        transition: "margin-left var(--dur-slow) var(--ease-out-expo)",
-      }} className="main-area">
-
+      <div className="flex flex-col flex-1 min-h-screen w-full transition-all duration-300 ease-out-expo lg:ml-[248px] peer-data-[collapsed=true]:lg:ml-[72px]">
         {/* Top Header */}
-        <header className="app-topbar" style={{
-          position: "sticky", top: 0, zIndex: 200,
-          background: "rgba(255,250,240,0.88)",
-          backdropFilter: "blur(20px) saturate(160%)",
-          WebkitBackdropFilter: "blur(20px) saturate(160%)",
-          borderBottom: "1px solid var(--border-soft)",
-          padding: "0 32px",
-          height: "68px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "16px",
-        }}>
+        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-brand-border-soft px-4 sm:px-8 h-[72px] flex items-center justify-between gap-4 shadow-sm">
           {/* Page title */}
-          <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
-            <div style={{
-              width: "40px", height: "40px", borderRadius: "11px",
-              background: "linear-gradient(135deg, var(--green-900) 0%, var(--green-700) 100%)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-              boxShadow: "0 2px 8px rgba(27,67,50,0.25)",
-            }}>
-              <Icon size={17} color="#C9A96E" />
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-brand-green-900 to-brand-green-700 flex items-center justify-center shrink-0 shadow-md ring-1 ring-brand-gold/20">
+              <Icon className="w-[18px] h-[18px] text-brand-gold" />
             </div>
-            <div style={{ minWidth: 0 }}>
-              <p className="brand-kicker" style={{ marginBottom: "2px" }}>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-[11px] font-bold text-brand-gold-rich tracking-widest uppercase mb-0.5">
                 Treat Operations
               </p>
-              <h1 style={{
-                fontSize: "14px", fontWeight: 700, color: "var(--text-1)",
-                lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis",
-                whiteSpace: "nowrap", margin: 0,
-                fontFamily: "'Karla', sans-serif", letterSpacing: "0.01em",
-              }}>
+              <h1 className="text-sm sm:text-base font-bold text-brand-text-1 leading-tight truncate font-display">
                 {meta.title}
               </h1>
-              <p style={{
-                fontSize: "11px", color: "var(--text-3)", marginTop: "2px",
-                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                letterSpacing: "0.01em",
-              }}>
+              <p className="hidden sm:block text-[11px] sm:text-xs text-brand-text-3 mt-0.5 truncate">
                 {meta.subtitle}
               </p>
             </div>
           </div>
 
           {/* Right actions */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Search */}
-            <div style={{
-              display: "flex", alignItems: "center", gap: "8px",
-              background: "rgba(255,255,255,0.8)", border: "1.5px solid var(--border)",
-              borderRadius: "10px", padding: "8px 14px",
-              transition: "border-color 150ms ease, box-shadow 150ms ease",
-            }}
-              onFocus={e => { e.currentTarget.style.borderColor = "#C9A96E"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(201,169,110,0.14)"; }}
-              onBlur={e  => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
-            >
-              <Search size={13} color="var(--text-3)" />
+            <div className="hidden md:flex items-center gap-2 bg-white/60 border border-brand-border rounded-lg px-3 py-2 transition-all duration-200 focus-within:border-brand-gold focus-within:ring-2 focus-within:ring-brand-gold/20 focus-within:bg-white">
+              <Search className="w-[14px] h-[14px] text-brand-text-3" />
               <input
                 placeholder="Search..."
-                style={{
-                  border: "none", background: "transparent", outline: "none",
-                  fontSize: "13px", color: "var(--text-1)", width: "130px",
-                  fontFamily: "'Karla', 'Inter', sans-serif",
-                }}
+                className="border-none bg-transparent outline-none text-sm text-brand-text-1 w-[140px] placeholder:text-brand-text-3"
               />
             </div>
 
             {/* Notifications */}
-            <button style={{
-              width: "40px", height: "40px", borderRadius: "10px",
-              background: "rgba(255,255,255,0.8)", border: "1.5px solid var(--border)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", position: "relative",
-              transition: "border-color 150ms, background 150ms, box-shadow 150ms",
-            }}
+            <button
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/60 border border-brand-border flex items-center justify-center relative transition-all duration-200 hover:border-brand-gold hover:bg-white hover:shadow-md"
               aria-label="Open notifications"
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "#C9A96E"; e.currentTarget.style.background = "#FFFFFF"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(201,169,110,0.15)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.boxShadow = "none"; }}
             >
-              <Bell size={15} color="var(--text-2)" />
-              <span style={{
-                position: "absolute", top: "8px", right: "8px",
-                width: "7px", height: "7px", borderRadius: "50%",
-                background: "#DC2626", border: "1.5px solid var(--bg)",
-              }} />
+              <Bell className="w-[16px] h-[16px] text-brand-text-2" />
+              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-600 ring-2 ring-white" />
             </button>
 
             {/* Date badge */}
-            <div style={{
-              padding: "8px 16px", borderRadius: "10px",
-              background: "rgba(255,255,255,0.8)", border: "1.5px solid var(--border)",
-              fontSize: "12px", fontWeight: 600, color: "var(--text-2)",
-              whiteSpace: "nowrap", letterSpacing: "0.02em",
-            }}>
+            <div className="hidden sm:block px-3 py-2 rounded-lg bg-white/60 border border-brand-border text-xs font-semibold text-brand-text-2 whitespace-nowrap">
               {dateLabel}
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="app-main" style={{
-          flex: 1, padding: "28px 32px",
-          width: "100%",
-        }}>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
           {activeModule === "feedback"
             ? <FeedbackModule key={role} role={role} data={dashboardData} />
             : activeModule === "inbox"
@@ -172,23 +104,6 @@ export default function Dashboard() {
           }
         </main>
       </div>
-
-      {/* Responsive sidebar margin */}
-      <style>{`
-        @media (max-width: 1023px) {
-          .main-area {
-            margin-left: var(--sidebar-w-col) !important;
-            width: calc(100% - var(--sidebar-w-col)) !important;
-          }
-        }
-        @media (max-width: 767px) {
-          .main-area {
-            margin-left: 0 !important;
-            width: 100% !important;
-            padding-top: 68px;
-          }
-        }
-      `}</style>
     </div>
   );
 }

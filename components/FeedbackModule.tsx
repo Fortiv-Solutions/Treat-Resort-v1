@@ -19,28 +19,23 @@ import {
 const SatelliteMap = dynamic(() => import("./SatelliteMap"), {
   ssr: false,
   loading: () => (
-    <div style={{
-      background: "#0f1f15", borderRadius: "10px", height: "280px",
-      border: "1px solid rgba(201,169,110,0.12)",
-      display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "8px",
-    }}>
-      <div style={{ width: "22px", height: "22px", borderRadius: "50%", border: "2px solid #C9A96E", borderTopColor: "transparent", animation: "spin 700ms linear infinite" }} />
-      <p style={{ color: "rgba(255,255,255,0.3)", fontSize: "11px" }}>Loading map…</p>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <div className="bg-brand-green-950 rounded-xl h-[280px] border border-brand-gold/10 flex flex-col items-center justify-center gap-2">
+      <div className="w-6 h-6 rounded-full border-2 border-brand-gold border-t-transparent animate-spin" />
+      <p className="text-brand-text-3 text-xs">Loading map…</p>
     </div>
   ),
 });
 
-const STATUS_STYLE: Record<PropertyStatus, { bg: string; color: string; dot: string }> = {
-  "Excellent":       { bg: "#ECFDF5", color: "#065F46", dot: "#059669" },
-  "Good":            { bg: "#FFFBEB", color: "#92400E", dot: "#D97706" },
-  "Needs Attention": { bg: "#FEF2F2", color: "#991B1B", dot: "#DC2626" },
+const STATUS_STYLE: Record<PropertyStatus, { badge: string; dot: string }> = {
+  "Excellent":       { badge: "badge-emerald", dot: "bg-emerald-500" },
+  "Good":            { badge: "badge-amber",   dot: "bg-amber-500" },
+  "Needs Attention": { badge: "badge-red",     dot: "bg-red-500" },
 };
 
-const SENTIMENT_STYLE: Record<FeedbackSentiment, { bg: string; color: string; label: string }> = {
-  POSITIVE: { bg: "#ECFDF5", color: "#065F46", label: "POSITIVE" },
-  NEGATIVE: { bg: "#FEF2F2", color: "#991B1B", label: "NEGATIVE" },
-  NEUTRAL:  { bg: "#F3F4F6", color: "#6B7280", label: "NEUTRAL"  },
+const SENTIMENT_STYLE: Record<FeedbackSentiment, { badge: string }> = {
+  POSITIVE: { badge: "badge-emerald" },
+  NEGATIVE: { badge: "badge-red" },
+  NEUTRAL:  { badge: "badge-gray" },
 };
 
 const ROLE_MAP: Record<Role, string> = {
@@ -49,23 +44,23 @@ const ROLE_MAP: Record<Role, string> = {
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <span style={{ display: "inline-flex", gap: "1px" }}>
+    <span className="inline-flex gap-0.5">
       {[1,2,3,4,5].map(i => (
-        <span key={i} style={{ color: i <= rating ? "#C9A96E" : "#E5E7EB", fontSize: "11px" }}>★</span>
+        <span key={i} className={`text-xs ${i <= rating ? "text-brand-gold" : "text-brand-border-soft"}`}>★</span>
       ))}
     </span>
   );
 }
 
 function ProgressBar({ value }: { value: number }) {
-  const color = value >= 90 ? "#059669" : value >= 75 ? "#D97706" : "#DC2626";
-  const textColor = value >= 90 ? "#065F46" : value >= 75 ? "#92400E" : "#991B1B";
+  const color = value >= 90 ? "bg-emerald-600" : value >= 75 ? "bg-amber-600" : "bg-red-600";
+  const textColor = value >= 90 ? "text-emerald-700" : value >= 75 ? "text-amber-700" : "text-red-700";
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-      <div style={{ width: "52px", height: "4px", borderRadius: "2px", background: "#E5E7EB", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${value}%`, background: color, borderRadius: "2px" }} />
+    <div className="flex items-center gap-2">
+      <div className="w-14 h-1.5 rounded-full bg-brand-border-soft overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
       </div>
-      <span style={{ fontWeight: 600, fontSize: "11.5px", color: textColor, fontVariantNumeric: "tabular-nums" }}>{value.toFixed(1)}%</span>
+      <span className={`font-semibold text-xs tabular-nums ${textColor}`}>{value.toFixed(1)}%</span>
     </div>
   );
 }
@@ -73,11 +68,10 @@ function ProgressBar({ value }: { value: number }) {
 function SLABadge({ hours }: { hours: number }) {
   const ok    = hours <= 2;
   const warn  = hours > 2 && hours <= 3.5;
-  const bg    = ok ? "#ECFDF5" : warn ? "#FFFBEB" : "#FEF2F2";
-  const color = ok ? "#065F46" : warn ? "#92400E" : "#991B1B";
+  const badgeClass = ok ? "badge-emerald" : warn ? "badge-amber" : "badge-red";
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: "3px", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: 600, background: bg, color }}>
-      <Clock size={9} color={color} />
+    <span className={badgeClass}>
+      <Clock className="w-3 h-3" />
       {hours.toFixed(1)}h
     </span>
   );
@@ -93,58 +87,37 @@ function BusinessKPIs({
   const kpis = [
     {
       icon: RefreshCw, label: "Guest Automation",
-      value: `${automationPct.toFixed(1)}%`,
-      sub: "of checkouts automated",
-      color: "#059669",
-      bg: "#ECFDF5",
+      value: `${automationPct.toFixed(1)}%`, sub: "of checkouts automated",
+      colorClass: "text-emerald-600", bgClass: "bg-emerald-50",
     },
     {
       icon: Star, label: "Reviews Generated",
-      value: reviewsGenerated.toLocaleString(),
-      sub: "via WhatsApp funnel",
-      color: "#C9A96E",
-      bg: "#FFFBEB",
+      value: reviewsGenerated.toLocaleString(), sub: "via WhatsApp funnel",
+      colorClass: "text-brand-gold-rich", bgClass: "bg-amber-50",
     },
     {
       icon: ShieldCheck, label: "Complaint Recovery",
-      value: `${complaintRecovery}%`,
-      sub: "resolved within SLA",
-      color: "#1D4ED8",
-      bg: "#EFF6FF",
+      value: `${complaintRecovery}%`, sub: "resolved within SLA",
+      colorClass: "text-blue-600", bgClass: "bg-blue-50",
     },
     {
       icon: RotateCcw, label: "Repeat Guest Est.",
-      value: `${repeatGuestEst}%`,
-      sub: "returning guests (30d)",
-      color: "#7C3AED",
-      bg: "#F5F3FF",
+      value: `${repeatGuestEst}%`, sub: "returning guests (30d)",
+      colorClass: "text-purple-600", bgClass: "bg-purple-50",
     },
   ];
 
   return (
-    <div style={{
-      display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-      background: "#FFFFFF",
-      border: "1px solid var(--border)",
-      borderRadius: "10px",
-      overflow: "hidden",
-    }} className="biz-kpi-grid">
-      {kpis.map(({ icon: Icon, label, value, sub, color, bg }, i) => (
-        <div key={label} style={{
-          padding: "12px 16px",
-          borderRight: i < kpis.length - 1 ? "1px solid var(--border)" : "none",
-          display: "flex", alignItems: "center", gap: "12px",
-        }}>
-          <div style={{
-            width: "32px", height: "32px", borderRadius: "8px",
-            background: bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-          }}>
-            <Icon size={15} color={color} />
+    <div className="grid grid-cols-2 md:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden">
+      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }, i) => (
+        <div key={label} className={`p-4 flex items-center gap-3 ${i < kpis.length - 1 ? "border-r border-brand-border-soft" : ""}`}>
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${bgClass}`}>
+            <Icon className={`w-4 h-4 ${colorClass}`} />
           </div>
-          <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: "10px", fontWeight: 600, color: "var(--text-3)", textTransform: "uppercase", letterSpacing: "0.06em", margin: 0 }}>{label}</p>
-            <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-1)", lineHeight: 1.2, margin: "2px 0 0", fontVariantNumeric: "tabular-nums" }}>{value}</p>
-            <p style={{ fontSize: "10.5px", color: "var(--text-3)", margin: 0 }}>{sub}</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold text-brand-text-3 uppercase tracking-wider mb-0.5">{label}</p>
+            <p className="text-xl font-bold text-brand-text-1 leading-tight tabular-nums">{value}</p>
+            <p className="text-[11px] text-brand-text-3 mt-0.5 truncate">{sub}</p>
           </div>
         </div>
       ))}
@@ -199,28 +172,28 @@ export default function FeedbackModule({ role, data }: Props) {
 
   const SortIcon = ({ col }: { col: string }) =>
     sortCol === col
-      ? sortDir === "desc" ? <ChevronDown size={10} color="var(--gold)" /> : <ChevronUp size={10} color="var(--gold)" />
-      : <ChevronDown size={10} color="#D1D5DB" />;
+      ? sortDir === "desc" ? <ChevronDown className="w-3 h-3 text-brand-gold" /> : <ChevronUp className="w-3 h-3 text-brand-gold" />
+      : <ChevronDown className="w-3 h-3 text-brand-text-3/40" />;
 
   const TABLE_COLS = [
-    { key: "name",               label: "Property",    sortable: false, w: "160px" },
-    { key: "occupancyRate",      label: "Occ %",       sortable: true,  w: "60px"  },
-    { key: "checkouts",          label: "Submissions", sortable: true,  w: "90px"  },
-    { key: "responseRate",       label: "Response",    sortable: true,  w: "110px" },
-    { key: "googleReviews",      label: "Reviews",     sortable: true,  w: "70px"  },
-    { key: "avgRating",          label: "Avg ★",       sortable: true,  w: "60px"  },
-    { key: "negativeComplaints", label: "Complaints",  sortable: true,  w: "80px"  },
-    { key: "responseSLAHours",   label: "SLA",         sortable: true,  w: "65px"  },
-    { key: "status",             label: "Status",      sortable: false, w: "130px" },
+    { key: "name",               label: "Property",    sortable: false, w: "w-48" },
+    { key: "occupancyRate",      label: "Occ %",       sortable: true,  w: "w-20" },
+    { key: "checkouts",          label: "Submissions", sortable: true,  w: "w-28" },
+    { key: "responseRate",       label: "Response",    sortable: true,  w: "w-32" },
+    { key: "googleReviews",      label: "Reviews",     sortable: true,  w: "w-24" },
+    { key: "avgRating",          label: "Avg ★",       sortable: true,  w: "w-20" },
+    { key: "negativeComplaints", label: "Complaints",  sortable: true,  w: "w-28" },
+    { key: "responseSLAHours",   label: "SLA",         sortable: true,  w: "w-24" },
+    { key: "status",             label: "Status",      sortable: false, w: "w-32" },
   ];
 
   const syncFailProps = allProps.filter(p => p.lastSync === "Sync failed");
 
   return (
-    <div className="module-stack feedback-module" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="flex flex-col gap-6 w-full">
 
       {/* ── Business KPI strip ── */}
-      <div className="anim-fade-up" style={{ animationDelay: "0ms" }}>
+      <div className="anim-fade-up">
         <BusinessKPIs
           automationPct={automationPct}
           reviewsGenerated={totalReviews}
@@ -230,14 +203,7 @@ export default function FeedbackModule({ role, data }: Props) {
       </div>
 
       {/* ── Row 1: Operational Stat cards ── */}
-      <div className="stat-cards-panel" style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        background: "#FFFFFF",
-        borderRadius: "10px",
-        border: "1px solid var(--border)",
-        overflow: "hidden",
-      }}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden anim-fade-up" style={{ animationDelay: "50ms" }}>
         <StatCard
           title="Submissions"       value={totalCheckouts} subtitle="Last 30 days from Supabase"
           icon={Hotel}              accent="gold"
@@ -247,12 +213,12 @@ export default function FeedbackModule({ role, data }: Props) {
           title="Feedback Received" value={totalFeedback}  subtitle={`${feedbackPct.toFixed(1)}% response rate`}
           icon={MessageCircle}      accent={feedbackPct >= 85 ? "green" : feedbackPct >= 70 ? "amber" : "red"}
           trend={{ label: `${feedbackPct.toFixed(1)}% of checkouts`, direction: "up", positive: true }}
-          delay={60}
+          delay={50}
         />
         <StatCard
           title="Google Reviews"    value={totalReviews}   subtitle="via automated WhatsApp flow"
           icon={Star}               accent="green"
-          delay={120}
+          delay={100}
         />
         <StatCard
           title="Open Complaints"   value={totalComplaints} subtitle={totalComplaints > 0 ? "Require GM attention" : "All clear this month"}
@@ -261,27 +227,23 @@ export default function FeedbackModule({ role, data }: Props) {
             ? { label: `${totalComplaints} unresolved`, direction: "up", positive: false }
             : { label: "0 open complaints", direction: "down", positive: true }
           }
-          delay={180}
+          delay={150}
         />
       </div>
 
       {/* ── Sync error alert ── */}
       {syncFailProps.length > 0 && (
-        <div style={{
-          background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: "8px",
-          padding: "10px 14px", display: "flex", alignItems: "center", gap: "10px",
-          fontSize: "12.5px",
-        }}>
-          <AlertTriangle size={14} color="#D97706" />
-          <span style={{ color: "#92400E", fontWeight: 500 }}>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-3 shadow-sm anim-fade-up">
+          <AlertTriangle className="w-5 h-5 text-amber-600" />
+          <span className="text-amber-900 text-sm font-medium">
             <strong>Sync failed</strong> — {syncFailProps.map(p => p.name.replace("Treat ", "")).join(", ")}. Data may be up to 20 min stale.
           </span>
         </div>
       )}
 
       {/* ── Row 2: Map + Chart ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: "12px" }} className="map-chart-row">
-        <div className="anim-fade-up" style={{ animationDelay: "160ms", minWidth: 0 }}>
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6">
+        <div className="anim-fade-up min-w-0" style={{ animationDelay: "160ms" }}>
           <SatelliteMap properties={allProps} />
         </div>
         <div className="anim-fade-up" style={{ animationDelay: "200ms" }}>
@@ -290,44 +252,38 @@ export default function FeedbackModule({ role, data }: Props) {
       </div>
 
       {/* ── Row 3: Property Table + Feedback Feed ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "12px", alignItems: "start" }} className="table-feed-row">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6 items-start">
 
         {/* Property Performance Table */}
-        <div className="glass-card anim-fade-up" style={{ padding: 0, overflow: "hidden", animationDelay: "220ms" }}>
-          <div style={{ padding: "12px 16px 10px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div className="glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "220ms" }}>
+          <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50">
             <div>
-              <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-1)" }}>Property Performance</h2>
-              <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>Supabase aggregates · click headers to sort</p>
+              <h2 className="text-sm font-bold text-brand-text-1">Property Performance</h2>
+              <p className="text-xs text-brand-text-3 mt-0.5">Supabase aggregates · click headers to sort</p>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="flex items-center gap-3">
               {role === "MD" && (
-                <span style={{ fontSize: "11px", background: "#F5EDD9", color: "#92400E", padding: "2px 8px", borderRadius: "5px", fontWeight: 600 }}>
+                <span className="badge-amber">
                   {allProps.length} Properties
                 </span>
               )}
-              <span style={{ fontSize: "10.5px", color: "var(--text-3)", display: "flex", alignItems: "center", gap: "3px" }}>
-                <RefreshCw size={10} color="var(--text-3)" />
+              <span className="text-xs text-brand-text-3 flex items-center gap-1.5 font-medium">
+                <RefreshCw className="w-3.5 h-3.5" />
                 Backend data
               </span>
             </div>
           </div>
-          <div style={{ overflowX: "auto", maxHeight: "340px", overflowY: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
-              <thead style={{ position: "sticky", top: 0, zIndex: 1 }}>
-                <tr style={{ background: "var(--surface-2)" }}>
+          <div className="overflow-x-auto max-h-[400px]">
+            <table className="w-full border-collapse">
+              <thead className="sticky top-0 z-10">
+                <tr>
                   {TABLE_COLS.map(col => (
                     <th
                       key={col.key}
                       onClick={() => col.sortable && toggleSort(col.key)}
-                      style={{
-                        padding: "7px 12px", textAlign: "left", fontSize: "10px",
-                        fontWeight: 600, color: "var(--text-3)", letterSpacing: "0.06em",
-                        textTransform: "uppercase", borderBottom: "1px solid var(--border)",
-                        cursor: col.sortable ? "pointer" : "default", whiteSpace: "nowrap",
-                        userSelect: "none", width: col.w,
-                      }}
+                      className={`premium-table-header ${col.w}`}
                     >
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                      <span className="inline-flex items-center gap-1.5">
                         {col.label} {col.sortable && <SortIcon col={col.key} />}
                       </span>
                     </th>
@@ -336,83 +292,69 @@ export default function FeedbackModule({ role, data }: Props) {
               </thead>
               <tbody>
                 {sorted.map((prop, i) => (
-                  <tr
-                    key={prop.id}
-                    className="trow"
-                    style={{ background: i % 2 === 0 ? "#FFFFFF" : "var(--surface-2)" }}
-                  >
+                  <tr key={prop.id} className={`premium-table-row ${i % 2 === 0 ? "bg-white" : "bg-brand-surface-2"}`}>
                     {/* Property name */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <span style={{
-                          width: "6px", height: "6px", borderRadius: "50%", flexShrink: 0,
-                          background: STATUS_STYLE[prop.status].dot,
-                        }} />
-                        <span style={{ fontWeight: 600, color: "var(--text-1)", fontSize: "12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "140px" }}>
+                    <td className="premium-table-cell">
+                      <div className="flex items-center gap-2.5">
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${STATUS_STYLE[prop.status].dot}`} />
+                        <span className="font-semibold text-brand-text-1 truncate max-w-[140px]">
                           {prop.name.replace("Treat ", "")}
                         </span>
                       </div>
-                      <div style={{ fontSize: "10px", color: "var(--text-3)", marginTop: "1px", paddingLeft: "12px" }}>
+                      <div className="text-[11px] text-brand-text-3 mt-1 pl-4.5">
                         GM: {prop.gmName}
                       </div>
                     </td>
                     {/* Occ % */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)", fontVariantNumeric: "tabular-nums" }}>
-                      <span style={{
-                        fontSize: "12px", fontWeight: 600,
-                        color: prop.occupancyRate >= 85 ? "#059669" : prop.occupancyRate >= 70 ? "#D97706" : "#DC2626",
-                      }}>
+                    <td className="premium-table-cell tabular-nums">
+                      <span className={`font-semibold ${prop.occupancyRate >= 85 ? "text-emerald-600" : prop.occupancyRate >= 70 ? "text-amber-600" : "text-red-600"}`}>
                         {prop.occupancyRate}%
                       </span>
                     </td>
                     {/* Checkouts */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)", fontWeight: 600, color: "var(--text-1)", fontVariantNumeric: "tabular-nums", fontSize: "12px" }}>
+                    <td className="premium-table-cell font-semibold text-brand-text-1 tabular-nums">
                       {prop.checkouts}
                     </td>
                     {/* Response rate */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)" }}>
+                    <td className="premium-table-cell">
                       <ProgressBar value={prop.responseRate} />
                     </td>
                     {/* Reviews */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                        <Star size={10} color="#C9A96E" fill="#C9A96E" />
-                        <span style={{ fontWeight: 600, color: "var(--text-1)", fontSize: "12px" }}>{prop.googleReviews}</span>
+                    <td className="premium-table-cell">
+                      <span className="inline-flex items-center gap-1.5 font-semibold text-brand-text-1">
+                        <Star className="w-3.5 h-3.5 text-brand-gold fill-brand-gold" />
+                        {prop.googleReviews}
                       </span>
                     </td>
                     {/* Avg rating */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)", fontVariantNumeric: "tabular-nums" }}>
-                      <span style={{
-                        fontSize: "12px", fontWeight: 700,
-                        color: prop.avgRating >= 4.5 ? "#059669" : prop.avgRating >= 4.0 ? "#D97706" : "#DC2626",
-                      }}>
+                    <td className="premium-table-cell tabular-nums">
+                      <span className={`font-bold ${prop.avgRating >= 4.5 ? "text-emerald-600" : prop.avgRating >= 4.0 ? "text-amber-600" : "text-red-600"}`}>
                         {prop.avgRating.toFixed(1)}
                       </span>
                     </td>
                     {/* Complaints */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)", textAlign: "center" }}>
+                    <td className="premium-table-cell text-center">
                       {prop.negativeComplaints > 0
-                        ? <span style={{ fontWeight: 700, color: prop.negativeComplaints >= 5 ? "#DC2626" : "#D97706", fontSize: "12px" }}>
+                        ? <span className={`font-bold ${prop.negativeComplaints >= 5 ? "text-red-600" : "text-amber-600"}`}>
                             {prop.negativeComplaints}
                           </span>
-                        : <span style={{ color: "#059669", fontSize: "12px", fontWeight: 600 }}>—</span>
+                        : <span className="text-emerald-600 font-semibold">—</span>
                       }
                     </td>
                     {/* SLA */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)" }}>
+                    <td className="premium-table-cell">
                       <SLABadge hours={prop.responseSLAHours} />
                     </td>
                     {/* Status */}
-                    <td style={{ padding: "7px 12px", borderBottom: "1px solid var(--border)" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                        <span className="badge" style={{ background: STATUS_STYLE[prop.status].bg, color: STATUS_STYLE[prop.status].color }}>
+                    <td className="premium-table-cell">
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className={STATUS_STYLE[prop.status].badge}>
                           {prop.status}
                         </span>
-                        {prop.lastSync === "Sync failed" && (
-                          <span style={{ fontSize: "10px", color: "#DC2626", fontWeight: 500 }}>⚠ Sync failed</span>
-                        )}
-                        {prop.lastSync !== "Sync failed" && (
-                          <span style={{ fontSize: "10px", color: "var(--text-3)" }}>Sync {prop.lastSync}</span>
+                        {prop.lastSync === "Sync failed" ? (
+                          <span className="text-[10px] font-semibold text-red-600">⚠ Sync failed</span>
+                        ) : (
+                          <span className="text-[10px] text-brand-text-3">Sync {prop.lastSync}</span>
                         )}
                       </div>
                     </td>
@@ -423,31 +365,31 @@ export default function FeedbackModule({ role, data }: Props) {
           </div>
           {/* Empty state */}
           {sorted.length === 0 && (
-            <div style={{ padding: "32px", textAlign: "center", color: "var(--text-3)", fontSize: "13px" }}>
+            <div className="p-8 text-center text-sm text-brand-text-3">
               No properties to display.
             </div>
           )}
         </div>
 
         {/* Live Feedback Feed */}
-        <div className="glass-card anim-fade-up" style={{ padding: 0, overflow: "hidden", animationDelay: "240ms" }}>
-          <div style={{ padding: "12px 16px 10px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div className="glass-card overflow-hidden anim-fade-up flex flex-col" style={{ animationDelay: "240ms", maxHeight: "500px" }}>
+          <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50 shrink-0">
             <div>
-              <h2 style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-1)" }}>Live Feedback</h2>
-              <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>From vw_live_feedback_feed</p>
+              <h2 className="text-sm font-bold text-brand-text-1">Live Feedback</h2>
+              <p className="text-xs text-brand-text-3 mt-0.5">From vw_live_feedback_feed</p>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#059669", animation: "pulse-dot 2s infinite" }} />
-              <span style={{ fontSize: "10.5px", color: "var(--text-3)" }}>Backend</span>
+            <div className="flex items-center gap-2">
+              <span className="pulse-dot bg-emerald-500" />
+              <span className="text-[11px] font-medium text-brand-text-3">Backend</span>
             </div>
           </div>
 
-          <div style={{ maxHeight: "420px", overflowY: "auto" }}>
+          <div className="overflow-y-auto flex-1">
             {visibleFeed.length === 0 ? (
-              <div style={{ padding: "32px 20px", textAlign: "center" }}>
-                <CheckCircle2 size={28} color="#059669" style={{ margin: "0 auto 8px" }} />
-                <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-1)", margin: "0 0 4px" }}>All clear</p>
-                <p style={{ fontSize: "12px", color: "var(--text-3)", margin: 0 }}>No feedback submissions are available yet.</p>
+              <div className="p-8 text-center">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-3" />
+                <p className="text-sm font-bold text-brand-text-1 mb-1">All clear</p>
+                <p className="text-sm text-brand-text-3">No feedback submissions are available yet.</p>
               </div>
             ) : visibleFeed.map((entry, i) => {
               const sentStyle     = SENTIMENT_STYLE[entry.sentiment];
@@ -456,29 +398,19 @@ export default function FeedbackModule({ role, data }: Props) {
               return (
                 <div
                   key={entry.id}
-                  style={{
-                    padding: "10px 14px",
-                    borderBottom: i < visibleFeed.length - 1 ? "1px solid var(--border)" : "none",
-                    opacity: isResolved ? 0.55 : 1,
-                    transition: "opacity 200ms ease",
-                  }}
+                  className={`p-4 sm:p-5 border-b border-brand-border-soft transition-opacity duration-300 ${isResolved ? "opacity-60 bg-brand-surface-2" : "bg-white hover:bg-brand-gold/5"}`}
                 >
                   {/* Header row */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", marginBottom: "4px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px", minWidth: 0 }}>
-                      {/* Sentiment badge */}
-                      <span style={{
-                        fontSize: "9.5px", fontWeight: 700, padding: "1px 6px",
-                        borderRadius: "3px", background: sentStyle.bg, color: sentStyle.color,
-                        letterSpacing: "0.04em", flexShrink: 0,
-                      }}>
-                        {sentStyle.label}
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={sentStyle.badge}>
+                        {entry.sentiment}
                       </span>
-                      <span style={{ fontWeight: 700, fontSize: "12px", color: "var(--text-1)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <span className="font-bold text-sm text-brand-text-1 truncate">
                         {entry.guest}
                       </span>
-                      <span style={{ color: "var(--border)", flexShrink: 0 }}>·</span>
-                      <span style={{ fontSize: "11px", color: "var(--text-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span className="text-brand-border-soft shrink-0">·</span>
+                      <span className="text-xs text-brand-text-3 truncate font-medium">
                         {entry.property.replace("Treat ", "").replace(" Resort", "").replace(" Imperial", "").replace(" Beach", "")}
                       </span>
                     </div>
@@ -486,101 +418,69 @@ export default function FeedbackModule({ role, data }: Props) {
                   </div>
 
                   {/* Snippet */}
-                  <p style={{ fontSize: "12px", color: "var(--text-2)", margin: "0 0 5px", lineHeight: 1.45, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                  <p className="text-sm text-brand-text-2 mb-3 leading-relaxed line-clamp-2 italic">
                     &quot;{entry.snippet}&quot;
                   </p>
 
                   {/* Meta row: assigned manager + escalation + time */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "7px", flexWrap: "wrap" }}>
+                  <div className="flex items-center gap-3 mb-3 flex-wrap">
                     {entry.assignedManager ? (
-                      <span style={{ fontSize: "10.5px", color: "var(--text-3)", display: "flex", alignItems: "center", gap: "3px" }}>
-                        <UserCheck size={10} color="var(--text-3)" />
+                      <span className="text-xs text-brand-text-3 flex items-center gap-1.5 font-medium">
+                        <UserCheck className="w-3.5 h-3.5" />
                         {isAssigned ? "Reassigned" : entry.assignedManager}
                       </span>
                     ) : (
-                      <span style={{ fontSize: "10.5px", color: "#DC2626", fontWeight: 600, display: "flex", alignItems: "center", gap: "3px" }}>
-                        <AlertTriangle size={10} color="#DC2626" />
+                      <span className="text-xs text-red-600 font-bold flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5" />
                         Unassigned
                       </span>
                     )}
                     {entry.escalationMins && !isResolved && (
-                      <span style={{ fontSize: "10.5px", color: "#DC2626", fontWeight: 600, display: "flex", alignItems: "center", gap: "3px" }}>
-                        <Clock size={10} color="#DC2626" />
+                      <span className="text-xs text-red-600 font-bold flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" />
                         {entry.escalationMins}m escalated
                       </span>
                     )}
                     {isResolved && (
-                      <span style={{ fontSize: "10.5px", color: "#059669", fontWeight: 600, display: "flex", alignItems: "center", gap: "3px" }}>
-                        <CheckCircle2 size={10} color="#059669" />
+                      <span className="text-xs text-emerald-600 font-bold flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
                         Resolved
                       </span>
                     )}
-                    <span style={{ fontSize: "10px", color: "var(--text-3)", marginLeft: "auto" }}>
+                    <span className="text-[11px] text-brand-text-3 ml-auto font-medium">
                       {entry.timestamp} · {entry.checkoutDate}
                     </span>
                   </div>
 
                   {/* Quick actions */}
                   {!isResolved && (
-                    <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
+                    <div className="flex gap-2 flex-wrap mt-1">
                       <button
                         onClick={() => {
                           const wa = window.open(`https://wa.me/?text=Dear+${entry.guest}`, "_blank");
                           if (wa) wa.focus();
                         }}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: "4px",
-                          padding: "4px 9px", borderRadius: "5px", border: "1px solid #E5E7EB",
-                          background: "#FFFFFF", cursor: "pointer", fontSize: "11px", fontWeight: 500,
-                          color: "var(--text-2)", fontFamily: "'Inter', sans-serif",
-                          transition: "border-color 120ms, background 120ms",
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = "#C9A96E"; e.currentTarget.style.background = "#FFFBEB"; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.background = "#FFFFFF"; }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-emerald-600/50 hover:bg-emerald-50 hover:text-emerald-700 transition-all shadow-sm"
                       >
-                        <MessageSquare size={11} color="#059669" /> WhatsApp
+                        <MessageSquare className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp
                       </button>
                       <button
                         onClick={() => { const p = dbProperties.find(x => x.id === entry.propertyId); if (p) window.alert(`Calling GM: ${p.gmName}`); }}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: "4px",
-                          padding: "4px 9px", borderRadius: "5px", border: "1px solid #E5E7EB",
-                          background: "#FFFFFF", cursor: "pointer", fontSize: "11px", fontWeight: 500,
-                          color: "var(--text-2)", fontFamily: "'Inter', sans-serif",
-                          transition: "border-color 120ms, background 120ms",
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = "#93C5FD"; e.currentTarget.style.background = "#EFF6FF"; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.background = "#FFFFFF"; }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-blue-600/50 hover:bg-blue-50 hover:text-blue-700 transition-all shadow-sm"
                       >
-                        <Phone size={11} color="#1D4ED8" /> Call GM
+                        <Phone className="w-3.5 h-3.5 text-blue-600" /> Call GM
                       </button>
                       <button
                         onClick={() => setAssignedIds(s => { const n = new Set(s); n.add(entry.id); return n; })}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: "4px",
-                          padding: "4px 9px", borderRadius: "5px", border: "1px solid #E5E7EB",
-                          background: "#FFFFFF", cursor: "pointer", fontSize: "11px", fontWeight: 500,
-                          color: "var(--text-2)", fontFamily: "'Inter', sans-serif",
-                          transition: "border-color 120ms, background 120ms",
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = "#A7F3D0"; e.currentTarget.style.background = "#ECFDF5"; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.background = "#FFFFFF"; }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-emerald-600/50 hover:bg-emerald-50 hover:text-emerald-700 transition-all shadow-sm"
                       >
-                        <UserCheck size={11} color="#059669" /> Assign
+                        <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> Assign
                       </button>
                       <button
                         onClick={() => setResolvedIds(s => { const n = new Set(s); n.add(entry.id); return n; })}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: "4px",
-                          padding: "4px 9px", borderRadius: "5px", border: "1px solid #E5E7EB",
-                          background: "#FFFFFF", cursor: "pointer", fontSize: "11px", fontWeight: 500,
-                          color: "var(--text-2)", fontFamily: "'Inter', sans-serif",
-                          transition: "border-color 120ms, background 120ms",
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = "#FCA5A5"; e.currentTarget.style.background = "#FEF2F2"; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.background = "#FFFFFF"; }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-red-600/50 hover:bg-red-50 hover:text-red-700 transition-all shadow-sm ml-auto"
                       >
-                        <CheckCircle2 size={11} color="#6B7280" /> Resolve
+                        <CheckCircle2 className="w-3.5 h-3.5 text-brand-text-3" /> Resolve
                       </button>
                     </div>
                   )}
@@ -591,34 +491,18 @@ export default function FeedbackModule({ role, data }: Props) {
 
           {/* Show more / less */}
           {totalFeedSource.length > 5 && (
-            <div style={{ padding: "8px 16px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
+            <div className="p-3 border-t border-brand-border-soft text-center bg-brand-surface-2 shrink-0">
               <button
                 onClick={() => setFeedLimit(l => l === 5 ? 10 : 5)}
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  fontSize: "11.5px", fontWeight: 600, color: "var(--text-2)",
-                  fontFamily: "'Inter', sans-serif",
-                  display: "inline-flex", alignItems: "center", gap: "4px",
-                }}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-text-2 hover:text-brand-gold-rich transition-colors"
               >
                 {feedLimit === 5 ? `Show ${Math.min(5, totalFeedSource.length - 5)} more` : "Show less"}
-                {feedLimit === 5 ? <ChevronDown size={12} /> : <ChevronUp size={12} />}
+                {feedLimit === 5 ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
               </button>
             </div>
           )}
         </div>
       </div>
-
-      {/* Responsive */}
-      <style>{`
-        @media (max-width: 1100px) {
-          .map-chart-row  { grid-template-columns: 1fr !important; }
-          .table-feed-row { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 700px) {
-          .biz-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
     </div>
   );
 }
