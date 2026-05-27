@@ -7,13 +7,11 @@ import {
   type PropertyStatus, type FeedbackSentiment,
 } from "@/lib/data";
 import type { DashboardPayload } from "@/lib/dashboardData";
-import StatCard from "./StatCard";
 import PerformanceChart from "./PerformanceChart";
 import {
-  Hotel, MessageCircle, Star, AlertTriangle,
+  FileText, MessageSquare, Star, AlertTriangle, ShieldAlert,
   ChevronDown, ChevronUp, Phone, UserCheck, CheckCircle2,
-  MessageSquare, Clock, RefreshCw, ShieldCheck,
-  RotateCcw,
+  Clock, Bot, ShieldCheck, RefreshCw, ArrowUpRight
 } from "lucide-react";
 
 
@@ -69,53 +67,7 @@ function SLABadge({ hours }: { hours: number }) {
   );
 }
 
-/* ── Business KPI strip ─────────────────────────────── */
-function BusinessKPIs({
-  automationPct, reviewsGenerated, complaintRecovery, repeatGuestEst,
-}: {
-  automationPct: number; reviewsGenerated: number;
-  complaintRecovery: number; repeatGuestEst: number;
-}) {
-  const kpis = [
-    {
-      icon: RefreshCw, label: "Guest Automation",
-      value: `${automationPct.toFixed(1)}%`, sub: "of checkouts automated",
-      colorClass: "text-emerald-600", bgClass: "bg-emerald-50",
-    },
-    {
-      icon: Star, label: "Reviews Generated",
-      value: reviewsGenerated.toLocaleString(), sub: "via WhatsApp funnel",
-      colorClass: "text-brand-gold-rich", bgClass: "bg-amber-50",
-    },
-    {
-      icon: ShieldCheck, label: "Complaint Recovery",
-      value: `${complaintRecovery}%`, sub: "resolved within SLA",
-      colorClass: "text-blue-600", bgClass: "bg-blue-50",
-    },
-    {
-      icon: RotateCcw, label: "Repeat Guest Est.",
-      value: `${repeatGuestEst}%`, sub: "returning guests (30d)",
-      colorClass: "text-purple-600", bgClass: "bg-purple-50",
-    },
-  ];
-
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden">
-      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }, i) => (
-        <div key={label} className={`p-4 flex items-center gap-3 ${i < kpis.length - 1 ? "border-r border-brand-border-soft" : ""}`}>
-          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${bgClass}`}>
-            <Icon className={`w-4 h-4 ${colorClass}`} />
-          </div>
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold text-brand-text-3 uppercase tracking-wider mb-0.5">{label}</p>
-            <p className="text-xl font-bold text-brand-text-1 leading-tight tabular-nums">{value}</p>
-            <p className="text-[11px] text-brand-text-3 mt-0.5 truncate">{sub}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+/* ── Bento Grid Pattern ─────────────────────────────── */
 
 /* ── Module ──────────────────────────────────────────── */
 interface Props { role: Role; data: DashboardPayload | null; }
@@ -184,43 +136,137 @@ export default function FeedbackModule({ role, data }: Props) {
   return (
     <div className="flex flex-col gap-6 w-full">
 
-      {/* ── Business KPI strip ── */}
-      <div className="anim-fade-up">
-        <BusinessKPIs
-          automationPct={automationPct}
-          reviewsGenerated={totalReviews}
-          complaintRecovery={complaintRecovery}
-          repeatGuestEst={0}
-        />
-      </div>
+      {/* ── Bento Grid Dashboard Top ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 anim-fade-up">
+        
+        {/* 1. Hero Card: Guest Automation (col-span-2, row-span-2) */}
+        <div className="col-span-1 md:col-span-2 xl:col-span-2 xl:row-span-2 glass-card relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/0 to-transparent pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none" />
+          <div className="p-6 sm:p-8 flex flex-col justify-between h-full relative z-10">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-6 border border-emerald-100 shadow-sm">
+                <Bot className="w-4 h-4" /> Guest Automation
+              </div>
+              <p className="text-[15px] font-medium text-brand-text-2 mb-2">Automated Checkouts</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl font-black text-brand-text-1 tracking-tighter">{automationPct.toFixed(1)}</span>
+                <span className="text-3xl font-bold text-emerald-600">%</span>
+              </div>
+              <p className="text-sm text-brand-text-3 mt-4 max-w-xs leading-relaxed">
+                Successfully automated checkout workflows through the WhatsApp funnel, reducing manual front-desk effort.
+              </p>
+            </div>
+            
+            <div className="mt-8 flex items-center gap-6 bg-white/60 p-5 rounded-2xl border border-white shadow-sm backdrop-blur-md">
+               <div className="flex-1">
+                 <div className="flex items-center gap-2 mb-1">
+                   <FileText className="w-4 h-4 text-emerald-600" />
+                   <p className="text-xs text-brand-text-3 font-medium">Submissions</p>
+                 </div>
+                 <p className="text-2xl font-bold text-brand-text-1">{totalCheckouts}</p>
+               </div>
+               <div className="w-px h-10 bg-brand-border-soft" />
+               <div className="flex-1">
+                 <div className="flex items-center gap-2 mb-1">
+                   <MessageSquare className="w-4 h-4 text-emerald-600" />
+                   <p className="text-xs text-brand-text-3 font-medium">Feedback</p>
+                 </div>
+                 <p className="text-2xl font-bold text-brand-text-1">{totalFeedback}</p>
+               </div>
+            </div>
+          </div>
+        </div>
 
-      {/* ── Row 1: Operational Stat cards ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden anim-fade-up" style={{ animationDelay: "50ms" }}>
-        <StatCard
-          title="Submissions"       value={totalCheckouts} subtitle="Last 30 days from Supabase"
-          icon={Hotel}              accent="gold"
-          delay={0}
-        />
-        <StatCard
-          title="Feedback Received" value={totalFeedback}  subtitle={`${feedbackPct.toFixed(1)}% response rate`}
-          icon={MessageCircle}      accent={feedbackPct >= 85 ? "green" : feedbackPct >= 70 ? "amber" : "red"}
-          trend={{ label: `${feedbackPct.toFixed(1)}% of checkouts`, direction: "up", positive: true }}
-          delay={50}
-        />
-        <StatCard
-          title="Google Reviews"    value={totalReviews}   subtitle="via automated WhatsApp flow"
-          icon={Star}               accent="green"
-          delay={100}
-        />
-        <StatCard
-          title="Open Complaints"   value={totalComplaints} subtitle={totalComplaints > 0 ? "Require GM attention" : "All clear this month"}
-          icon={AlertTriangle}      accent={totalComplaints >= 5 ? "red" : totalComplaints > 0 ? "amber" : "green"}
-          trend={totalComplaints > 0
-            ? { label: `${totalComplaints} unresolved`, direction: "up", positive: false }
-            : { label: "0 open complaints", direction: "down", positive: true }
-          }
-          delay={150}
-        />
+        {/* 2. Reviews Generated */}
+        <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/10 blur-2xl rounded-full pointer-events-none" />
+          <div className="flex justify-between items-start mb-4 relative z-10">
+            <div>
+              <p className="text-[15px] font-medium text-brand-text-2 mb-1">Google Reviews</p>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{totalReviews}</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-100 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
+            </div>
+          </div>
+          <div className="relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 text-amber-700 text-xs font-semibold">
+              <ArrowUpRight className="w-3.5 h-3.5" /> via WhatsApp funnel
+            </span>
+          </div>
+        </div>
+
+        {/* 3. Open Complaints */}
+        <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
+          <div className={`absolute top-0 right-0 w-32 h-32 ${totalComplaints > 0 ? "bg-red-500/10" : "bg-emerald-500/10"} blur-2xl rounded-full pointer-events-none`} />
+          <div className="flex justify-between items-start mb-4 relative z-10">
+            <div>
+              <p className="text-[15px] font-medium text-brand-text-2 mb-1">Open Complaints</p>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{totalComplaints}</span>
+              </div>
+            </div>
+            <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shadow-sm border group-hover:scale-105 transition-transform ${totalComplaints > 0 ? "bg-gradient-to-br from-red-100 to-red-50 border-red-100" : "bg-gradient-to-br from-emerald-100 to-emerald-50 border-emerald-100"}`}>
+              <ShieldAlert className={`w-6 h-6 ${totalComplaints > 0 ? "text-red-600" : "text-emerald-600"}`} />
+            </div>
+          </div>
+          <div className="relative z-10">
+            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold ${totalComplaints > 0 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
+              {totalComplaints > 0 ? <><ArrowUpRight className="w-3.5 h-3.5" /> Require attention</> : <><CheckCircle2 className="w-3.5 h-3.5" /> All clear</>}
+            </span>
+          </div>
+        </div>
+
+        {/* 4. Complaint Recovery */}
+        <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-2xl rounded-full pointer-events-none" />
+           <div className="flex justify-between items-start mb-6 relative z-10">
+             <div>
+               <p className="text-[15px] font-medium text-brand-text-2 mb-1">Complaint Recovery</p>
+               <div className="flex items-baseline gap-1">
+                 <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{complaintRecovery}</span>
+                 <span className="text-xl font-bold text-blue-600">%</span>
+               </div>
+             </div>
+             <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+               <ShieldCheck className="w-6 h-6 text-blue-600" />
+             </div>
+           </div>
+           <div className="relative z-10">
+             <div className="flex items-center justify-between text-xs font-medium mb-2">
+               <span className="text-brand-text-3">Resolved within SLA</span>
+             </div>
+             <div className="w-full h-2 bg-brand-surface-2 rounded-full overflow-hidden shadow-inner border border-brand-border-soft">
+               <div className="h-full bg-blue-600 rounded-full transition-all duration-1000 ease-out" style={{ width: `${complaintRecovery}%` }} />
+             </div>
+           </div>
+        </div>
+
+        {/* 5. Repeat Guest Est. */}
+        <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-2xl rounded-full pointer-events-none" />
+           <div className="flex justify-between items-start mb-6 relative z-10">
+             <div>
+               <p className="text-[15px] font-medium text-brand-text-2 mb-1">Repeat Guests</p>
+               <div className="flex items-baseline gap-1">
+                 <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">0</span>
+                 <span className="text-xl font-bold text-purple-600">%</span>
+               </div>
+             </div>
+             <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-100 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+               <UserCheck className="w-6 h-6 text-purple-600" />
+             </div>
+           </div>
+           <div className="relative z-10">
+             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-semibold">
+               <Clock className="w-3.5 h-3.5" /> 30-day returning est.
+             </span>
+           </div>
+        </div>
+
       </div>
 
       {/* ── Sync error alert ── */}
@@ -238,7 +284,7 @@ export default function FeedbackModule({ role, data }: Props) {
 
         {/* Property Performance Table */}
         <div className="glass-card overflow-hidden anim-fade-up h-full flex flex-col" style={{ animationDelay: "200ms" }}>
-          <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50">
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Property Performance</h2>
               <p className="text-xs text-brand-text-3 mt-0.5">Supabase aggregates · click headers to sort</p>
@@ -361,7 +407,7 @@ export default function FeedbackModule({ role, data }: Props) {
 
           {/* Live Feedback Feed */}
           <div className="glass-card overflow-hidden anim-fade-up flex flex-col" style={{ animationDelay: "240ms", maxHeight: "600px" }}>
-          <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50 shrink-0">
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50 shrink-0">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Live Feedback</h2>
               <p className="text-xs text-brand-text-3 mt-0.5">From vw_live_feedback_feed</p>

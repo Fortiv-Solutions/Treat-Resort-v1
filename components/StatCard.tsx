@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { type LucideIcon, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { type LucideIcon, ArrowUpRight, ArrowDownRight, ArrowRight } from "lucide-react";
 
 export interface TrendData {
   label: string;
@@ -78,69 +78,60 @@ export default function StatCard({
   const trendClass = trend ? (trendIsGood ? TREND_GOOD : TREND_BAD) : TREND_GOOD;
 
   const TrendIcon = trend?.direction === "up"
-    ? TrendingUp
+    ? ArrowUpRight
     : trend?.direction === "down"
-    ? TrendingDown
-    : Minus;
+    ? ArrowDownRight
+    : ArrowRight;
 
   return (
     <div
-      className="relative flex flex-col justify-between overflow-hidden border-r border-brand-border-soft last:border-r-0 hover:bg-brand-gold/5 transition-colors duration-200 cursor-default group"
+      className="glass-card flex flex-col justify-between overflow-hidden cursor-default group"
       style={{ animationDelay: `${delay}ms` }}
     >
-      {/* Accent top line */}
-      <div className={`absolute top-0 left-0 right-0 h-0.5 ${accentLineClass}`} />
-
-      {/* Cell body */}
-      <div className="p-5 pb-4">
-        {/* Label + icon row */}
-        <div className="flex justify-between items-start gap-3 mb-4">
-          <p className="text-[10.5px] font-semibold tracking-[0.08em] uppercase text-brand-text-3 leading-none pt-1">
-            {title}
-          </p>
-          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${iconClass} shadow-sm group-hover:shadow-md transition-shadow`}>
-            <Icon className="w-4 h-4" strokeWidth={2} />
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <p className="text-[15px] font-medium text-brand-text-2 mb-3">
+              {title}
+            </p>
+            <div className="flex items-baseline gap-1 leading-none">
+              <span className="text-4xl xl:text-[42px] font-bold text-brand-text-1 tabular-nums tracking-tight">
+                {typeof value === "number"
+                  ? (animateNumber ? animated : value).toLocaleString()
+                  : animated.toLocaleString()
+                }
+              </span>
+              {suffix && (
+                <span className="text-xl font-bold text-brand-text-1 ml-0.5">
+                  {suffix}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className={`w-[46px] h-[46px] rounded-[14px] flex items-center justify-center shrink-0 ${iconClass} shadow-sm group-hover:shadow-md transition-shadow`}>
+            <Icon className="w-5 h-5" strokeWidth={2.5} />
           </div>
         </div>
 
-        {/* Value */}
-        <div className="flex items-baseline gap-1 leading-none">
-          <span className="text-4xl lg:text-[40px] xl:text-[44px] font-bold text-brand-text-1 tabular-nums tracking-tight">
-            {typeof value === "number"
-              ? (animateNumber ? animated : value).toLocaleString()
-              : animated.toLocaleString()
-            }
-          </span>
-          {suffix && (
-            <span className="text-xl font-semibold text-brand-text-3 ml-0.5">
-              {suffix}
+        <div className="flex items-center gap-2 pt-1">
+          {trend ? (
+            <>
+              <span className={trendClass}>
+                <TrendIcon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                {trend.label.split(" ")[0]}
+              </span>
+              <span className="text-[13px] text-brand-text-3 truncate font-medium">
+                {trend.label.split(" ").slice(1).join(" ")}
+              </span>
+            </>
+          ) : subtitle ? (
+            <span className="text-[13px] text-brand-text-3 font-medium truncate">
+              {subtitle.startsWith("Last") ? subtitle : `Last month: ${subtitle}`}
             </span>
+          ) : (
+            <span className="text-[13px] text-brand-text-3">— No data</span>
           )}
         </div>
-
-        {/* Subtitle */}
-        {subtitle && (
-          <p className="text-xs text-brand-text-3 mt-1.5 font-medium leading-snug line-clamp-1">
-            {subtitle}
-          </p>
-        )}
-      </div>
-
-      {/* Trend row */}
-      <div className="mx-5 pt-3 pb-4 border-t border-brand-border-soft flex items-center gap-2">
-        {trend ? (
-          <>
-            <span className={trendClass}>
-              <TrendIcon className="w-3 h-3" strokeWidth={2.5} />
-              {trend.label.split(" ")[0]}
-            </span>
-            <span className="text-xs text-brand-text-3 truncate">
-              {trend.label.split(" ").slice(1).join(" ")}
-            </span>
-          </>
-        ) : (
-          <span className="text-xs text-brand-text-3">— No data</span>
-        )}
       </div>
     </div>
   );

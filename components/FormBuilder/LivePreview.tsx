@@ -21,12 +21,12 @@ function StarRating({ max = 5, value, onChange }: { max?: number; value: number;
           onClick={() => onChange(i)}
           style={{
             background: "none", border: "none", cursor: "pointer", padding: "2px",
-            color: i <= (hover || value) ? "#C9A96E" : "#D1D5DB",
+            color: i <= (hover || value) ? "#059669" : "#D1D5DB",
             transition: "color 100ms, transform 100ms",
             transform: i === (hover || value) ? "scale(1.15)" : "scale(1)",
           }}
         >
-          <Star size={24} fill={i <= (hover || value) ? "#C9A96E" : "none"} strokeWidth={1.8} />
+          <Star size={24} fill={i <= (hover || value) ? "#059669" : "none"} strokeWidth={1.8} />
         </button>
       ))}
     </div>
@@ -41,7 +41,7 @@ function NPSRow({ value, onChange }: { value: number; onChange: (v: number) => v
           <button key={i} aria-label={`Set score to ${i}`} onClick={() => onChange(i)} style={{
             flex: 1, padding: "7px 0", borderRadius: "6px", border: "none", cursor: "pointer",
             background: value === i ? "#1B4332" : "#F3F4F6",
-            color: value === i ? "#C9A96E" : "#6B7280",
+            color: value === i ? "#059669" : "#6B7280",
             fontSize: "11px", fontWeight: 700,
             transition: "background 150ms",
           }}>
@@ -57,7 +57,7 @@ function NPSRow({ value, onChange }: { value: number; onChange: (v: number) => v
   );
 }
 
-function QuestionPreview({ q, branding }: { q: Question; branding: FormConfig["branding"] }) {
+function QuestionPreview({ q, branding, onAnswerChange }: { q: Question; branding: FormConfig["branding"], onAnswerChange: (id: string, val: number) => void }) {
   const [textVal, setTextVal] = useState("");
   const [ratingVal, setRatingVal] = useState(0);
   const [npsVal, setNpsVal] = useState(-1);
@@ -86,7 +86,7 @@ function QuestionPreview({ q, branding }: { q: Question; branding: FormConfig["b
 
       {q.type === "rating" && (
         <div>
-          <StarRating max={q.maxRating ?? 5} value={ratingVal} onChange={setRatingVal} />
+          <StarRating max={q.maxRating ?? 5} value={ratingVal} onChange={(v) => { setRatingVal(v); onAnswerChange(q.id, v); }} />
           {(q.lowLabel || q.highLabel) && (
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "4px" }}>
               <span style={{ fontSize: "10.5px", color: "#9CA3AF" }}>{q.lowLabel}</span>
@@ -97,7 +97,7 @@ function QuestionPreview({ q, branding }: { q: Question; branding: FormConfig["b
       )}
 
       {q.type === "nps" && (
-        <NPSRow value={npsVal} onChange={setNpsVal} />
+        <NPSRow value={npsVal} onChange={(v) => { setNpsVal(v); onAnswerChange(q.id, v); }} />
       )}
 
       {q.type === "text" && (
@@ -194,21 +194,58 @@ function QuestionPreview({ q, branding }: { q: Question; branding: FormConfig["b
 
 export default function LivePreview({ form }: Props) {
   const [previewPage, setPreviewPage] = useState<"form" | "thankyou">("form");
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [triggeredActions, setTriggeredActions] = useState<string[]>([]);
+  const [customMessage, setCustomMessage] = useState<string | null>(null);
+
   const { settings, branding } = form;
+
+  function handleAnswerChange(id: string, val: number) {
+    setAnswers(prev => ({ ...prev, [id]: val }));
+  }
+
+  function handleSubmit() {
+    const actions = new Set<string>();
+    let cMsg = null;
+    
+    if (form.routing.enabled) {
+      for (const rule of form.routing.rules) {
+        const val = answers[rule.questionId];
+        if (typeof val === "number") {
+          let matches = false;
+          if (rule.condition === "gte" && val >= rule.value) matches = true;
+          if (rule.condition === "lte" && val <= rule.value) matches = true;
+          if (rule.condition === "eq" && val === rule.value) matches = true;
+          if (rule.condition === "between" && rule.value2 !== undefined && val >= rule.value && val <= rule.value2) matches = true;
+
+          if (matches) {
+            actions.add(rule.action);
+            if (rule.action === "custom_message" && rule.customMessage) {
+              cMsg = rule.customMessage;
+            }
+          }
+        }
+      }
+    }
+    
+    setTriggeredActions(Array.from(actions));
+    setCustomMessage(cMsg);
+    setPreviewPage("thankyou");
+  }
 
   return (
     <div>
       {/* Preview label */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
-        <div style={{ fontSize: "11.5px", fontWeight: 600, color: "rgba(255,255,255,0.4)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+        <div style={{ fontSize: "11.5px", fontWeight: 600, color: "rgba(0,0,0,0.4)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
           Live Preview
         </div>
         <div style={{ display: "flex", gap: "4px" }}>
           {(["form", "thankyou"] as const).map(p => (
             <button key={p} onClick={() => setPreviewPage(p)} style={{
               padding: "4px 10px", borderRadius: "20px", border: "none", cursor: "pointer",
-              background: previewPage === p ? "rgba(201,169,110,0.2)" : "transparent",
-              color: previewPage === p ? "#C9A96E" : "rgba(255,255,255,0.4)",
+              background: previewPage === p ? "rgba(5,150,105,0.2)" : "transparent",
+              color: previewPage === p ? "#059669" : "rgba(0,0,0,0.4)",
               fontSize: "11px", fontWeight: 600,
               transition: "all 150ms",
             }}>
@@ -273,7 +310,7 @@ export default function LivePreview({ form }: Props) {
                   </p>
                 )}
                 {branding.showPropertyName && (
-                  <div style={{ marginTop: "8px", display: "inline-flex", alignItems: "center", gap: "5px", padding: "3px 9px", borderRadius: "20px", background: "rgba(201,169,110,0.2)", border: "1px solid rgba(201,169,110,0.3)" }}>
+                  <div style={{ marginTop: "8px", display: "inline-flex", alignItems: "center", gap: "5px", padding: "3px 9px", borderRadius: "20px", background: "rgba(5,150,105,0.2)", border: "1px solid rgba(5,150,105,0.3)" }}>
                     <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: branding.accentColor, flexShrink: 0 }} />
                     <span style={{ fontSize: "10.5px", fontWeight: 600, color: branding.accentColor }}>{settings.propertyName}</span>
                   </div>
@@ -330,14 +367,14 @@ export default function LivePreview({ form }: Props) {
                 ) : (
                   <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #E4DDD4", padding: "16px" }}>
                     {form.questions.map(q => (
-                      <QuestionPreview key={q.id} q={q} branding={branding} />
+                      <QuestionPreview key={q.id} q={q} branding={branding} onAnswerChange={handleAnswerChange} />
                     ))}
                   </div>
                 )}
 
                 {form.questions.length > 0 && (
                   <button
-                    onClick={() => setPreviewPage("thankyou")}
+                    onClick={handleSubmit}
                     style={{
                       width: "100%", marginTop: "14px", padding: "14px",
                       borderRadius: "12px", border: "none", cursor: "pointer",
@@ -377,7 +414,18 @@ export default function LivePreview({ form }: Props) {
                 {branding.thankYouMessage}
               </p>
 
-              {form.routing.enabled && form.routing.reviewLink && (
+              {customMessage && (
+                <div style={{
+                  background: "#EFF6FF", border: "1px solid #BFDBFE",
+                  borderRadius: "12px", padding: "14px 16px", width: "100%", marginBottom: "16px"
+                }}>
+                  <p style={{ fontSize: "12.5px", color: "#1D4ED8", margin: 0, fontWeight: 500 }}>
+                    {customMessage}
+                  </p>
+                </div>
+              )}
+
+              {form.routing.enabled && form.routing.reviewLink && triggeredActions.includes("show_review_link") && (
                 <div style={{
                   background: "#ECFDF5", border: "1px solid #A7F3D0",
                   borderRadius: "12px", padding: "14px 16px", width: "100%",
@@ -421,7 +469,7 @@ export default function LivePreview({ form }: Props) {
 
       {/* Preview footer note */}
       <div style={{ textAlign: "center", marginTop: "10px" }}>
-        <span style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.25)" }}>
+        <span style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.4)" }}>
           Interactive preview · Changes reflect in real time
         </span>
       </div>

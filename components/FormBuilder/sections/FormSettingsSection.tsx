@@ -10,7 +10,7 @@ interface Props {
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "rgba(255,255,255,0.55)", marginBottom: "6px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+    <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "rgba(0,0,0,0.5)", marginBottom: "6px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
       {children}
     </label>
   );
@@ -19,10 +19,10 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 function inputStyle(focused?: boolean): React.CSSProperties {
   return {
     width: "100%", padding: "9px 12px",
-    background: "rgba(255,255,255,0.06)",
-    border: `1.5px solid ${focused ? "rgba(201,169,110,0.5)" : "rgba(255,255,255,0.1)"}`,
+    background: "#ffffff",
+    border: `1.5px solid ${focused ? "rgba(5,150,105,0.5)" : "rgba(0,0,0,0.1)"}`,
     borderRadius: "9px", fontSize: "13px",
-    color: "#FFFFFF", outline: "none",
+    color: "#111827", outline: "none",
     fontFamily: "'Inter', sans-serif",
     transition: "border-color 150ms",
     boxSizing: "border-box",
@@ -112,12 +112,12 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
           style={{ ...inputStyle(), cursor: "pointer" }}
         >
           {properties.length === 0 && (
-            <option value="" style={{ background: "#1B4332", color: "#fff" }}>
+            <option value="" style={{ background: "#ffffff", color: "#111827" }}>
               No active properties in database
             </option>
           )}
           {properties.map(p => (
-            <option key={p.id} value={p.id} style={{ background: "#1B4332", color: "#fff" }}>
+            <option key={p.id} value={p.id} style={{ background: "#ffffff", color: "#111827" }}>
               {p.name}
             </option>
           ))}
@@ -133,8 +133,8 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
               value={s.propertyId}
               onChange={e => setField("propertyId", e.target.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
               style={inputStyle()}
-              onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
-              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.5)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
             />
           </div>
           <div>
@@ -144,8 +144,8 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
               value={s.propertyName}
               onChange={e => setField("propertyName", e.target.value)}
               style={inputStyle()}
-              onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
-              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.5)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
             />
           </div>
         </div>
@@ -160,8 +160,8 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
           onChange={e => setField("title", e.target.value)}
           placeholder="Tell Us About Your Stay"
           style={inputStyle()}
-          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
-          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+          onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.5)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
         />
       </div>
 
@@ -174,8 +174,8 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
           placeholder="Short subtitle shown below the form title…"
           rows={2}
           style={{ ...inputStyle(), resize: "vertical", lineHeight: 1.5 }}
-          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
-          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+          onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.5)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
         />
       </div>
 
@@ -188,7 +188,7 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
           style={{ ...inputStyle(), cursor: "pointer" }}
         >
           {["English", "Hindi", "Gujarati", "Marathi"].map(l => (
-            <option key={l} value={l} style={{ background: "#1B4332", color: "#fff" }}>{l}</option>
+            <option key={l} value={l} style={{ background: "#ffffff", color: "#111827" }}>{l}</option>
           ))}
         </select>
       </div>
@@ -208,7 +208,7 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
                 onClick={() => setField(key, !s[key])}
                 style={{
                   width: "36px", height: "20px", borderRadius: "10px", flexShrink: 0,
-                  background: s[key] ? "#C9A96E" : "rgba(255,255,255,0.12)",
+                  background: s[key] ? "#059669" : "rgba(0,0,0,0.1)",
                   position: "relative", cursor: "pointer",
                   transition: "background 200ms",
                 }}
@@ -217,11 +217,12 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
                   position: "absolute", top: "3px",
                   left: s[key] ? "18px" : "3px",
                   width: "14px", height: "14px", borderRadius: "50%",
-                  background: s[key] ? "#1B4332" : "rgba(255,255,255,0.5)",
+                  background: "#ffffff",
                   transition: "left 200ms var(--ease-out-expo)",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
                 }} />
               </div>
-              <span style={{ fontSize: "12.5px", color: "rgba(255,255,255,0.75)", userSelect: "none" }}>{label}</span>
+              <span style={{ fontSize: "12.5px", color: "rgba(0,0,0,0.7)", userSelect: "none" }}>{label}</span>
             </label>
           ))}
         </div>
@@ -235,8 +236,8 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
           value={s.expiresAt ? s.expiresAt.slice(0, 16) : ""}
           onChange={e => setField("expiresAt", e.target.value)}
           style={inputStyle()}
-          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
-          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+          onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.5)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
         />
       </div>
 
@@ -244,14 +245,14 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "10px 14px", borderRadius: "10px",
-        background: s.isActive ? "rgba(5,150,105,0.12)" : "rgba(255,255,255,0.04)",
-        border: `1px solid ${s.isActive ? "rgba(5,150,105,0.25)" : "rgba(255,255,255,0.08)"}`,
+        background: s.isActive ? "rgba(5,150,105,0.08)" : "rgba(0,0,0,0.02)",
+        border: `1px solid ${s.isActive ? "rgba(5,150,105,0.2)" : "rgba(0,0,0,0.06)"}`,
       }}>
         <div>
-          <div style={{ fontSize: "12.5px", fontWeight: 600, color: s.isActive ? "#6EE7B7" : "rgba(255,255,255,0.5)" }}>
+          <div style={{ fontSize: "12.5px", fontWeight: 600, color: s.isActive ? "#059669" : "rgba(0,0,0,0.5)" }}>
             {s.isActive ? "Form is Active" : "Form is Inactive"}
           </div>
-          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)", marginTop: "2px" }}>
+          <div style={{ fontSize: "11px", color: "rgba(0,0,0,0.4)", marginTop: "2px" }}>
             {s.isActive ? "Accepting responses" : "Not accepting responses"}
           </div>
         </div>
@@ -259,7 +260,7 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
           onClick={() => setField("isActive", !s.isActive)}
           style={{
             width: "40px", height: "22px", borderRadius: "11px", flexShrink: 0,
-            background: s.isActive ? "#059669" : "rgba(255,255,255,0.12)",
+            background: s.isActive ? "#059669" : "rgba(0,0,0,0.1)",
             position: "relative", cursor: "pointer",
             transition: "background 200ms",
           }}

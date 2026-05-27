@@ -39,11 +39,12 @@ export default function CollapsibleSection({ icon, label, subtitle, isOpen, onTo
     <div
       className="anim-fade-up"
       style={{
-        background: "rgba(255,255,255,0.06)",
-        border: `1px solid ${isOpen ? "rgba(201,169,110,0.3)" : "rgba(255,255,255,0.08)"}`,
-        borderLeft: isOpen ? "3px solid #C9A96E" : "3px solid transparent",
+        background: "#ffffff",
+        border: `1px solid ${isOpen ? "rgba(5,150,105,0.5)" : "rgba(0,0,0,0.08)"}`,
+        borderLeft: isOpen ? "3px solid #059669" : "3px solid transparent",
         borderRadius: "14px",
         overflow: "hidden",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
         transition: "border-color 250ms ease, border-left-color 250ms ease",
         animationDelay: `${index * 60}ms`,
       }}
@@ -60,9 +61,9 @@ export default function CollapsibleSection({ icon, label, subtitle, isOpen, onTo
       >
         <div style={{
           width: "32px", height: "32px", borderRadius: "9px", flexShrink: 0,
-          background: isOpen ? "rgba(201,169,110,0.18)" : "rgba(255,255,255,0.07)",
+          background: isOpen ? "rgba(5,150,105,0.15)" : "rgba(0,0,0,0.04)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          color: isOpen ? "#C9A96E" : "rgba(255,255,255,0.5)",
+          color: isOpen ? "#064e3b" : "rgba(0,0,0,0.4)",
           transition: "background 200ms, color 200ms",
         }}>
           {icon}
@@ -70,14 +71,14 @@ export default function CollapsibleSection({ icon, label, subtitle, isOpen, onTo
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: "13px", fontWeight: 600,
-            color: isOpen ? "#FFFFFF" : "rgba(255,255,255,0.75)",
+            color: isOpen ? "#111827" : "rgba(0,0,0,0.7)",
             lineHeight: 1.2, transition: "color 200ms",
           }}>
             {label}
           </div>
           <div style={{
             fontSize: "11px",
-            color: isOpen ? "rgba(201,169,110,0.7)" : "rgba(255,255,255,0.35)",
+            color: isOpen ? "#064e3b" : "rgba(0,0,0,0.4)",
             marginTop: "2px", transition: "color 200ms",
           }}>
             {subtitle}
@@ -85,7 +86,7 @@ export default function CollapsibleSection({ icon, label, subtitle, isOpen, onTo
         </div>
         <ChevronDown
           size={15}
-          color={isOpen ? "#C9A96E" : "rgba(255,255,255,0.35)"}
+          color={isOpen ? "#064e3b" : "rgba(0,0,0,0.3)"}
           style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 280ms var(--ease-out-expo)", flexShrink: 0 }}
         />
       </button>
@@ -101,7 +102,7 @@ export default function CollapsibleSection({ icon, label, subtitle, isOpen, onTo
       >
         <div style={{
           padding: "0 18px 18px",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderTop: "1px solid rgba(0,0,0,0.05)",
           paddingTop: "16px",
         }}>
           {children}

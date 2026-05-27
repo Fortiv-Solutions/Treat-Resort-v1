@@ -12,14 +12,14 @@ import RoutingRulesSection from "./sections/RoutingRulesSection";
 import BrandingSection from "./sections/BrandingSection";
 import ShareSection from "./sections/ShareSection";
 import LivePreview from "./LivePreview";
-import { Settings, List, GitBranch, Palette, Share2 } from "lucide-react";
+import { Settings, ListOrdered, Waypoints, Palette, Share } from "lucide-react";
 
 const SECTIONS = [
   { key: "settings",  label: "Form Settings",   icon: Settings,   subtitle: "Property, title & guest details" },
-  { key: "questions", label: "Questions",        icon: List,       subtitle: "Drag, add & configure questions" },
-  { key: "routing",   label: "Routing Rules",    icon: GitBranch,  subtitle: "Auto-actions based on responses" },
+  { key: "questions", label: "Questions",        icon: ListOrdered,       subtitle: "Drag, add & configure questions" },
+  { key: "routing",   label: "Routing Rules",    icon: Waypoints,  subtitle: "Auto-actions based on responses" },
   { key: "branding",  label: "Branding",         icon: Palette,    subtitle: "Colors, logo & thank you message" },
-  { key: "share",     label: "Share & Embed",    icon: Share2,     subtitle: "Link, QR code & embed snippet" },
+  { key: "share",     label: "Share & Embed",    icon: Share,     subtitle: "Link, QR code & embed snippet" },
 ] as const;
 
 type SectionKey = (typeof SECTIONS)[number]["key"];
@@ -51,10 +51,11 @@ export default function FormBuilderApp() {
   return (
     <div className="form-builder-shell" style={{
       minHeight: "100vh",
-      background: "linear-gradient(160deg, #0f2a20 0%, #1B4332 40%, #1e3a2f 100%)",
+      background: "#f6f8fa",
       display: "flex",
       flexDirection: "column",
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      zoom: 1.15,
     }}>
       <BuilderHeader form={form} updateForm={updateForm} addToast={addToast} />
 

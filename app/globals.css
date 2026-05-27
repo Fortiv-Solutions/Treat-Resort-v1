@@ -35,13 +35,12 @@
 }
 
 @layer base {
+  html {
+    zoom: 0.9; /* Applies a universal 90% zoom out to all elements across all pages */
+  }
+  
   body {
-    background:
-      linear-gradient(180deg, #fffaf0 0%, rgba(250, 246, 236, 0.92) 18rem, var(--color-brand-bg) 42rem),
-      linear-gradient(90deg, rgba(21, 60, 44, 0.035) 0 1px, transparent 1px 100%),
-      linear-gradient(180deg, rgba(21, 60, 44, 0.03) 0 1px, transparent 1px 100%);
-    background-size: auto, 64px 64px, 64px 64px;
-    background-attachment: fixed;
+    background: #f6f8fa; /* Clean, modern light-grey background */
   }
 
   /* Form outline overrides */
@@ -57,18 +56,18 @@
 /* Base custom classes to carry over minimal functionality without clutter */
 @layer components {
   .glass-card {
-    @apply bg-white/95 backdrop-blur-md border border-brand-border-soft rounded-xl shadow-premium-card transition-all duration-300;
+    @apply bg-white rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.02)] border border-brand-border-soft/40 transition-all duration-300;
   }
   .glass-card:hover {
-    @apply border-brand-border shadow-premium-lg;
+    @apply shadow-[0_8px_32px_rgba(0,0,0,0.04)] border-brand-border-soft/80;
   }
 
   .premium-table-row {
-    @apply transition-colors duration-150 border-b border-brand-border-soft hover:bg-brand-gold/5 cursor-pointer;
+    @apply transition-colors duration-150 border-b border-brand-border-soft/50 hover:bg-brand-surface-2 cursor-pointer;
   }
 
   .premium-table-header {
-    @apply bg-brand-surface-2 text-brand-text-3 font-semibold text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-3 text-left border-b border-brand-border cursor-pointer select-none whitespace-nowrap;
+    @apply text-brand-text-3 font-semibold text-[11px] uppercase tracking-wider px-3 sm:px-4 py-4 text-left border-b border-brand-border-soft/60 cursor-pointer select-none whitespace-nowrap bg-transparent;
   }
 
   .premium-table-cell {

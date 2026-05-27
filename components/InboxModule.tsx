@@ -11,7 +11,7 @@ import {
   Mail, Clock, AlertCircle, Timer,
   X, Reply, ArrowUpCircle, AlertTriangle,
   ChevronRight, Sparkles, Bell, StickyNote,
-  CheckCircle2, DollarSign, Zap,
+  CheckCircle2, Target, MailWarning,
 } from "lucide-react";
 
 const ROLE_MAP: Record<Role, string> = {
@@ -54,23 +54,23 @@ function InboxKPIs({
   leadsSaved: number; avgSLA: number; revenueAtRisk: string; escalationsPrevented: number;
 }) {
   const kpis = [
-    { icon: DollarSign, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", colorClass: "text-purple-600", bgClass: "bg-purple-50" },
+    { icon: Target, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", colorClass: "text-purple-600", bgClass: "bg-purple-50" },
     { icon: Clock,      label: "Avg Response SLA",     value: `${avgSLA}h`,    sub: "target: under 2h",         colorClass: avgSLA > 2 ? "text-red-600" : "text-emerald-600", bgClass: avgSLA > 2 ? "bg-red-50" : "bg-emerald-50" },
     { icon: AlertTriangle, label: "Urgent Open",       value: revenueAtRisk,   sub: "urgent unread threads", colorClass: "text-red-600", bgClass: "bg-red-50" },
-    { icon: Zap,        label: "Replied Threads",       value: `${escalationsPrevented}`, sub: "status from email_threads", colorClass: "text-amber-600", bgClass: "bg-amber-50" },
+    { icon: CheckCircle2,        label: "Replied Threads",       value: `${escalationsPrevented}`, sub: "status from email_threads", colorClass: "text-amber-600", bgClass: "bg-amber-50" },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
       {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }, i) => (
-        <div key={label} className={`p-4 flex items-center gap-3 ${i < kpis.length - 1 ? "border-r border-brand-border-soft" : ""}`}>
-          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${bgClass}`}>
-            <Icon className={`w-4 h-4 ${colorClass}`} />
+        <div key={label} className="glass-card p-6 flex items-center gap-4">
+          <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0 ${bgClass} shadow-sm`}>
+            <Icon className={`w-5 h-5 ${colorClass}`} strokeWidth={2.5} />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-bold text-brand-text-3 uppercase tracking-wider mb-0.5">{label}</p>
-            <p className="text-xl font-bold text-brand-text-1 leading-tight tabular-nums">{value}</p>
-            <p className="text-[11px] text-brand-text-3 mt-0.5 truncate">{sub}</p>
+            <p className="text-[13px] font-medium text-brand-text-2 mb-1">{label}</p>
+            <p className="text-2xl font-bold text-brand-text-1 leading-tight tabular-nums">{value}</p>
+            <p className="text-[11px] text-brand-text-3 mt-1 truncate">{sub}</p>
           </div>
         </div>
       ))}
@@ -244,7 +244,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
       </div>
 
       {/* Operational Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 bg-white border border-brand-border rounded-xl shadow-premium-sm overflow-hidden anim-fade-up" style={{ animationDelay: "50ms" }}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 anim-fade-up" style={{ animationDelay: "50ms" }}>
         <StatCard
           title="Email Threads"
           value={allScope.length}
@@ -257,7 +257,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
           title="Unread / Pending"
           value={unread}
           subtitle={`${allScope.length - unread} already handled`}
-          icon={Clock}
+          icon={MailWarning}
           accent={unread > 5 ? "red" : unread > 2 ? "amber" : "green"}
           trend={{ label: `${unread} need response`, direction: unread > 3 ? "up" : "down", positive: false }}
           delay={50}
@@ -339,7 +339,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
 
       {/* Email Table */}
       <div className="glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "200ms" }}>
-        <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50">
+        <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50">
           <div>
             <h2 className="text-sm font-bold text-brand-text-1">Email Inbox</h2>
             <p className="text-xs text-brand-text-3 mt-0.5">Click any row to read & respond</p>

@@ -61,14 +61,16 @@ export default function QuestionsSection({ form, updateForm, addToast }: Props) 
   }
 
   function deleteQuestion(id: string) {
-    updateForm(prev => ({
-      ...prev,
-      questions: prev.questions.filter(q => q.id !== id),
-      routing: {
-        ...prev.routing,
-        rules: prev.routing.rules.filter(rule => rule.questionId !== id),
-      },
-    }));
+    updateForm(prev => {
+      return {
+        ...prev,
+        questions: prev.questions.filter(q => q.id !== id),
+        routing: {
+          ...prev.routing,
+          rules: prev.routing.rules.filter(rule => rule.questionId !== id),
+        },
+      };
+    });
     setExpandedQuestionId(prev => prev === id ? null : prev);
     addToast("Question removed", "info");
   }
@@ -99,11 +101,11 @@ export default function QuestionsSection({ form, updateForm, addToast }: Props) 
       {form.questions.length === 0 && (
         <div style={{
           padding: "32px 20px", textAlign: "center",
-          border: "1px dashed rgba(255,255,255,0.12)", borderRadius: "12px",
+          border: "1px dashed rgba(0,0,0,0.1)", borderRadius: "12px",
         }}>
           <div style={{ fontSize: "28px", marginBottom: "8px" }}>📋</div>
-          <div style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>No questions yet</div>
-          <div style={{ fontSize: "11.5px", color: "rgba(255,255,255,0.3)", marginTop: "4px" }}>Add your first question below</div>
+          <div style={{ fontSize: "13px", fontWeight: 600, color: "rgba(0,0,0,0.5)" }}>No questions yet</div>
+          <div style={{ fontSize: "11.5px", color: "rgba(0,0,0,0.4)", marginTop: "4px" }}>Add your first question below</div>
         </div>
       )}
 
@@ -128,14 +130,14 @@ export default function QuestionsSection({ form, updateForm, addToast }: Props) 
         style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
           padding: "10px", borderRadius: "10px",
-          background: "rgba(201,169,110,0.08)",
-          border: "1px dashed rgba(201,169,110,0.3)",
-          color: "#C9A96E", fontSize: "13px", fontWeight: 600,
+          background: "rgba(0,0,0,0.02)",
+          border: "1px dashed rgba(0,0,0,0.1)",
+          color: "#064e3b", fontSize: "13px", fontWeight: 600,
           cursor: "pointer", marginTop: "4px",
           transition: "background 150ms",
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = "rgba(201,169,110,0.14)")}
-        onMouseLeave={e => (e.currentTarget.style.background = "rgba(201,169,110,0.08)")}
+        onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.06)")}
+        onMouseLeave={e => (e.currentTarget.style.background = "rgba(0,0,0,0.02)")}
       >
         <Plus size={15} />
         Add Question

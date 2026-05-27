@@ -9,7 +9,7 @@ interface Props {
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label style={{ display: "block", fontSize: "10.5px", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+    <label style={{ display: "block", fontSize: "10.5px", fontWeight: 600, color: "rgba(0,0,0,0.5)", marginBottom: "6px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
       {children}
     </label>
   );
@@ -18,10 +18,10 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 function iStyle(): React.CSSProperties {
   return {
     width: "100%", padding: "9px 12px",
-    background: "rgba(255,255,255,0.06)",
-    border: "1.5px solid rgba(255,255,255,0.1)",
+    background: "#ffffff",
+    border: "1.5px solid rgba(0,0,0,0.1)",
     borderRadius: "9px", fontSize: "13px",
-    color: "#FFFFFF", outline: "none",
+    color: "#111827", outline: "none",
     fontFamily: "'Inter', sans-serif",
     boxSizing: "border-box",
   };
@@ -42,8 +42,8 @@ export default function BrandingSection({ form, updateForm }: Props) {
         <FieldLabel>Header Text</FieldLabel>
         <input type="text" value={b.headerText} onChange={e => setB("headerText", e.target.value)}
           placeholder="Treat Hotels & Resorts" style={iStyle()}
-          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+          onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
         />
       </div>
 
@@ -52,8 +52,8 @@ export default function BrandingSection({ form, updateForm }: Props) {
         <FieldLabel>Logo URL (optional)</FieldLabel>
         <input type="url" value={b.logoUrl} onChange={e => setB("logoUrl", e.target.value)}
           placeholder="https://…/logo.png" style={iStyle()}
-          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+          onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
         />
       </div>
 
@@ -67,7 +67,7 @@ export default function BrandingSection({ form, updateForm }: Props) {
             ["Background", "bgColor"],
           ] as const).map(([label, key]) => (
             <div key={key} style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-              <div style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>{label}</div>
+              <div style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.5)", fontWeight: 500 }}>{label}</div>
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <input
                   type="color"
@@ -75,12 +75,12 @@ export default function BrandingSection({ form, updateForm }: Props) {
                   onChange={e => setB(key, e.target.value)}
                   style={{
                     width: "32px", height: "32px", padding: "2px",
-                    border: "1px solid rgba(255,255,255,0.15)",
+                    border: "1px solid rgba(0,0,0,0.1)",
                     borderRadius: "8px", cursor: "pointer",
-                    background: "rgba(255,255,255,0.06)",
+                    background: "#ffffff",
                   }}
                 />
-                <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", fontFamily: "monospace" }}>
+                <span style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)", fontFamily: "monospace" }}>
                   {b[key]}
                 </span>
               </div>
@@ -95,7 +95,7 @@ export default function BrandingSection({ form, updateForm }: Props) {
         <select value={b.fontFamily} onChange={e => setB("fontFamily", e.target.value)}
           style={{ ...iStyle(), cursor: "pointer" }}>
           {["Professional Sans", "Aptos", "Segoe UI", "Helvetica Neue"].map(f => (
-            <option key={f} value={f} style={{ background: "#1a3d2c" }}>{f}</option>
+            <option key={f} value={f} style={{ background: "#ffffff", color: "#111827" }}>{f}</option>
           ))}
         </select>
       </div>
@@ -104,20 +104,20 @@ export default function BrandingSection({ form, updateForm }: Props) {
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <FieldLabel>Thank You Screen</FieldLabel>
         <div>
-          <div style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.4)", fontWeight: 500, marginBottom: "5px" }}>Title</div>
+          <div style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.5)", fontWeight: 500, marginBottom: "5px" }}>Title</div>
           <input type="text" value={b.thankYouTitle} onChange={e => setB("thankYouTitle", e.target.value)}
             placeholder="Thank You for Your Feedback!" style={iStyle()}
-            onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-            onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+            onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)")}
+            onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
           />
         </div>
         <div>
-          <div style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.4)", fontWeight: 500, marginBottom: "5px" }}>Message</div>
+          <div style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.5)", fontWeight: 500, marginBottom: "5px" }}>Message</div>
           <textarea value={b.thankYouMessage} onChange={e => setB("thankYouMessage", e.target.value)}
             placeholder="Your experience matters…" rows={2}
             style={{ ...iStyle(), resize: "vertical", lineHeight: 1.5 }}
-            onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-            onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+            onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)")}
+            onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
           />
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function BrandingSection({ form, updateForm }: Props) {
         <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: b.primaryColor, flexShrink: 0 }} />
         <div>
           <div style={{ fontSize: "12.5px", fontWeight: 700, color: b.accentColor }}>{b.headerText}</div>
-          <div style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.4)", marginTop: "2px" }}>Brand preview</div>
+          <div style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.5)", marginTop: "2px" }}>Brand preview</div>
         </div>
         <div style={{ marginLeft: "auto", width: "24px", height: "24px", borderRadius: "6px", background: b.accentColor, flexShrink: 0 }} />
       </div>

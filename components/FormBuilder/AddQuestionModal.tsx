@@ -45,7 +45,7 @@ export default function AddQuestionModal({ onAdd, onClose }: Props) {
         position: "fixed",
         inset: 0,
         zIndex: 1000,
-        background: "rgba(7,21,15,0.74)",
+        background: "rgba(255,255,255,0.7)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
         display: "grid",
@@ -60,8 +60,8 @@ export default function AddQuestionModal({ onAdd, onClose }: Props) {
         aria-modal="true"
         aria-labelledby="add-question-title"
         style={{
-          background: "linear-gradient(180deg, #142d22 0%, #10261c 100%)",
-          border: "1px solid rgba(201,169,110,0.28)",
+          background: "#ffffff",
+          border: "1px solid rgba(0,0,0,0.1)",
           borderRadius: "14px",
           width: "min(680px, 100%)",
           maxHeight: "calc(100vh - 48px)",
@@ -77,12 +77,12 @@ export default function AddQuestionModal({ onAdd, onClose }: Props) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           gap: "14px",
           padding: "16px 18px",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
           flexShrink: 0,
         }}>
           <div>
-            <div id="add-question-title" style={{ fontSize: "14px", fontWeight: 700, color: "#FFFFFF" }}>Add a Question</div>
-            <div style={{ fontSize: "11px", color: "rgba(201,169,110,0.6)", marginTop: "2px" }}>Choose a question type to add</div>
+            <div id="add-question-title" style={{ fontSize: "14px", fontWeight: 700, color: "#111827" }}>Add a Question</div>
+            <div style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)", marginTop: "2px" }}>Choose a question type to add</div>
           </div>
           <button
             ref={closeButtonRef}
@@ -91,9 +91,9 @@ export default function AddQuestionModal({ onAdd, onClose }: Props) {
             onClick={onClose}
             style={{
             width: "28px", height: "28px", borderRadius: "8px",
-            background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)",
+            background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.1)",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(0,0,0,0.5)",
             flexShrink: 0,
           }}>
             <X size={13} />
@@ -110,7 +110,7 @@ export default function AddQuestionModal({ onAdd, onClose }: Props) {
         }}>
           {TYPE_GROUPS.map(group => (
             <div key={group.label}>
-              <div style={{ fontSize: "10px", fontWeight: 700, color: "rgba(255,255,255,0.38)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "8px" }}>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "rgba(0,0,0,0.4)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "8px" }}>
                 {group.label}
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "8px" }}>
@@ -125,25 +125,26 @@ export default function AddQuestionModal({ onAdd, onClose }: Props) {
                         display: "flex", flexDirection: "column", alignItems: "flex-start",
                         gap: "6px", padding: "12px 14px", borderRadius: "10px",
                         minHeight: "92px",
-                        background: "rgba(255,255,255,0.055)",
-                        border: "1px solid rgba(255,255,255,0.095)",
+                        background: "#ffffff",
+                        border: "1px solid rgba(0,0,0,0.08)",
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                         cursor: "pointer", textAlign: "left",
                         transition: "background 150ms, border-color 150ms, box-shadow 150ms",
                       }}
                       onMouseEnter={e => {
-                        e.currentTarget.style.background = "rgba(201,169,110,0.12)";
-                        e.currentTarget.style.borderColor = "rgba(201,169,110,0.32)";
-                        e.currentTarget.style.boxShadow = "0 10px 22px rgba(0,0,0,0.18)";
+                        e.currentTarget.style.background = "#fafafa";
+                        e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)";
+                        e.currentTarget.style.boxShadow = "0 10px 22px rgba(0,0,0,0.08)";
                       }}
                       onMouseLeave={e => {
-                        e.currentTarget.style.background = "rgba(255,255,255,0.055)";
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.095)";
-                        e.currentTarget.style.boxShadow = "none";
+                        e.currentTarget.style.background = "#ffffff";
+                        e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)";
+                        e.currentTarget.style.boxShadow = "0 1px 2px rgba(0,0,0,0.05)";
                       }}
                     >
-                      <span style={{ fontSize: "16px", lineHeight: 1, color: "#C9A96E", fontWeight: 800 }}>{m.icon}</span>
-                      <div style={{ fontSize: "12px", fontWeight: 600, color: "#FFFFFF", lineHeight: 1.2 }}>{m.label}</div>
-                      <div style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.48)", lineHeight: 1.35 }}>{m.description}</div>
+                      <span style={{ fontSize: "16px", lineHeight: 1, color: "#064e3b", fontWeight: 800 }}>{m.icon}</span>
+                      <div style={{ fontSize: "12px", fontWeight: 600, color: "#111827", lineHeight: 1.2 }}>{m.label}</div>
+                      <div style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.5)", lineHeight: 1.35 }}>{m.description}</div>
                     </button>
                   );
                 })}

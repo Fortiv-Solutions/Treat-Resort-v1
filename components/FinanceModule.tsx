@@ -16,14 +16,14 @@ import {
   YAxis,
 } from "recharts";
 import {
-  Building2,
+  Key,
   ChevronDown,
   ChevronUp,
   Database,
   FileText,
-  IndianRupee,
-  Landmark,
-  PieChart as PieIcon,
+  Wallet,
+  Coins,
+  Receipt,
 } from "lucide-react";
 import type { DashboardPayload } from "@/lib/dashboardData";
 import { FINANCE_PROPERTIES, type EntityFilter, type FinanceProperty } from "@/lib/financeData";
@@ -69,17 +69,25 @@ function KpiCard({ label, value, sub, icon: Icon }: {
   label: string;
   value: string;
   sub: string;
-  icon: typeof IndianRupee;
+  icon: typeof Wallet;
 }) {
   return (
-    <div className="bg-white border border-brand-border rounded-xl p-5 flex items-center gap-4 min-w-0 shadow-premium-sm transition-shadow hover:shadow-premium-md">
-      <div className="w-11 h-11 rounded-xl bg-brand-green-900 flex items-center justify-center shrink-0 shadow-inner">
-        <Icon className="w-5 h-5 text-brand-gold" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-bold text-brand-text-3 uppercase tracking-widest mb-1 truncate">{label}</p>
-        <p className="text-2xl xl:text-[28px] font-bold text-brand-text-1 leading-none tabular-nums truncate">{value}</p>
-        <p className="text-xs text-brand-text-3 mt-1.5 truncate">{sub}</p>
+    <div className="glass-card flex flex-col justify-between overflow-hidden cursor-default group">
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <p className="text-[15px] font-medium text-brand-text-2 mb-3">{label}</p>
+            <div className="flex items-baseline gap-1 leading-none">
+              <span className="text-4xl xl:text-[38px] font-bold text-brand-text-1 tabular-nums tracking-tight">{value}</span>
+            </div>
+          </div>
+          <div className="w-[46px] h-[46px] rounded-[14px] bg-brand-green-900 flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+            <Icon className="w-5 h-5 text-brand-gold" strokeWidth={2.5} />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 pt-1">
+          <span className="text-[13px] text-brand-text-3 font-medium truncate">{sub}</span>
+        </div>
       </div>
     </div>
   );
@@ -243,7 +251,7 @@ function FinancePropertyTable({ properties }: { properties: FinanceProperty[] })
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="p-4 sm:p-5 border-b border-brand-border-soft bg-white/50">
+      <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 bg-white/50">
         <SectionHeader title="Property Finance Records" subtitle="Latest finance record per property" />
       </div>
       {sorted.length === 0 ? (
@@ -362,11 +370,11 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 anim-fade-up" style={{ animationDelay: "50ms" }}>
-        <KpiCard label="Total Revenue" value={fmtINR(totalRevenue)} sub={`${properties.length} property records`} icon={IndianRupee} />
-        <KpiCard label="Occupancy" value={pct(avgOccupancy)} sub={`${occupiedRooms}/${totalRooms} rooms`} icon={Building2} />
-        <KpiCard label="ADR" value={fmtINR(avgAdr)} sub="Average daily rate" icon={Landmark} />
-        <KpiCard label="Receivables" value={fmtINR(totalOutstanding)} sub="Outstanding receivables" icon={PieIcon} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 anim-fade-up" style={{ animationDelay: "50ms" }}>
+        <KpiCard label="Total Revenue" value={fmtINR(totalRevenue)} sub={`${properties.length} property records`} icon={Wallet} />
+        <KpiCard label="Occupancy" value={pct(avgOccupancy)} sub={`${occupiedRooms}/${totalRooms} rooms`} icon={Key} />
+        <KpiCard label="ADR" value={fmtINR(avgAdr)} sub="Average daily rate" icon={Coins} />
+        <KpiCard label="Receivables" value={fmtINR(totalOutstanding)} sub="Outstanding receivables" icon={Receipt} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 anim-fade-up" style={{ animationDelay: "100ms" }}>

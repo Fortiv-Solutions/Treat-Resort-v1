@@ -25,11 +25,11 @@ function iStyle(): React.CSSProperties {
   return {
     width: "100%",
     padding: "8px 10px",
-    background: "rgba(255,255,255,0.06)",
-    border: "1.5px solid rgba(255,255,255,0.1)",
+    background: "#ffffff",
+    border: "1.5px solid rgba(0,0,0,0.1)",
     borderRadius: "8px",
     fontSize: "12px",
-    color: "#FFFFFF",
+    color: "#111827",
     outline: "none",
     fontFamily: "'Inter', sans-serif",
     boxSizing: "border-box",
@@ -41,7 +41,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
     <div style={{
       fontSize: "10.5px",
       fontWeight: 650,
-      color: "rgba(255,255,255,0.44)",
+      color: "rgba(0,0,0,0.5)",
       marginBottom: "5px",
       letterSpacing: "0.04em",
       textTransform: "uppercase",
@@ -112,17 +112,18 @@ export default function QuestionCard({
       onDragOver={e => { e.preventDefault(); onDragOver(e); }}
       onDrop={e => onDrop(e, index)}
       style={{
-        background: expanded ? "rgba(255,255,255,0.075)" : "rgba(255,255,255,0.06)",
-        border: `1px solid ${expanded ? "rgba(201,169,110,0.28)" : "rgba(255,255,255,0.1)"}`,
+        background: "#ffffff",
+        border: `1px solid ${expanded ? "rgba(5,150,105,0.5)" : "rgba(0,0,0,0.08)"}`,
         borderRadius: "12px",
         overflow: "visible",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
         opacity: isDragging ? 0.4 : 1,
         transition: "opacity 150ms, border-color 150ms, background 150ms",
         cursor: "default",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px" }}>
-        <div style={{ cursor: "grab", color: "rgba(255,255,255,0.25)", flexShrink: 0, display: "flex", alignItems: "center" }}>
+        <div style={{ cursor: "grab", color: "rgba(0,0,0,0.2)", flexShrink: 0, display: "flex", alignItems: "center" }}>
           <GripVertical size={14} />
         </div>
 
@@ -131,13 +132,13 @@ export default function QuestionCard({
           height: "20px",
           borderRadius: "6px",
           flexShrink: 0,
-          background: "rgba(201,169,110,0.15)",
+          background: "rgba(5,150,105,0.15)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: "10px",
           fontWeight: 700,
-          color: "#C9A96E",
+          color: "#059669",
         }}>
           {index + 1}
         </div>
@@ -152,9 +153,9 @@ export default function QuestionCard({
               gap: "5px",
               padding: "4px 8px",
               borderRadius: "7px",
-              background: "rgba(201,169,110,0.12)",
-              border: "1px solid rgba(201,169,110,0.2)",
-              color: "#C9A96E",
+              background: "rgba(5,150,105,0.12)",
+              border: "1px solid rgba(5,150,105,0.2)",
+              color: "#059669",
               fontSize: "11px",
               fontWeight: 600,
               cursor: "pointer",
@@ -169,13 +170,13 @@ export default function QuestionCard({
               position: "absolute",
               top: "calc(100% + 4px)",
               left: 0,
-              background: "#1a3d2c",
-              border: "1px solid rgba(201,169,110,0.25)",
+              background: "#ffffff",
+              border: "1px solid rgba(0,0,0,0.1)",
               borderRadius: "10px",
               padding: "4px",
               zIndex: 80,
               minWidth: "170px",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
             }}>
               {TYPE_OPTIONS.map(type => {
                 const optionMeta = QUESTION_TYPE_META[type];
@@ -192,8 +193,8 @@ export default function QuestionCard({
                       padding: "7px 10px",
                       borderRadius: "7px",
                       border: "none",
-                      background: q.type === type ? "rgba(201,169,110,0.15)" : "transparent",
-                      color: q.type === type ? "#C9A96E" : "rgba(255,255,255,0.7)",
+                      background: q.type === type ? "rgba(5,150,105,0.1)" : "transparent",
+                      color: q.type === type ? "#064e3b" : "rgba(0,0,0,0.7)",
                       fontSize: "12px",
                       cursor: "pointer",
                       textAlign: "left",
@@ -219,14 +220,14 @@ export default function QuestionCard({
             padding: 0,
             textAlign: "left",
             fontSize: "12.5px",
-            color: "rgba(255,255,255,0.8)",
+            color: "#111827",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             cursor: "pointer",
           }}
         >
-          {q.label || <span style={{ color: "rgba(255,255,255,0.3)" }}>Untitled question</span>}
+          {q.label || <span style={{ color: "rgba(0,0,0,0.3)" }}>Untitled question</span>}
         </button>
 
         <button
@@ -237,9 +238,9 @@ export default function QuestionCard({
             borderRadius: "20px",
             fontSize: "10.5px",
             fontWeight: 600,
-            background: q.required ? "rgba(220,38,38,0.15)" : "rgba(255,255,255,0.07)",
-            border: `1px solid ${q.required ? "rgba(220,38,38,0.3)" : "rgba(255,255,255,0.1)"}`,
-            color: q.required ? "#FCA5A5" : "rgba(255,255,255,0.4)",
+            background: q.required ? "rgba(220,38,38,0.1)" : "rgba(0,0,0,0.04)",
+            border: `1px solid ${q.required ? "rgba(220,38,38,0.2)" : "rgba(0,0,0,0.1)"}`,
+            color: q.required ? "#DC2626" : "rgba(0,0,0,0.5)",
             cursor: "pointer",
             whiteSpace: "nowrap",
           }}
@@ -251,7 +252,7 @@ export default function QuestionCard({
           type="button"
           onClick={() => onExpandedChange(!expanded)}
           aria-label={expanded ? "Collapse question editor" : "Expand question editor"}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", padding: "2px", display: "flex", alignItems: "center" }}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,0.4)", padding: "2px", display: "flex", alignItems: "center" }}
         >
           <ChevronDown size={14} style={{ transform: expanded ? "rotate(180deg)" : "none", transition: "transform 250ms" }} />
         </button>
@@ -271,7 +272,7 @@ export default function QuestionCard({
       {expanded && (
         <div style={{
           padding: "12px",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderTop: "1px solid rgba(0,0,0,0.06)",
           display: "flex",
           flexDirection: "column",
           gap: "12px",
@@ -284,8 +285,8 @@ export default function QuestionCard({
               onChange={e => setQ("label", e.target.value)}
               placeholder={meta.defaultLabel}
               style={iStyle()}
-              onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
             />
           </div>
 
@@ -298,8 +299,8 @@ export default function QuestionCard({
                 onChange={e => setQ("placeholder", e.target.value)}
                 placeholder="Hint text shown inside the input..."
                 style={iStyle()}
-                onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-                onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)")}
+                onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
               />
             </div>
           )}
@@ -352,7 +353,7 @@ export default function QuestionCard({
               <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
                 {(q.options ?? []).map((option, optionIndex) => (
                   <div key={option.id} style={{ display: "grid", gridTemplateColumns: "24px minmax(0, 1fr) 34px", gap: "6px", alignItems: "center" }}>
-                    <div style={{ width: "24px", height: "24px", borderRadius: "7px", display: "grid", placeItems: "center", background: "rgba(201,169,110,0.12)", color: "#C9A96E", fontSize: "10px", fontWeight: 700 }}>
+                    <div style={{ width: "24px", height: "24px", borderRadius: "7px", display: "grid", placeItems: "center", background: "rgba(5,150,105,0.15)", color: "#064e3b", fontSize: "10px", fontWeight: 700 }}>
                       {optionIndex + 1}
                     </div>
                     <input
@@ -361,14 +362,14 @@ export default function QuestionCard({
                       onChange={e => updateOption(option.id, e.target.value)}
                       placeholder={`Option ${optionIndex + 1}`}
                       style={iStyle()}
-                      onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)")}
-                      onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                      onFocus={e => (e.currentTarget.style.borderColor = "rgba(5,150,105,0.4)")}
+                      onBlur={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
                     />
                     <button
                       type="button"
                       onClick={() => removeOption(option.id)}
                       aria-label={`Remove option ${optionIndex + 1}`}
-                      style={{ height: "34px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "8px", cursor: "pointer", color: "#FCA5A5", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ height: "34px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "8px", cursor: "pointer", color: "#DC2626", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       <X size={12} />
                     </button>
@@ -384,9 +385,9 @@ export default function QuestionCard({
                     justifyContent: "center",
                     padding: "8px",
                     borderRadius: "8px",
-                    background: "rgba(201,169,110,0.08)",
-                    border: "1px dashed rgba(201,169,110,0.25)",
-                    color: "rgba(201,169,110,0.78)",
+                    background: "rgba(0,0,0,0.02)",
+                    border: "1px dashed rgba(0,0,0,0.1)",
+                    color: "#064e3b",
                     fontSize: "11.5px",
                     cursor: "pointer",
                   }}
