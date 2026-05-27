@@ -16,15 +16,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-const SatelliteMap = dynamic(() => import("./SatelliteMap"), {
-  ssr: false,
-  loading: () => (
-    <div className="bg-brand-green-950 rounded-xl h-[280px] border border-brand-gold/10 flex flex-col items-center justify-center gap-2">
-      <div className="w-6 h-6 rounded-full border-2 border-brand-gold border-t-transparent animate-spin" />
-      <p className="text-brand-text-3 text-xs">Loading map…</p>
-    </div>
-  ),
-});
+
 
 const STATUS_STYLE: Record<PropertyStatus, { badge: string; dot: string }> = {
   "Excellent":       { badge: "badge-emerald", dot: "bg-emerald-500" },
@@ -241,21 +233,11 @@ export default function FeedbackModule({ role, data }: Props) {
         </div>
       )}
 
-      {/* ── Row 2: Map + Chart ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6">
-        <div className="anim-fade-up min-w-0" style={{ animationDelay: "160ms" }}>
-          <SatelliteMap properties={allProps} />
-        </div>
-        <div className="anim-fade-up" style={{ animationDelay: "200ms" }}>
-          <PerformanceChart properties={allProps} />
-        </div>
-      </div>
-
-      {/* ── Row 3: Property Table + Feedback Feed ── */}
+      {/* ── Main Dashboard Layout ── */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6 items-start">
 
         {/* Property Performance Table */}
-        <div className="glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "220ms" }}>
+        <div className="glass-card overflow-hidden anim-fade-up h-full flex flex-col" style={{ animationDelay: "200ms" }}>
           <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Property Performance</h2>
@@ -273,7 +255,7 @@ export default function FeedbackModule({ role, data }: Props) {
               </span>
             </div>
           </div>
-          <div className="overflow-x-auto max-h-[400px]">
+          <div className="overflow-x-auto flex-1 min-h-[400px]">
             <table className="w-full border-collapse">
               <thead className="sticky top-0 z-10">
                 <tr>
@@ -363,7 +345,6 @@ export default function FeedbackModule({ role, data }: Props) {
               </tbody>
             </table>
           </div>
-          {/* Empty state */}
           {sorted.length === 0 && (
             <div className="p-8 text-center text-sm text-brand-text-3">
               No properties to display.
@@ -371,8 +352,15 @@ export default function FeedbackModule({ role, data }: Props) {
           )}
         </div>
 
-        {/* Live Feedback Feed */}
-        <div className="glass-card overflow-hidden anim-fade-up flex flex-col" style={{ animationDelay: "240ms", maxHeight: "500px" }}>
+        {/* Right Sidebar: Chart + Feed */}
+        <div className="flex flex-col gap-6 w-full">
+          {/* Performance Chart */}
+          <div className="anim-fade-up" style={{ animationDelay: "220ms" }}>
+            <PerformanceChart properties={allProps} />
+          </div>
+
+          {/* Live Feedback Feed */}
+          <div className="glass-card overflow-hidden anim-fade-up flex flex-col" style={{ animationDelay: "240ms", maxHeight: "600px" }}>
           <div className="p-4 sm:p-5 border-b border-brand-border-soft flex justify-between items-center bg-white/50 shrink-0">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Live Feedback</h2>
@@ -501,6 +489,7 @@ export default function FeedbackModule({ role, data }: Props) {
               </button>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>
