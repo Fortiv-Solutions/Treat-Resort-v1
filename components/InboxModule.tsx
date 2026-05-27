@@ -62,18 +62,29 @@ function InboxKPIs({
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }, i) => (
-        <div key={label} className="glass-card p-6 flex items-center gap-4">
-          <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0 ${bgClass} shadow-sm`}>
-            <Icon className={`w-5 h-5 ${colorClass}`} strokeWidth={2.5} />
+      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }, i) => {
+        const match = String(value).match(/^([^0-9.-]*)([0-9.,]+)([^0-9]*)$/);
+        const prefix = match ? match[1].trim() : "";
+        const num = match ? match[2] : value;
+        const suffix = match ? match[3].trim() : "";
+
+        return (
+          <div key={label} className="glass-card p-6 flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0 ${bgClass} shadow-sm`}>
+              <Icon className={`w-5 h-5 ${colorClass}`} strokeWidth={2.5} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-medium text-brand-text-2 mb-1">{label}</p>
+              <div className="flex items-baseline leading-tight">
+                {prefix && <span className="text-lg font-bold text-brand-text-3 mr-0.5">{prefix}</span>}
+                <span className="text-3xl xl:text-4xl font-bold text-brand-text-1 tabular-nums tracking-tight">{num}</span>
+                {suffix && <span className="text-base font-bold text-brand-text-3 ml-0.5">{suffix}</span>}
+              </div>
+              <p className="text-[11px] text-brand-text-3 mt-1 truncate">{sub}</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="text-[13px] font-medium text-brand-text-2 mb-1">{label}</p>
-            <p className="text-2xl font-bold text-brand-text-1 leading-tight tabular-nums">{value}</p>
-            <p className="text-[11px] text-brand-text-3 mt-1 truncate">{sub}</p>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -310,25 +321,25 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
       {/* Filter Bar */}
       <div className="glass-card p-3 sm:p-4 anim-fade-up" style={{ animationDelay: "150ms" }}>
         <div className="flex gap-4 items-center flex-wrap">
-          <span className="text-[11px] font-bold text-brand-text-3 tracking-wider uppercase">Filter</span>
-          <div className="flex gap-1.5 flex-wrap">
+          <span className="text-[11px] font-bold text-brand-text-3 tracking-wider uppercase whitespace-nowrap">Filter</span>
+          <div className="flex gap-2 flex-wrap">
             {(["All", "Urgent", "Normal", "FYI"] as const).map(p => (
-              <button key={p} onClick={() => setFilterPri(p)} className={`px-3 py-1.5 rounded-md border text-[12px] font-semibold transition-colors focus:outline-none
+              <button key={p} onClick={() => setFilterPri(p)} className={`px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-all focus:outline-none shadow-sm
                 ${filterPri === p
                   ? (p === "Urgent" ? "bg-red-50 text-red-700 border-red-200" : p === "Normal" ? "bg-amber-50 text-amber-700 border-amber-200" : p === "FYI" ? "bg-gray-100 text-gray-700 border-gray-300" : "bg-brand-green-900 text-brand-gold border-brand-green-900")
-                  : "bg-transparent text-brand-text-3 border-brand-border hover:bg-brand-surface-2"
+                  : "bg-white text-brand-text-2 border-brand-border hover:bg-brand-surface-2"
                 }`}>
                 {p}
               </button>
             ))}
           </div>
-          <div className="w-[1px] h-5 bg-brand-border hidden sm:block" />
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="w-[1px] h-6 bg-brand-border hidden sm:block" />
+          <div className="flex gap-2 flex-wrap">
             {(["All", "Booking Inquiry", "Wedding Lead", "Guest Complaint", "Vendor", "Finance"] as const).map(c => (
-              <button key={c} onClick={() => setFilterCat(c)} className={`px-3 py-1.5 rounded-md border text-[12px] font-semibold transition-colors focus:outline-none
+              <button key={c} onClick={() => setFilterCat(c)} className={`px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-all focus:outline-none shadow-sm
                 ${filterCat === c
                   ? (c === "All" ? "bg-brand-green-900 text-brand-gold border-brand-green-900" : "bg-brand-surface-3 text-brand-text-1 border-brand-border-soft")
-                  : "bg-transparent text-brand-text-3 border-brand-border hover:bg-brand-surface-2"
+                  : "bg-white text-brand-text-2 border-brand-border hover:bg-brand-surface-2"
                 }`}>
                 {c}
               </button>
@@ -389,7 +400,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
                       onClick={() => setSelectedEmail(isSelected ? null : email)}
                     >
                       {/* Priority */}
-                      <td className="premium-table-cell">
+                      <td className="premium-table-cell whitespace-nowrap">
                         <span className={PRI_STYLE[email.priority].badge}>
                           <span className={`pulse-dot ${PRI_STYLE[email.priority].dot}`} style={{ animationPlayState: email.priority === "Urgent" && isUnread ? "running" : "paused" }} />
                           {email.priority}
@@ -414,50 +425,50 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
                         </span>
                       </td>
                       {/* Category */}
-                      <td className="premium-table-cell">
+                      <td className="premium-table-cell whitespace-nowrap">
                         <span className={CAT_STYLE[email.category].badge}>
                           {email.category}
                         </span>
                       </td>
                       {/* From */}
-                      <td className="premium-table-cell max-w-[160px]">
-                        <div className={`text-[13px] truncate ${isUnread ? "font-bold text-brand-text-1" : "font-medium text-brand-text-1"}`}>{email.from}</div>
-                        <div className="text-[11px] text-brand-text-3 truncate">{email.fromEmail}</div>
+                      <td className="premium-table-cell">
+                        <div className={`text-[13px] ${isUnread ? "font-bold text-brand-text-1" : "font-medium text-brand-text-1"}`}>{email.from}</div>
+                        <div className="text-[11px] text-brand-text-3">{email.fromEmail}</div>
                       </td>
                       {/* Subject */}
-                      <td className="premium-table-cell max-w-[280px]">
-                        <span className={`truncate block text-[13px] ${isUnread ? "font-bold text-brand-text-1" : "font-medium text-brand-text-2"}`} title={email.subject}>
+                      <td className="premium-table-cell max-w-[320px]">
+                        <span className={`text-[13px] leading-relaxed ${isUnread ? "font-bold text-brand-text-1" : "font-medium text-brand-text-2"}`} title={email.subject}>
                           {isUnread && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-green-900 mr-1.5 align-middle" />
                           )}
                           {email.subject}
                         </span>
                         {/* AI note snippet */}
-                        <span className="text-[11px] text-purple-600 block mt-0.5 truncate">
+                        <span className="text-[11px] text-purple-600 block mt-1">
                           ✦ {email.aiNote}
                         </span>
                       </td>
                       {/* Received */}
-                      <td className={`premium-table-cell text-xs ${email.receivedHoursAgo >= 2 && isUnread ? "text-red-600 font-bold" : "text-brand-text-3 font-medium"}`}>
+                      <td className={`premium-table-cell text-xs whitespace-nowrap ${email.receivedHoursAgo >= 2 && isUnread ? "text-red-600 font-bold" : "text-brand-text-3 font-medium"}`}>
                         {email.received}
                         {email.receivedHoursAgo >= 2 && isUnread && (
-                          <span className="block text-[10px] text-red-600 mt-0.5">⚠ SLA breach</span>
+                          <span className="block text-[10px] text-red-600 mt-1 uppercase tracking-wide">⚠ SLA breach</span>
                         )}
                       </td>
                       {/* Status */}
-                      <td className="premium-table-cell">
+                      <td className="premium-table-cell whitespace-nowrap">
                         <span className={`text-[13px] ${STATUS_STYLE[email.status].weight} ${STATUS_STYLE[email.status].color}`}>
                           {email.status}
                         </span>
                       </td>
                       {/* Assigned */}
-                      <td className="premium-table-cell text-xs text-brand-text-2">
+                      <td className="premium-table-cell text-xs text-brand-text-2 whitespace-nowrap">
                         {email.assignedTo === "Unassigned"
-                          ? <span className="text-red-600 font-bold">⚠ Unassigned</span>
+                          ? <span className="text-red-600 font-bold inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3"/> Unassigned</span>
                           : <span className="font-medium">{email.assignedTo}</span>
                         }
                         {email.lastUpdatedBy && (
-                          <div className="text-[10px] text-brand-text-3 mt-0.5">{email.lastUpdatedBy.split("·")[0].trim()}</div>
+                          <div className="text-[10px] text-brand-text-3 mt-1 truncate max-w-[120px]">{email.lastUpdatedBy.split("·")[0].trim()}</div>
                         )}
                       </td>
                       {/* Quick actions */}

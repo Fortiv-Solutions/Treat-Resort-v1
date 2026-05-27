@@ -71,6 +71,11 @@ function KpiCard({ label, value, sub, icon: Icon }: {
   sub: string;
   icon: typeof Wallet;
 }) {
+  const match = value.match(/^([^0-9.-]*)([0-9.,]+)([^0-9]*)$/);
+  const prefix = match ? match[1].trim() : "";
+  const num = match ? match[2] : value;
+  const suffix = match ? match[3].trim() : "";
+
   return (
     <div className="glass-card flex flex-col justify-between overflow-hidden cursor-default group">
       <div className="p-6">
@@ -78,7 +83,9 @@ function KpiCard({ label, value, sub, icon: Icon }: {
           <div>
             <p className="text-[15px] font-medium text-brand-text-2 mb-3">{label}</p>
             <div className="flex items-baseline gap-1 leading-none">
-              <span className="text-4xl xl:text-[38px] font-bold text-brand-text-1 tabular-nums tracking-tight">{value}</span>
+              {prefix && <span className="text-2xl font-bold text-brand-text-3">{prefix}</span>}
+              <span className="text-4xl xl:text-[42px] font-bold text-brand-text-1 tabular-nums tracking-tight">{num}</span>
+              {suffix && <span className="text-xl font-bold text-brand-text-3 ml-0.5">{suffix}</span>}
             </div>
           </div>
           <div className="w-[46px] h-[46px] rounded-[14px] bg-brand-green-900 flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
@@ -165,23 +172,25 @@ function RevenueMix({ data }: { data: DashboardPayload["revenueMix"] }) {
         {data.length === 0 ? (
           <EmptyState title="No revenue mix yet" body="Room, F&B, events, adventure, and other revenue will appear here." />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-6 items-center w-full">
-            <ResponsiveContainer width="100%" height={210} minWidth={1} minHeight={1}>
-              <PieChart>
-                <Pie data={data} cx="50%" cy="50%" innerRadius={58} outerRadius={88} dataKey="value" paddingAngle={2}>
-                  {data.map(item => <Cell key={item.name} fill={item.color} />)}
-                </Pie>
-                <Tooltip formatter={(value) => fmtINR(Number(value))} contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-brand-border)", fontFamily: "var(--font-inter)", fontSize: "12px" }} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex flex-col gap-3">
+          <div className="flex flex-col items-center gap-6 w-full mt-2">
+            <div className="w-[180px] h-[180px] shrink-0">
+              <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+                <PieChart>
+                  <Pie data={data} cx="50%" cy="50%" innerRadius={58} outerRadius={88} dataKey="value" paddingAngle={2}>
+                    {data.map(item => <Cell key={item.name} fill={item.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(value) => fmtINR(Number(value))} contentStyle={{ borderRadius: "8px", border: "1px solid var(--color-brand-border)", fontFamily: "var(--font-inter)", fontSize: "12px" }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex flex-col gap-3 w-full">
               {data.map(item => (
-                <div key={item.name} className="flex justify-between items-center gap-4 text-[13px]">
-                  <span className="flex items-center gap-2 text-brand-text-2 font-medium">
+                <div key={item.name} className="flex justify-between items-center gap-3 text-[13px]">
+                  <span className="flex items-center gap-2 text-brand-text-2 font-medium whitespace-nowrap">
                     <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: item.color }} />
                     {item.name}
                   </span>
-                  <strong className="text-brand-text-1 tabular-nums">{fmtINR(item.value)}</strong>
+                  <strong className="text-brand-text-1 tabular-nums whitespace-nowrap">{fmtINR(item.value)}</strong>
                 </div>
               ))}
             </div>
