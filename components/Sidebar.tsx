@@ -114,7 +114,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
               }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://treatresorts.com/wp-content/uploads/2025/05/cropped-Treat-Resort-main.webp"
+                  src="/treat-resort-logo.webp"
                   alt="Treat Hotels & Resorts"
                   style={{ width: "32px", height: "32px", objectFit: "contain", filter: "brightness(0) invert(1)" }}
                 />
@@ -125,7 +125,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
               <div style={{ overflow: "hidden", flex: 1, minWidth: 0 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://treatresorts.com/wp-content/uploads/2025/05/cropped-Treat-Resort-main.webp"
+                  src="/treat-resort-logo.webp"
                   alt="Treat Hotels & Resorts"
                   style={{
                     height: "42px",
