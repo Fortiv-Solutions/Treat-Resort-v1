@@ -16,27 +16,60 @@ interface Props {
 export default function QuestionsSection({ form, updateForm, addToast }: Props) {
   const [showModal, setShowModal] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(form.questions[0]?.id ?? null);
 
   function addQuestion(type: QuestionType) {
     const meta = QUESTION_TYPE_META[type];
+    const stamp = Date.now();
     const newQ: Question = {
-      id: `q-${Date.now()}`,
+      id: `q-${stamp}`,
       type,
       label: meta.defaultLabel,
       required: false,
-      ...(type === "rating" || type === "nps" ? { minRating: 1, maxRating: type === "rating" ? 5 : 10, lowLabel: "Poor", highLabel: "Excellent" } : {}),
-      ...(type === "select" || type === "multiselect" ? { options: [{ id: `o-${Date.now()}-1`, label: "Option 1" }, { id: `o-${Date.now()}-2`, label: "Option 2" }] } : {}),
+      ...(type === "rating" ? { minRating: 1, maxRating: 5, lowLabel: "Poor", highLabel: "Excellent" } : {}),
+      ...(type === "nps" ? { minRating: 0, maxRating: 10, lowLabel: "Not likely", highLabel: "Very likely" } : {}),
+      ...(type === "select" || type === "multiselect" ? {
+        placeholder: "Choose an option...",
+        options: [
+          { id: `o-${stamp}-1`, label: "Option 1" },
+          { id: `o-${stamp}-2`, label: "Option 2" },
+        ],
+      } : {}),
+      ...(type === "text" || type === "textarea" ? { placeholder: "Your answer..." } : {}),
+      ...(type === "email" ? { placeholder: "name@email.com" } : {}),
+      ...(type === "phone" ? { placeholder: "+91 98765 43210" } : {}),
     };
     updateForm(prev => ({ ...prev, questions: [...prev.questions, newQ] }));
+    setExpandedQuestionId(newQ.id);
     addToast(`${meta.label} question added`, "success");
   }
 
   function updateQuestion(id: string, q: Question) {
-    updateForm(prev => ({ ...prev, questions: prev.questions.map(x => x.id === id ? q : x) }));
+    updateForm(prev => {
+      const becameNonNumeric = q.type !== "rating" && q.type !== "nps";
+      return {
+        ...prev,
+        questions: prev.questions.map(x => x.id === id ? q : x),
+        routing: becameNonNumeric
+          ? {
+              ...prev.routing,
+              rules: prev.routing.rules.filter(rule => rule.questionId !== id),
+            }
+          : prev.routing,
+      };
+    });
   }
 
   function deleteQuestion(id: string) {
-    updateForm(prev => ({ ...prev, questions: prev.questions.filter(q => q.id !== id) }));
+    updateForm(prev => ({
+      ...prev,
+      questions: prev.questions.filter(q => q.id !== id),
+      routing: {
+        ...prev.routing,
+        rules: prev.routing.rules.filter(rule => rule.questionId !== id),
+      },
+    }));
+    setExpandedQuestionId(prev => prev === id ? null : prev);
     addToast("Question removed", "info");
   }
 
@@ -85,6 +118,8 @@ export default function QuestionsSection({ form, updateForm, addToast }: Props) 
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           isDragging={draggingIndex === i}
+          expanded={expandedQuestionId === q.id}
+          onExpandedChange={expanded => setExpandedQuestionId(expanded ? q.id : null)}
         />
       ))}
 

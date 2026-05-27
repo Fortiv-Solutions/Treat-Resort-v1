@@ -37,18 +37,28 @@ const CONDITION_LABELS: Record<RoutingRule["condition"], string> = {
 
 export default function RoutingRulesSection({ form, updateForm }: Props) {
   const r = form.routing;
+  const numericQuestions = form.questions.filter(question => question.type === "rating" || question.type === "nps");
+  const numericQuestionIds = new Set(numericQuestions.map(question => question.id));
+  const visibleRules = r.rules.filter(rule => numericQuestionIds.has(rule.questionId));
 
   function setRouting<K extends keyof typeof r>(key: K, val: typeof r[K]) {
     updateForm(prev => ({ ...prev, routing: { ...prev.routing, [key]: val } }));
   }
 
   function addRule() {
+    const firstNumericQuestion = numericQuestions[0];
+    if (!firstNumericQuestion) return;
+    const nextRuleNumber = r.rules.reduce((max, rule) => {
+      const idNumber = Number(rule.id.replace(/^r-/, ""));
+      return Number.isFinite(idNumber) ? Math.max(max, idNumber) : max;
+    }, 0) + 1;
+
     const newRule: RoutingRule = {
-      id: `r-${Date.now()}`,
+      id: `r-${nextRuleNumber}`,
       condition: "gte",
       value: 4,
       action: "show_review_link",
-      questionId: form.questions.find(q => q.type === "rating" || q.type === "nps")?.id ?? form.questions[0]?.id ?? "",
+      questionId: firstNumericQuestion.id,
     };
     setRouting("rules", [...r.rules, newRule]);
   }
@@ -99,7 +109,21 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
         <>
           {/* Rules */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {r.rules.map((rule, i) => {
+            {visibleRules.length === 0 && (
+              <div style={{
+                padding: "14px",
+                borderRadius: "11px",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px dashed rgba(255,255,255,0.12)",
+                color: "rgba(255,255,255,0.52)",
+                fontSize: "12px",
+                lineHeight: 1.5,
+              }}>
+                Add a Star Rating or NPS Score question before creating routing rules.
+              </div>
+            )}
+
+            {visibleRules.map((rule, i) => {
               const actionMeta = ACTION_LABELS[rule.action];
               return (
                 <div key={rule.id} style={{
@@ -135,9 +159,9 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
                     {/* Question */}
                     <select value={rule.questionId} onChange={e => updateRule(rule.id, { questionId: e.target.value })}
                       style={{ ...iStyle(), cursor: "pointer" }}>
-                      {form.questions.map(q => (
+                      {numericQuestions.map(q => (
                         <option key={q.id} value={q.id} style={{ background: "#1a3d2c" }}>
-                          {q.label.slice(0, 32)}{q.label.length > 32 ? "…" : ""}
+                          {q.label.slice(0, 32)}{q.label.length > 32 ? "..." : ""}
                         </option>
                       ))}
                     </select>
@@ -203,13 +227,17 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
               );
             })}
 
-            <button onClick={addRule} style={{
+            <button disabled={numericQuestions.length === 0} onClick={addRule} style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: "7px",
               padding: "9px", borderRadius: "10px",
               background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)",
-              color: "rgba(255,255,255,0.45)", fontSize: "12px", cursor: "pointer",
+              color: "rgba(255,255,255,0.45)", fontSize: "12px",
+              cursor: numericQuestions.length === 0 ? "not-allowed" : "pointer",
+              opacity: numericQuestions.length === 0 ? 0.55 : 1,
             }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)")}
+              onMouseEnter={e => {
+                if (!e.currentTarget.disabled) e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+              }}
               onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)")}
             >
               <Plus size={13} /> Add Rule
@@ -219,7 +247,7 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
           {/* URLs */}
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {[
-              ["Google Review Link", "reviewLink", "https://g.page/r/…/review"],
+              ["Google Review Link", "reviewLink", "https://g.page/r/.../review"],
               ["GM Email / WhatsApp", "gmEmail", "gm@treatresorts.com"],
               ["MD Email", "mdEmail", "md@treatresorts.com"],
               ["WhatsApp Number", "whatsappNumber", "+91 98765 43210"],

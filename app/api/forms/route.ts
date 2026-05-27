@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { FormConfig } from "@/lib/formBuilderTypes";
 import { getForms, saveForm } from "@/lib/formPersistence";
 import { isSupabaseConfigured } from "@/lib/supabaseRest";
-import { validateFormConfig } from "@/lib/formBuilderValidation";
+import { sanitizeFormConfig, validateFormConfig } from "@/lib/formBuilderValidation";
 
 function isUnavailableForGuest(form: FormConfig) {
   if (!form.settings.isActive) return true;
@@ -48,7 +48,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid form configuration payload" }, { status: 400 });
     }
 
-    const validated = validateFormConfig(form);
+    const sanitized = sanitizeFormConfig(form);
+    const validated = validateFormConfig(sanitized);
     if (!validated.ok) {
       return NextResponse.json({ error: validated.errors.join(" ") }, { status: 400 });
     }

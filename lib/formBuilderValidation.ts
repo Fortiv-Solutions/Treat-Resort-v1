@@ -40,6 +40,29 @@ export function looksLikeHttpUrl(value: string) {
   }
 }
 
+export function sanitizeFormConfig(form: FormConfig): FormConfig {
+  const questionIds = new Set(form.questions.map(question => question.id));
+  const numericQuestionIds = new Set(
+    form.questions
+      .filter(question => question.type === "rating" || question.type === "nps")
+      .map(question => question.id),
+  );
+  const rules = form.routing.rules.filter(rule => {
+    if (!questionIds.has(rule.questionId)) return false;
+    if (!numericQuestionIds.has(rule.questionId)) return false;
+    return true;
+  });
+
+  return {
+    ...form,
+    routing: {
+      ...form.routing,
+      rules,
+      enabled: form.routing.enabled && rules.length > 0,
+    },
+  };
+}
+
 export function validateFormConfig(form: FormConfig): ValidationResult<FormConfig> {
   const errors: string[] = [];
 
@@ -64,9 +87,17 @@ export function validateFormConfig(form: FormConfig): ValidationResult<FormConfi
   });
 
   const questionIds = new Set(form?.questions?.map(question => question.id) ?? []);
+  const numericQuestionIds = new Set(
+    form?.questions
+      ?.filter(question => question.type === "rating" || question.type === "nps")
+      .map(question => question.id) ?? [],
+  );
   if (form?.routing?.enabled) {
     form.routing.rules.forEach((rule, index) => {
       if (!questionIds.has(rule.questionId)) errors.push(`Routing rule ${index + 1} points to a missing question.`);
+      if (questionIds.has(rule.questionId) && !numericQuestionIds.has(rule.questionId)) {
+        errors.push(`Routing rule ${index + 1} must point to a rating or NPS question.`);
+      }
       if (rule.condition === "between" && (rule.value2 === undefined || rule.value > rule.value2)) {
         errors.push(`Routing rule ${index + 1} has an invalid range.`);
       }
