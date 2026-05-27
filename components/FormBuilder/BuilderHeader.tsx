@@ -1,17 +1,49 @@
 "use client";
 
+import { useState } from "react";
 import type { FormConfig, Toast } from "@/lib/formBuilderTypes";
-import { AlertCircle, CheckCircle2, Download, Loader2, Sparkles, ChevronLeft } from "lucide-react";
+import { Download, Save, Sparkles, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 interface Props {
   form: FormConfig;
-  autosaveStatus: "idle" | "saving" | "saved" | "error";
-  autosaveMessage: string;
+  updateForm: (updater: (prev: FormConfig) => FormConfig) => void;
   addToast: (msg: string, type?: Toast["type"]) => void;
 }
 
-export default function BuilderHeader({ form, autosaveStatus, autosaveMessage, addToast }: Props) {
+export default function BuilderHeader({ form, updateForm, addToast }: Props) {
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const response = await fetch("/api/forms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(data?.error || `Save failed with status ${response.status}`);
+      }
+
+      if (!data?.form) {
+        throw new Error("Save response did not include the saved form.");
+      }
+
+      updateForm(() => data.form);
+      addToast("Form saved to database", "success");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown save error";
+      addToast(`Failed to save: ${message}`, "error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function handleExport() {
     const json = JSON.stringify(form, null, 2);
     const blob = new Blob([json], { type: "application/json" });
@@ -23,15 +55,6 @@ export default function BuilderHeader({ form, autosaveStatus, autosaveMessage, a
     URL.revokeObjectURL(url);
     addToast("Form exported as JSON", "info");
   }
-
-  const StatusIcon =
-    autosaveStatus === "saving" ? Loader2 :
-    autosaveStatus === "error" ? AlertCircle :
-    CheckCircle2;
-  const statusColor =
-    autosaveStatus === "error" ? "#FCA5A5" :
-    autosaveStatus === "saving" ? "#FDE68A" :
-    "#6EE7B7";
 
   return (
     <header style={{
@@ -121,21 +144,25 @@ export default function BuilderHeader({ form, autosaveStatus, autosaveMessage, a
           Export
         </button>
 
-        <div style={{
-          display: "flex", alignItems: "center", gap: "7px",
-          padding: "8px 12px", borderRadius: "9px",
-          background: "rgba(255,255,255,0.07)",
-          border: `1px solid ${autosaveStatus === "error" ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.12)"}`,
-          color: statusColor,
-          fontSize: "11.5px", fontWeight: 650,
-          maxWidth: "260px",
-          whiteSpace: "nowrap",
-        }}>
-          <StatusIcon size={13} style={{ flexShrink: 0, animation: autosaveStatus === "saving" ? "spin 900ms linear infinite" : "none" }} />
-          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{autosaveMessage}</span>
-        </div>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          style={{
+            display: "flex", alignItems: "center", gap: "6px",
+            padding: "8px 16px", borderRadius: "9px",
+            background: saving ? "rgba(201,169,110,0.6)" : "linear-gradient(135deg, #C9A96E 0%, #b8935a 100%)",
+            border: "none",
+            color: "#1B4332", fontSize: "12px", fontWeight: 700,
+            cursor: saving ? "not-allowed" : "pointer",
+            transition: "opacity 150ms",
+            boxShadow: "0 2px 12px rgba(201,169,110,0.35)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <Save size={13} />
+          {saving ? "Saving..." : "Save Form"}
+        </button>
       </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </header>
   );
 }
