@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
 import { getForms } from "@/lib/formPersistence";
-import type { QuestionType } from "@/lib/formBuilderTypes";
+import type { SubmittedAnswer } from "@/lib/formBuilderTypes";
 import { isSupabaseConfigured, supabaseInsert } from "@/lib/supabaseRest";
-
-type SubmittedAnswer = {
-  questionId: string;
-  questionLabel: string;
-  questionType: QuestionType;
-  value: unknown;
-};
+import { effectiveSubmitWebhookUrl, evaluateRoutingRules, validateSubmission } from "@/lib/formBuilderValidation";
 
 function numericAnswer(answer: SubmittedAnswer | undefined) {
   if (!answer) return null;
@@ -32,14 +26,21 @@ function answerRow(submissionId: string, answer: SubmittedAnswer) {
   };
 }
 
+function isInactiveOrExpired(expiresAt: string, isActive: boolean) {
+  if (!isActive) return true;
+  if (!expiresAt) return false;
+  const parsed = new Date(expiresAt);
+  return Number.isFinite(parsed.getTime()) && parsed.getTime() < Date.now();
+}
+
 export async function POST(req: Request) {
   if (!isSupabaseConfigured()) {
     return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
   }
 
   try {
-    const submission = await req.json();
-    const { formId, guestName, guestEmail, guestPhone, roomNumber, answers = [], routingActions = [] } = submission;
+    const submission = await req.json() as Record<string, unknown>;
+    const formId = typeof submission.formId === "string" ? submission.formId : "";
 
     if (!formId) {
       return NextResponse.json({ error: "Missing formId in submission" }, { status: 400 });
@@ -55,19 +56,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
     }
 
-    const submittedAnswers = answers as SubmittedAnswer[];
+    if (isInactiveOrExpired(form.settings.expiresAt, form.settings.isActive)) {
+      return NextResponse.json({ error: "This form is no longer accepting responses." }, { status: 410 });
+    }
+
+    const validated = validateSubmission(form, submission);
+    if (!validated.ok) {
+      return NextResponse.json({ error: validated.errors.join(" ") }, { status: 400 });
+    }
+
+    const { guestName, guestEmail, guestPhone, roomNumber, answers: submittedAnswers } = validated.data;
+    const routingActions = evaluateRoutingRules(form, submittedAnswers);
     const overall = numericAnswer(submittedAnswers.find(answer => answer.questionType === "rating"));
     const nps = numericAnswer(submittedAnswers.find(answer => answer.questionType === "nps"));
-    const reviewLinkShown = routingActions.some((action: { action?: string }) => action.action === "show_review_link");
+    const reviewLinkShown = routingActions.some(action => action.action === "show_review_link");
 
     const insertedSubmission = await supabaseInsert<{ id: string }>("submissions", {
       form_id: form.id,
       property_id: form.settings.propertyId,
       idempotency_key: crypto.randomUUID(),
-      guest_name: guestName?.trim() || "Anonymous",
-      guest_email: guestEmail?.trim() || null,
-      guest_phone: guestPhone?.trim() || null,
-      room_number: roomNumber?.trim() || null,
+      guest_name: guestName || "Anonymous",
+      guest_email: guestEmail || null,
+      guest_phone: guestPhone || null,
+      room_number: roomNumber || null,
       overall_rating: overall,
       nps_score: nps,
       routing_actions_triggered: routingActions,
@@ -90,11 +101,11 @@ export async function POST(req: Request) {
       }
     }
 
-    const webhookUrl = form.settings.n8nSubmitWebhook;
+    const webhookUrl = effectiveSubmitWebhookUrl(form);
     let n8nSuccess = false;
     let n8nMessage = "No webhook configured";
 
-    if (webhookUrl && webhookUrl.trim().startsWith("http")) {
+    if (webhookUrl) {
       try {
         const response = await fetch(webhookUrl, {
           method: "POST",
@@ -104,9 +115,11 @@ export async function POST(req: Request) {
             submissionId,
             formId: form.id,
             propertyId: form.settings.propertyId,
-            guestName: guestName?.trim() || "Anonymous",
-            guestEmail: guestEmail?.trim() || "",
-            roomNumber: roomNumber?.trim() || "",
+            propertyName: form.settings.propertyName,
+            guestName: guestName || "Anonymous",
+            guestEmail,
+            guestPhone,
+            roomNumber,
             answers: submittedAnswers,
             routingActions,
             timestamp: new Date().toISOString(),

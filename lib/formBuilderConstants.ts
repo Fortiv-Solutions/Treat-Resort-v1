@@ -8,20 +8,21 @@ export interface QuestionTypeMeta {
 }
 
 export const QUESTION_TYPE_META: Record<QuestionType, QuestionTypeMeta> = {
-  rating:      { label: "Star Rating",       description: "1–5 star scale",            icon: "★",  defaultLabel: "Overall Experience" },
-  nps:         { label: "NPS Score",         description: "0–10 likelihood scale",     icon: "◉",  defaultLabel: "Would you recommend us?" },
-  text:        { label: "Short Text",        description: "Single line answer",        icon: "T",  defaultLabel: "What did you enjoy most?" },
-  textarea:    { label: "Long Text",         description: "Multi-line answer",         icon: "¶",  defaultLabel: "Please share your detailed feedback" },
-  select:      { label: "Dropdown",          description: "Single choice from list",   icon: "▾",  defaultLabel: "Which service did you use?" },
-  multiselect: { label: "Multi Select",      description: "Multiple choices from list",icon: "☑",  defaultLabel: "Which amenities did you use?" },
-  yesno:       { label: "Yes / No",          description: "Binary choice",             icon: "±",  defaultLabel: "Would you visit again?" },
-  date:        { label: "Date",              description: "Date picker",               icon: "□",  defaultLabel: "Date of visit" },
-  email:       { label: "Email",             description: "Email address input",       icon: "@",  defaultLabel: "Your email address" },
-  phone:       { label: "Phone",             description: "Phone number input",        icon: "✆",  defaultLabel: "Your contact number" },
+  rating: { label: "Star Rating", description: "1-5 star scale", icon: "*", defaultLabel: "Overall Experience" },
+  nps: { label: "NPS Score", description: "0-10 likelihood scale", icon: "0", defaultLabel: "Would you recommend us?" },
+  text: { label: "Short Text", description: "Single line answer", icon: "T", defaultLabel: "What did you enjoy most?" },
+  textarea: { label: "Long Text", description: "Multi-line answer", icon: "P", defaultLabel: "Please share your detailed feedback" },
+  select: { label: "Dropdown", description: "Single choice from list", icon: "v", defaultLabel: "Which service did you use?" },
+  multiselect: { label: "Multi Select", description: "Multiple choices from list", icon: "#", defaultLabel: "Which amenities did you use?" },
+  yesno: { label: "Yes / No", description: "Binary choice", icon: "+", defaultLabel: "Would you visit again?" },
+  date: { label: "Date", description: "Date picker", icon: "D", defaultLabel: "Date of visit" },
+  email: { label: "Email", description: "Email address input", icon: "@", defaultLabel: "Your email address" },
+  phone: { label: "Phone", description: "Phone number input", icon: "P", defaultLabel: "Your contact number" },
 };
 
 export const DEFAULT_FORM: FormConfig = {
   id: "new",
+  slug: undefined,
   settings: {
     title: "Tell Us About Your Stay",
     description: "Your feedback helps us deliver an exceptional experience for every guest.",
@@ -30,10 +31,10 @@ export const DEFAULT_FORM: FormConfig = {
     language: "English",
     collectGuestName: true,
     collectGuestEmail: true,
+    collectGuestPhone: false,
     collectRoomNumber: true,
     expiresAt: "",
     isActive: true,
-    n8nSaveWebhook: "",
     n8nSubmitWebhook: "",
   },
   questions: [
@@ -71,14 +72,14 @@ export const DEFAULT_FORM: FormConfig = {
       id: "q4",
       type: "textarea",
       label: "What did you enjoy most about your stay?",
-      placeholder: "Tell us what made your experience memorable…",
+      placeholder: "Tell us what made your experience memorable...",
       required: false,
     },
     {
       id: "q5",
       type: "textarea",
       label: "Is there anything we could have done better?",
-      placeholder: "Your suggestions help us improve…",
+      placeholder: "Your suggestions help us improve...",
       required: false,
     },
     {

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useId, useState } from "react";
 import type { Question, QuestionType } from "@/lib/formBuilderTypes";
 import { QUESTION_TYPE_META } from "@/lib/formBuilderConstants";
-import { GripVertical, Trash2, ChevronDown, Plus, X, ToggleLeft, ToggleRight } from "lucide-react";
+import { GripVertical, Trash2, ChevronDown, Plus, X } from "lucide-react";
 
 interface Props {
   question: Question;
@@ -11,7 +11,7 @@ interface Props {
   onChange: (q: Question) => void;
   onDelete: () => void;
   onDragStart: (e: React.DragEvent, index: number) => void;
-  onDragOver: (e: React.DragEvent, index: number) => void;
+  onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, index: number) => void;
   isDragging: boolean;
 }
@@ -33,11 +33,25 @@ function iStyle(): React.CSSProperties {
 export default function QuestionCard({ question: q, index, onChange, onDelete, onDragStart, onDragOver, onDrop, isDragging }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
+  const fallbackOptionId = useId();
 
   const meta = QUESTION_TYPE_META[q.type];
 
   function setQ<K extends keyof Question>(key: K, val: Question[K]) {
     onChange({ ...q, [key]: val });
+  }
+
+  function changeType(type: QuestionType) {
+    const next: Question = {
+      ...q,
+      type,
+      options: type === "select" || type === "multiselect" ? (q.options?.length ? q.options : [{ id: `${fallbackOptionId}-option-1`, label: "Option 1" }]) : undefined,
+      minRating: type === "rating" ? 1 : type === "nps" ? 0 : undefined,
+      maxRating: type === "rating" ? 5 : type === "nps" ? 10 : undefined,
+      lowLabel: type === "rating" || type === "nps" ? (q.lowLabel ?? "Low") : undefined,
+      highLabel: type === "rating" || type === "nps" ? (q.highLabel ?? "High") : undefined,
+    };
+    onChange(next);
   }
 
   function addOption() {
@@ -57,7 +71,7 @@ export default function QuestionCard({ question: q, index, onChange, onDelete, o
     <div
       draggable
       onDragStart={e => onDragStart(e, index)}
-      onDragOver={e => { e.preventDefault(); onDragOver(e, index); }}
+      onDragOver={e => { e.preventDefault(); onDragOver(e); }}
       onDrop={e => onDrop(e, index)}
       style={{
         background: "rgba(255,255,255,0.06)",
@@ -114,7 +128,7 @@ export default function QuestionCard({ question: q, index, onChange, onDelete, o
               {TYPE_OPTIONS.map(t => {
                 const m = QUESTION_TYPE_META[t];
                 return (
-                  <button key={t} onClick={() => { setQ("type", t); setTypeOpen(false); }} style={{
+                  <button key={t} onClick={() => { changeType(t); setTypeOpen(false); }} style={{
                     width: "100%", display: "flex", alignItems: "center", gap: "8px",
                     padding: "7px 10px", borderRadius: "7px", border: "none",
                     background: q.type === t ? "rgba(201,169,110,0.15)" : "transparent",

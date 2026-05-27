@@ -9,8 +9,8 @@ import type { DashboardPayload } from "@/lib/dashboardData";
 import StatCard from "./StatCard";
 import {
   Mail, Clock, AlertCircle, Timer,
-  X, Reply, ArrowUpCircle, TrendingUp, AlertTriangle, Target,
-  ChevronRight, User, Sparkles, MessageSquare, Bell, StickyNote,
+  X, Reply, ArrowUpCircle, AlertTriangle,
+  ChevronRight, Sparkles, Bell, StickyNote,
   CheckCircle2, DollarSign, Zap,
 } from "lucide-react";
 
@@ -464,7 +464,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
           <div style={{ padding: "40px", textAlign: "center" }}>
             <CheckCircle2 size={28} color="#059669" style={{ margin: "0 auto 10px" }} />
             <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-1)", margin: "0 0 4px" }}>Inbox clear</p>
-            <p style={{ fontSize: "12px", color: "var(--text-3)", margin: 0 }}>No emails match this filter. Try "All" to see everything.</p>
+            <p style={{ fontSize: "12px", color: "var(--text-3)", margin: 0 }}>No emails match this filter. Try &quot;All&quot; to see everything.</p>
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>

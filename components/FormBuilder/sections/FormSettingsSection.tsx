@@ -63,6 +63,15 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
               whatsappNumber: rows[0].whatsapp_number ?? prev.routing.whatsappNumber,
             },
           }));
+        } else if (!s.propertyId && rows.length === 0) {
+          updateForm(prev => ({
+            ...prev,
+            settings: {
+              ...prev.settings,
+              propertyId: "treat-resorts",
+              propertyName: "Treat Resorts",
+            },
+          }));
         }
       })
       .catch(() => {
@@ -115,6 +124,33 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
         </select>
       </div>
 
+      {properties.length === 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "10px" }}>
+          <div>
+            <FieldLabel>Property ID</FieldLabel>
+            <input
+              type="text"
+              value={s.propertyId}
+              onChange={e => setField("propertyId", e.target.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+              style={inputStyle()}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+            />
+          </div>
+          <div>
+            <FieldLabel>Property Name</FieldLabel>
+            <input
+              type="text"
+              value={s.propertyName}
+              onChange={e => setField("propertyName", e.target.value)}
+              style={inputStyle()}
+              onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
+              onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Title */}
       <div>
         <FieldLabel>Form Title</FieldLabel>
@@ -164,6 +200,7 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
           {([
             ["collectGuestName",  "Guest Name"],
             ["collectGuestEmail", "Email Address"],
+            ["collectGuestPhone", "Phone Number"],
             ["collectRoomNumber", "Room Number"],
           ] as const).map(([key, label]) => (
             <label key={key} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
@@ -188,6 +225,19 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
             </label>
           ))}
         </div>
+      </div>
+
+      {/* Expiry */}
+      <div>
+        <FieldLabel>Expiry Date (optional)</FieldLabel>
+        <input
+          type="datetime-local"
+          value={s.expiresAt ? s.expiresAt.slice(0, 16) : ""}
+          onChange={e => setField("expiresAt", e.target.value)}
+          style={inputStyle()}
+          onFocus={e => (e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+        />
       </div>
 
       {/* Active toggle */}

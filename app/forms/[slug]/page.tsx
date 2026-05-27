@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
-import type { FormConfig, Question, RoutingRule } from "@/lib/formBuilderTypes";
+import type { AnswerValue, FormConfig, Question, RoutingRule, TriggeredRoutingAction } from "@/lib/formBuilderTypes";
 import { Star, CheckCircle, ChevronRight, AlertCircle } from "lucide-react";
 
 // Star rating interactive helper matching LivePreview
@@ -71,14 +71,15 @@ export default function GuestFormPage() {
   // Form responses state
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
   const [roomNumber, setRoomNumber] = useState("");
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Submission state
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [triggeredActions, setTriggeredActions] = useState<any[]>([]);
+  const [triggeredActions, setTriggeredActions] = useState<TriggeredRoutingAction[]>([]);
 
   // Formatted Review Link helper to prevent relative redirect issues
   const formattedReviewLink = useMemo(() => {
@@ -106,7 +107,7 @@ export default function GuestFormPage() {
         }
         const data = await res.json();
         setForm(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to load form config:", err);
         setForm(null);
       } finally {
@@ -118,7 +119,7 @@ export default function GuestFormPage() {
   }, [slug]);
 
   // Handle answers input change
-  const handleAnswerChange = (questionId: string, value: any) => {
+  const handleAnswerChange = (questionId: string, value: AnswerValue) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
     if (validationErrors[questionId]) {
       setValidationErrors(prev => {
@@ -130,10 +131,10 @@ export default function GuestFormPage() {
   };
 
   // Evaluate routing rules
-  const evaluateRoutingRules = (currentForm: FormConfig, currentAnswers: Record<string, any>) => {
+  const evaluateRoutingRules = (currentForm: FormConfig, currentAnswers: Record<string, AnswerValue>) => {
     if (!currentForm.routing || !currentForm.routing.enabled) return [];
 
-    const actions: any[] = [];
+    const actions: TriggeredRoutingAction[] = [];
     currentForm.routing.rules.forEach((rule: RoutingRule) => {
       const ansVal = currentAnswers[rule.questionId];
       if (ansVal === undefined || ansVal === null) return;
@@ -158,9 +159,16 @@ export default function GuestFormPage() {
       }
 
       if (isTriggered) {
+        const question = currentForm.questions.find(item => item.id === rule.questionId);
         actions.push({
           action: rule.action,
           triggered: true,
+          questionId: rule.questionId,
+          questionLabel: question?.label ?? rule.questionId,
+          condition: rule.condition,
+          value: rule.value,
+          value2: rule.value2,
+          answerValue: numericVal,
           reason: `Evaluated Rule for ${rule.questionId}: ${ansVal} matching condition ${rule.condition} (${rule.value}${rule.value2 ? ` and ${rule.value2}` : ""})`,
         });
       }
@@ -219,6 +227,7 @@ export default function GuestFormPage() {
       formId: form.id,
       guestName: guestName.trim(),
       guestEmail: guestEmail.trim(),
+      guestPhone: guestPhone.trim(),
       roomNumber: roomNumber.trim(),
       answers: form.questions.map(q => ({
         questionId: q.id,
@@ -243,7 +252,7 @@ export default function GuestFormPage() {
       }
 
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       alert("Submission encountered an issue. Please try again.");
     } finally {
@@ -447,7 +456,7 @@ export default function GuestFormPage() {
             </div>
 
             {/* Guest info card (Matches LivePreview exactly) */}
-            {(settings.collectGuestName || settings.collectGuestEmail || settings.collectRoomNumber) && (
+            {(settings.collectGuestName || settings.collectGuestEmail || settings.collectGuestPhone || settings.collectRoomNumber) && (
               <div style={{ padding: "16px 16px 0" }}>
                 <div style={{
                   background: "#FFFFFF", borderRadius: "12px",
@@ -492,6 +501,20 @@ export default function GuestFormPage() {
                       )}
                     </div>
                   )}
+                  {settings.collectGuestPhone && (
+                    <div style={{ marginBottom: "12px" }}>
+                      <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Phone</div>
+                      <input
+                        type="tel"
+                        placeholder="+91 98765 43210"
+                        value={guestPhone}
+                        onChange={e => setGuestPhone(e.target.value)}
+                        style={iStyle}
+                        onFocus={e => (e.currentTarget.style.borderColor = primColor)}
+                        onBlur={e => (e.currentTarget.style.borderColor = "#E4DDD4")}
+                      />
+                    </div>
+                  )}
                   {settings.collectRoomNumber && (
                     <div>
                       <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Room Number</div>
@@ -513,7 +536,7 @@ export default function GuestFormPage() {
             {/* Questions container (Matches LivePreview exactly) */}
             <div style={{ padding: "12px 16px 16px" }}>
               <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #E4DDD4", padding: "16px" }}>
-                {form.questions.map((q: Question, i: number) => {
+                {form.questions.map((q: Question) => {
                   const errorMsg = validationErrors[q.id];
                   const answer = answers[q.id];
 
@@ -535,7 +558,7 @@ export default function GuestFormPage() {
                         <div>
                           <StarRating 
                             max={q.maxRating ?? 5} 
-                            value={answer ?? 0} 
+                            value={typeof answer === "number" ? answer : 0} 
                             onChange={v => handleAnswerChange(q.id, v)} 
                           />
                           {(q.lowLabel || q.highLabel) && (
@@ -550,7 +573,7 @@ export default function GuestFormPage() {
                       {/* ── QUESTION TYPE: NPS (0-10 pills) ── */}
                       {q.type === "nps" && (
                         <NPSRow 
-                          value={answer ?? -1} 
+                          value={typeof answer === "number" ? answer : -1} 
                           onChange={v => handleAnswerChange(q.id, v)} 
                         />
                       )}

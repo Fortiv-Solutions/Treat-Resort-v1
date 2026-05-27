@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { FormConfig, Toast } from "@/lib/formBuilderTypes";
 import { Copy, Check, ExternalLink, QrCode, Code2 } from "lucide-react";
 
@@ -10,13 +10,18 @@ interface Props {
   addToast: (msg: string, type?: Toast["type"]) => void;
 }
 
+const subscribeToOrigin = () => () => {};
+const getClientOrigin = () => window.location.origin;
+const getServerOrigin = () => "";
+
 export default function ShareSection({ form, updateForm, addToast }: Props) {
   const [copied, setCopied] = useState<"link" | "embed" | null>(null);
+  const origin = useSyncExternalStore(subscribeToOrigin, getClientOrigin, getServerOrigin);
 
-  const slug = `${form.settings.propertyId}-${form.id}`;
-  const formLink = typeof window !== "undefined"
-    ? `${window.location.origin}/forms/${slug}`
-    : `https://forms.fortiv.in/${slug}`;
+  const slug = form.slug ?? "";
+  const hasSavedLink = Boolean(slug && form.id !== "new");
+  const formPath = `/forms/${slug || "save-form-first"}`;
+  const formLink = origin ? `${origin}${formPath}` : formPath;
 
   const embedCode = `<iframe src="${formLink}" width="100%" height="600" style="border:none;border-radius:16px;" title="Feedback Form"></iframe>`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(formLink)}&bgcolor=FAF8F5&color=1B4332`;
@@ -46,22 +51,23 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
             color: "rgba(255,255,255,0.6)",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>
-            {formLink}
+            {hasSavedLink ? formLink : "Save the form to generate a working link"}
           </div>
-          <button onClick={() => copyText(formLink, "link")} style={{
+          <button disabled={!hasSavedLink} onClick={() => copyText(formLink, "link")} style={{
             padding: "9px 14px", borderRadius: "9px", flexShrink: 0,
             background: copied === "link" ? "rgba(5,150,105,0.2)" : "rgba(201,169,110,0.12)",
             border: `1.5px solid ${copied === "link" ? "rgba(5,150,105,0.3)" : "rgba(201,169,110,0.2)"}`,
             color: copied === "link" ? "#6EE7B7" : "#C9A96E",
-            cursor: "pointer", display: "flex", alignItems: "center", gap: "6px",
+            cursor: hasSavedLink ? "pointer" : "not-allowed", display: "flex", alignItems: "center", gap: "6px",
             fontSize: "12px", fontWeight: 600, transition: "all 150ms",
+            opacity: hasSavedLink ? 1 : 0.55,
           }}>
             {copied === "link" ? <Check size={13} /> : <Copy size={13} />}
             {copied === "link" ? "Copied!" : "Copy"}
           </button>
         </div>
         <p style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.3)", marginTop: "5px" }}>
-          Share this link via WhatsApp 30 min after checkout
+          {hasSavedLink ? "Share this link via WhatsApp 30 min after checkout" : "The final public URL is created after the first successful save."}
         </p>
       </div>
 
@@ -78,7 +84,8 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
           border: "1px solid rgba(255,255,255,0.08)",
         }}>
           <div style={{ background: "#FAF8F5", borderRadius: "10px", padding: "8px", flexShrink: 0 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {hasSavedLink ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={qrUrl}
               alt="Form QR Code"
@@ -86,6 +93,11 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
               height={90}
               style={{ display: "block", borderRadius: "4px" }}
             />
+            ) : (
+              <div style={{ width: "90px", height: "90px", display: "grid", placeItems: "center", color: "#1B4332", fontSize: "11px", fontWeight: 700, textAlign: "center" }}>
+                Save first
+              </div>
+            )}
           </div>
           <div>
             <div style={{ fontSize: "12.5px", fontWeight: 600, color: "rgba(255,255,255,0.8)", marginBottom: "4px" }}>
@@ -95,7 +107,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
               Print and display at reception or in rooms for instant access
             </div>
             <a
-              href={qrUrl}
+              href={hasSavedLink ? qrUrl : "#"}
               download={`qr-${slug}.png`}
               style={{
                 display: "inline-flex", alignItems: "center", gap: "5px",
@@ -107,7 +119,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
               }}
             >
               <ExternalLink size={11} />
-              Download QR
+              {hasSavedLink ? "Download QR" : "QR Pending"}
             </a>
           </div>
         </div>
@@ -136,6 +148,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
             }}
           />
           <button
+            disabled={!hasSavedLink}
             onClick={() => copyText(embedCode, "embed")}
             style={{
               position: "absolute", top: "8px", right: "8px",
@@ -143,8 +156,9 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
               background: copied === "embed" ? "rgba(5,150,105,0.25)" : "rgba(255,255,255,0.1)",
               border: "1px solid rgba(255,255,255,0.1)",
               color: copied === "embed" ? "#6EE7B7" : "rgba(255,255,255,0.6)",
-              fontSize: "11px", cursor: "pointer",
+              fontSize: "11px", cursor: hasSavedLink ? "pointer" : "not-allowed",
               display: "flex", alignItems: "center", gap: "5px",
+              opacity: hasSavedLink ? 1 : 0.55,
             }}
           >
             {copied === "embed" ? <Check size={11} /> : <Copy size={11} />}
@@ -189,34 +203,6 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
             <h4 style={{ fontSize: "13px", fontWeight: 700, color: "#FFFFFF", margin: 0 }}>n8n Webhook Integration</h4>
             <p style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.4)", margin: "1px 0 0" }}>Connect your form to your n8n workflow server</p>
           </div>
-        </div>
-
-        {/* Save Webhook Input */}
-        <div>
-          <div style={{ fontSize: "10.5px", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "5px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-            n8n Save Webhook URL
-          </div>
-          <input
-            type="text"
-            value={form.settings.n8nSaveWebhook ?? ""}
-            onChange={e => {
-              updateForm?.(prev => ({
-                ...prev,
-                settings: { ...prev.settings, n8nSaveWebhook: e.target.value }
-              }));
-            }}
-            placeholder="https://n8n.yourdomain.com/webhook/..."
-            style={{
-              padding: "9px 12px",
-              background: "rgba(0,0,0,0.2)",
-              border: "1.5px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px", fontSize: "12px",
-              color: "#FFFFFF", outline: "none",
-              fontFamily: "'Inter', sans-serif",
-              width: "100%",
-              boxSizing: "border-box"
-            }}
-          />
         </div>
 
         {/* Submit Webhook Input */}
@@ -266,6 +252,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
                   propertyId: form.settings.propertyId,
                   guestName: "<guest_name>",
                   guestEmail: "<guest_email>",
+                  guestPhone: "<guest_phone>",
                   roomNumber: "<room_number>",
                   answers: [
                     { questionId: "<question_id>", questionLabel: "<question_label>", questionType: "<question_type>", value: "<answer_value>" }
@@ -313,6 +300,8 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
   "propertyName": "${form.settings.propertyName}",
   "propertyId": "${form.settings.propertyId}",
   "guestName": "<guest_name>",
+  "guestEmail": "<guest_email>",
+  "guestPhone": "<guest_phone>",
   "roomNumber": "<room_number>",
   "answers": [
     { "questionId": "<question_id>", "value": "<answer_value>" }

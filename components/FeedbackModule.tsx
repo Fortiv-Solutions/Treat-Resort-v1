@@ -12,8 +12,8 @@ import PerformanceChart from "./PerformanceChart";
 import {
   Hotel, MessageCircle, Star, AlertTriangle,
   ChevronDown, ChevronUp, Phone, UserCheck, CheckCircle2,
-  MessageSquare, Clock, RefreshCw, TrendingUp, ShieldCheck,
-  RotateCcw, Users,
+  MessageSquare, Clock, RefreshCw, ShieldCheck,
+  RotateCcw,
 } from "lucide-react";
 
 const SatelliteMap = dynamic(() => import("./SatelliteMap"), {
@@ -73,7 +73,6 @@ function ProgressBar({ value }: { value: number }) {
 function SLABadge({ hours }: { hours: number }) {
   const ok    = hours <= 2;
   const warn  = hours > 2 && hours <= 3.5;
-  const bad   = hours > 3.5;
   const bg    = ok ? "#ECFDF5" : warn ? "#FFFBEB" : "#FEF2F2";
   const color = ok ? "#065F46" : warn ? "#92400E" : "#991B1B";
   return (
@@ -488,7 +487,7 @@ export default function FeedbackModule({ role, data }: Props) {
 
                   {/* Snippet */}
                   <p style={{ fontSize: "12px", color: "var(--text-2)", margin: "0 0 5px", lineHeight: 1.45, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                    "{entry.snippet}"
+                    &quot;{entry.snippet}&quot;
                   </p>
 
                   {/* Meta row: assigned manager + escalation + time */}

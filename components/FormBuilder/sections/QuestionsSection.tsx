@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import type { FormConfig, Question, QuestionType, Toast } from "@/lib/formBuilderTypes";
 import { QUESTION_TYPE_META } from "@/lib/formBuilderConstants";
 import QuestionCard from "../QuestionCard";
@@ -45,7 +45,7 @@ export default function QuestionsSection({ form, updateForm, addToast }: Props) 
     e.dataTransfer.effectAllowed = "move";
   }
 
-  function handleDragOver(e: React.DragEvent, index: number) {
+  function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
   }
 

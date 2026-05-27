@@ -281,7 +281,7 @@ export default function LivePreview({ form }: Props) {
               </div>
 
               {/* Guest info fields */}
-              {(settings.collectGuestName || settings.collectGuestEmail || settings.collectRoomNumber) && (
+              {(settings.collectGuestName || settings.collectGuestEmail || settings.collectGuestPhone || settings.collectRoomNumber) && (
                 <div style={{ padding: "16px 16px 0" }}>
                   <div style={{
                     background: "#FFFFFF", borderRadius: "12px",
@@ -304,6 +304,12 @@ export default function LivePreview({ form }: Props) {
                         <div style={{ padding: "8px 10px", borderRadius: "8px", border: "1.5px solid #E4DDD4", fontSize: "12px", color: "#9CA3AF", background: "#FAFAFA" }}>name@email.com…</div>
                       </div>
                     )}
+                    {settings.collectGuestPhone && (
+                      <div style={{ marginBottom: "8px" }}>
+                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Phone</div>
+                        <div style={{ padding: "8px 10px", borderRadius: "8px", border: "1.5px solid #E4DDD4", fontSize: "12px", color: "#9CA3AF", background: "#FAFAFA" }}>+91 98765 43210</div>
+                      </div>
+                    )}
                     {settings.collectRoomNumber && (
                       <div>
                         <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Room Number</div>
@@ -323,7 +329,7 @@ export default function LivePreview({ form }: Props) {
                   </div>
                 ) : (
                   <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #E4DDD4", padding: "16px" }}>
-                    {form.questions.map((q, i) => (
+                    {form.questions.map(q => (
                       <QuestionPreview key={q.id} q={q} branding={branding} />
                     ))}
                   </div>

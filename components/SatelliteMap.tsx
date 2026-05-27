@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from "react-leaflet";
-import type { Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { PROPERTIES, type Property, type PropertyStatus } from "@/lib/data";
+import { type Property, type PropertyStatus } from "@/lib/data";
 import {
-  X, Star, MessageCircle, Users, AlertTriangle, TrendingUp, MapPin,
+  X, Star, MessageCircle, Users, AlertTriangle, MapPin,
 } from "lucide-react";
 
 /* ── ESRI free satellite tiles (no API key) ─────────── */
@@ -178,18 +177,6 @@ function SummaryCard({ properties }: { properties: Property[] }) {
 /* ── Main component ──────────────────────────────────── */
 export default function SatelliteMap({ properties }: { properties: Property[] }) {
   const [selected, setSelected] = useState<Property | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const [mapKey, setMapKey] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => {
-      // Force a fresh map instance on remount (HMR / strict-mode)
-      setMapKey(k => k + 1);
-    };
-  }, []);
-  if (!mounted) return null;
 
   return (
     <div style={{
@@ -230,7 +217,7 @@ export default function SatelliteMap({ properties }: { properties: Property[] })
       {/* Map area */}
       <div style={{ position: "relative", height: "280px" }}>
         <MapContainer
-          key={mapKey}
+          key="satellite-map"
           center={INDIA_CENTER}
           zoom={INDIA_ZOOM}
           minZoom={5}

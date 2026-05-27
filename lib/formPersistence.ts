@@ -1,5 +1,6 @@
 import type { FormConfig, Question, RoutingRule } from "@/lib/formBuilderTypes";
 import { supabaseDelete, supabaseInsert, supabaseSelect, supabaseUpsert } from "@/lib/supabaseRest";
+import { isUuidLike } from "@/lib/formBuilderValidation";
 
 type DbForm = {
   id: string;
@@ -52,6 +53,16 @@ type DbRoutingRule = {
   is_active: boolean;
 };
 
+type DbProperty = {
+  id: string;
+  name: string;
+  entity: "Mundra Hotels & Resorts" | "Tirupati Shelters" | "RAS Resorts";
+  gm_email: string;
+  whatsapp_number: string | null;
+  google_review_link: string | null;
+  is_active: boolean;
+};
+
 export function slugForForm(form: FormConfig) {
   if (form.id && form.id !== "new") return `${form.settings.propertyId}-${form.id}`;
   return `${form.settings.propertyId}-${crypto.randomUUID()}`;
@@ -63,6 +74,7 @@ export function dbFormToConfig(row: DbForm): FormConfig {
 
   return {
     id: row.id,
+    slug: row.slug,
     settings: {
       title: row.title,
       description: row.description ?? "",
@@ -71,10 +83,10 @@ export function dbFormToConfig(row: DbForm): FormConfig {
       language: row.language,
       collectGuestName: row.collect_name,
       collectGuestEmail: row.collect_email,
+      collectGuestPhone: row.branding.collectGuestPhone ?? false,
       collectRoomNumber: row.collect_room,
       expiresAt: row.expires_at ?? "",
       isActive: row.is_active,
-      n8nSaveWebhook: row.n8n_save_webhook ?? "",
       n8nSubmitWebhook: row.n8n_submit_webhook ?? "",
     },
     questions: questions.map(question => ({
@@ -122,7 +134,25 @@ export async function getForms(query: { id?: string | null; slug?: string | null
 
 export async function saveForm(form: FormConfig) {
   const id = form.id && form.id !== "new" ? form.id : crypto.randomUUID();
-  const slug = form.id && form.id !== "new" ? `${form.settings.propertyId}-${id}` : slugForForm({ ...form, id });
+  const slug = form.slug || (form.id && form.id !== "new" ? `${form.settings.propertyId}-${id}` : slugForForm({ ...form, id }));
+
+  const propertyCheck = await supabaseSelect<DbProperty>(
+    "properties",
+    `select=id&id=eq.${encodeURIComponent(form.settings.propertyId)}&limit=1`,
+  );
+  if (!propertyCheck.ok) return propertyCheck;
+  if (propertyCheck.data.length === 0) {
+    const propertyResult = await supabaseInsert<DbProperty>("properties", {
+      id: form.settings.propertyId,
+      name: form.settings.propertyName || form.settings.propertyId,
+      entity: "RAS Resorts",
+      gm_email: form.routing.gmEmail || "gm@treatresorts.com",
+      whatsapp_number: form.routing.whatsappNumber || null,
+      google_review_link: form.routing.reviewLink || null,
+      is_active: true,
+    });
+    if (!propertyResult.ok) return propertyResult;
+  }
 
   const formRow = {
     id,
@@ -136,12 +166,15 @@ export async function saveForm(form: FormConfig) {
     collect_room: form.settings.collectRoomNumber,
     expires_at: form.settings.expiresAt || null,
     is_active: form.settings.isActive,
-    n8n_save_webhook: form.settings.n8nSaveWebhook || null,
+    n8n_save_webhook: null,
     n8n_submit_webhook: form.settings.n8nSubmitWebhook || null,
     review_link: form.routing.reviewLink || null,
     gm_alert_email: form.routing.gmEmail || null,
     md_alert_email: form.routing.mdEmail || null,
-    branding: form.branding,
+    branding: {
+      ...form.branding,
+      collectGuestPhone: form.settings.collectGuestPhone ?? false,
+    },
   };
 
   const formResult = await supabaseUpsert<DbForm>("forms", formRow, "id");
@@ -151,7 +184,7 @@ export async function saveForm(form: FormConfig) {
 
   if (form.questions.length > 0) {
     const questionRows = form.questions.map((question, index) => ({
-      id: question.id && question.id.length > 20 ? question.id : crypto.randomUUID(),
+      id: isUuidLike(question.id) ? question.id : crypto.randomUUID(),
       form_id: id,
       type: question.type,
       label: question.label,
@@ -169,9 +202,16 @@ export async function saveForm(form: FormConfig) {
     if (!questionResult.ok) return questionResult;
 
     const questionIdMap = new Map(form.questions.map((question, index) => [question.id, questionRows[index].id]));
+
+    const keptQuestionIds = questionRows.map(question => question.id).join(",");
+    if (keptQuestionIds) {
+      const deleteResult = await supabaseDelete("questions", `form_id=eq.${id}&id=not.in.(${keptQuestionIds})`);
+      if (!deleteResult.ok) return deleteResult;
+    }
+
     const ruleRows = form.routing.rules
       .map((rule, index) => ({
-        id: rule.id && rule.id.length > 20 ? rule.id : crypto.randomUUID(),
+        id: isUuidLike(rule.id) ? rule.id : crypto.randomUUID(),
         form_id: id,
         question_id: questionIdMap.get(rule.questionId),
         condition: rule.condition,
@@ -184,10 +224,13 @@ export async function saveForm(form: FormConfig) {
       }))
       .filter(row => row.question_id);
 
-    if (ruleRows.length > 0) {
+    if (form.routing.enabled && ruleRows.length > 0) {
       const ruleResult = await supabaseInsert<DbRoutingRule>("routing_rules", ruleRows);
       if (!ruleResult.ok) return ruleResult;
     }
+  } else {
+    const deleteResult = await supabaseDelete("questions", `form_id=eq.${id}`);
+    if (!deleteResult.ok) return deleteResult;
   }
 
   const saved = await getForms({ id });

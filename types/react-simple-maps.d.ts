@@ -1,12 +1,14 @@
 declare module "react-simple-maps" {
-  import { ComponentType, SVGProps, MouseEvent } from "react";
+  import { ComponentType } from "react";
 
-  export const ComposableMap: ComponentType<any>;
-  export const Geographies: ComponentType<any>;
-  export const Geography: ComponentType<any>;
-  export const Marker: ComponentType<any>;
-  export const ZoomableGroup: ComponentType<any>;
-  export const Sphere: ComponentType<any>;
-  export const Graticule: ComponentType<any>;
-  export const Line: ComponentType<any>;
+  type MapComponentProps = Record<string, unknown>;
+
+  export const ComposableMap: ComponentType<MapComponentProps>;
+  export const Geographies: ComponentType<MapComponentProps>;
+  export const Geography: ComponentType<MapComponentProps>;
+  export const Marker: ComponentType<MapComponentProps>;
+  export const ZoomableGroup: ComponentType<MapComponentProps>;
+  export const Sphere: ComponentType<MapComponentProps>;
+  export const Graticule: ComponentType<MapComponentProps>;
+  export const Line: ComponentType<MapComponentProps>;
 }

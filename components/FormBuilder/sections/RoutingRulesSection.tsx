@@ -29,8 +29,8 @@ const ACTION_LABELS: Record<RoutingRule["action"], { label: string; icon: typeof
 };
 
 const CONDITION_LABELS: Record<RoutingRule["condition"], string> = {
-  gte: "is ≥",
-  lte: "is ≤",
+  gte: "is >=",
+  lte: "is <=",
   eq: "equals",
   between: "is between",
 };
@@ -60,8 +60,6 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
   function deleteRule(id: string) {
     setRouting("rules", r.rules.filter(rule => rule.id !== id));
   }
-
-  const ratingQuestions = form.questions.filter(q => q.type === "rating" || q.type === "nps");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -103,7 +101,6 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {r.rules.map((rule, i) => {
               const actionMeta = ACTION_LABELS[rule.action];
-              const ActionIcon = actionMeta.icon;
               return (
                 <div key={rule.id} style={{
                   background: "rgba(255,255,255,0.05)",
@@ -192,6 +189,16 @@ export default function RoutingRulesSection({ form, updateForm }: Props) {
                       ))}
                     </select>
                   </div>
+
+                  {rule.action === "custom_message" && (
+                    <textarea
+                      value={rule.customMessage ?? ""}
+                      onChange={e => updateRule(rule.id, { customMessage: e.target.value })}
+                      placeholder="Message shown after submission"
+                      rows={2}
+                      style={{ ...iStyle(), width: "100%", resize: "vertical", lineHeight: 1.4 }}
+                    />
+                  )}
                 </div>
               );
             })}

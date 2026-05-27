@@ -112,11 +112,6 @@ function num(value: number | string | null | undefined) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function daysAgo(date: string) {
-  const diff = Date.now() - new Date(date).getTime();
-  return Math.max(0, Math.round(diff / 86_400_000));
-}
-
 function hoursAgo(date: string) {
   const diff = Date.now() - new Date(date).getTime();
   return Math.max(0, Math.round((diff / 3_600_000) * 10) / 10);
@@ -277,7 +272,6 @@ export function buildDashboardPayload(input: {
     const prop = propertyById.get(row.property_id);
     const totalRevenue = num(row.total_revenue);
     const totalRooms = num(row.total_rooms);
-    const occupied = num(row.rooms_occupied);
     const occ = num(row.occupancy_pct);
     return {
       id: row.property_id,

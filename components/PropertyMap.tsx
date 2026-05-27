@@ -7,7 +7,7 @@ import {
   ComposableMap, Geographies, Geography,
   Marker, ZoomableGroup,
 } from "react-simple-maps";
-import { PROPERTIES, type Property, type PropertyStatus } from "@/lib/data";
+import { type Property, type PropertyStatus } from "@/lib/data";
 import { X, MapPin, Star, MessageCircle, Users, AlertTriangle, TrendingUp } from "lucide-react";
 
 /* ── Geo data ───────────────────────────────────────── */
@@ -220,7 +220,6 @@ function SummaryPanel({ properties }: { properties: Property[] }) {
 export default function PropertyMap({ properties }: { properties: Property[] }) {
   const [selected, setSelected] = useState<Property | null>(null);
   const [hovered, setHovered]   = useState<string | null>(null);
-  const [tooltip, setTooltip]   = useState<{ x: number; y: number; id: string } | null>(null);
 
   const totals = {
     checkouts:  properties.reduce((s, p) => s + p.checkouts, 0),
@@ -299,8 +298,8 @@ export default function PropertyMap({ properties }: { properties: Property[] }) 
           >
             <ZoomableGroup zoom={1} minZoom={0.8} maxZoom={3}>
               <Geographies geography={GEO_URL}>
-                {({ geographies }: { geographies: any[] }) =>
-                  geographies.map((geo: any) => {
+                {({ geographies }: { geographies: Array<{ rsmKey: string; properties: { name?: string } }> }) =>
+                  geographies.map(geo => {
                     const isIndia = geo.properties.name === "India";
                     return (
                       <Geography
@@ -344,12 +343,10 @@ export default function PropertyMap({ properties }: { properties: Property[] }) 
                     key={prop.id}
                     coordinates={coords}
                     onClick={() => setSelected(selected?.id === prop.id ? null : prop)}
-                    onMouseEnter={(e: React.MouseEvent) => {
+                    onMouseEnter={() => {
                       setHovered(prop.id);
-                      const rect = (e.target as SVGElement).getBoundingClientRect();
-                      setTooltip({ x: rect.x + rect.width / 2, y: rect.y - 8, id: prop.id });
                     }}
-                    onMouseLeave={() => { setHovered(null); setTooltip(null); }}
+                    onMouseLeave={() => { setHovered(null); }}
                     style={{ cursor: "pointer" }}
                   >
                     {/* Glow ring */}

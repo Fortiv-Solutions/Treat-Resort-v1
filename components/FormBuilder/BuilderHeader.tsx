@@ -1,60 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import type { FormConfig, Toast } from "@/lib/formBuilderTypes";
-import { Eye, Download, Save, Sparkles, ChevronLeft } from "lucide-react";
+import { AlertCircle, CheckCircle2, Download, Loader2, Sparkles, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 interface Props {
   form: FormConfig;
-  updateForm?: (updater: (prev: FormConfig) => FormConfig) => void;
+  autosaveStatus: "idle" | "saving" | "saved" | "error";
+  autosaveMessage: string;
   addToast: (msg: string, type?: Toast["type"]) => void;
 }
 
-export default function BuilderHeader({ form, updateForm, addToast }: Props) {
-  const [saving, setSaving] = useState(false);
-
-  async function handleSave() {
-    setSaving(true);
-    try {
-      const response = await fetch("/api/forms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server returned status ${response.status}`);
-      }
-
-      const resData = await response.json();
-      if (resData.success) {
-        // Update client-side form ID with the database generated/assigned ID
-        if (resData.form?.id && updateForm) {
-          updateForm(prev => ({ ...prev, id: resData.form.id }));
-        }
-
-        addToast(
-          resData.n8n?.success 
-            ? "Form saved & synced with n8n!" 
-            : resData.n8n?.message.includes("No webhook") 
-            ? "Form saved successfully!" 
-            : `Form saved to database (${resData.n8n?.message})`,
-          resData.n8n?.success || resData.n8n?.message.includes("No") ? "success" : "info"
-        );
-      } else {
-        throw new Error(resData.error || "Unknown saving error");
-      }
-    } catch (error: any) {
-      console.error("Save failed:", error);
-      addToast(`Failed to save: ${error.message}`, "error");
-    } finally {
-      setSaving(false);
-    }
-  }
-
+export default function BuilderHeader({ form, autosaveStatus, autosaveMessage, addToast }: Props) {
   function handleExport() {
     const json = JSON.stringify(form, null, 2);
     const blob = new Blob([json], { type: "application/json" });
@@ -66,6 +23,15 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
     URL.revokeObjectURL(url);
     addToast("Form exported as JSON", "info");
   }
+
+  const StatusIcon =
+    autosaveStatus === "saving" ? Loader2 :
+    autosaveStatus === "error" ? AlertCircle :
+    CheckCircle2;
+  const statusColor =
+    autosaveStatus === "error" ? "#FCA5A5" :
+    autosaveStatus === "saving" ? "#FDE68A" :
+    "#6EE7B7";
 
   return (
     <header style={{
@@ -155,25 +121,21 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
           Export
         </button>
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          style={{
-            display: "flex", alignItems: "center", gap: "6px",
-            padding: "8px 16px", borderRadius: "9px",
-            background: saving ? "rgba(201,169,110,0.6)" : "linear-gradient(135deg, #C9A96E 0%, #b8935a 100%)",
-            border: "none",
-            color: "#1B4332", fontSize: "12px", fontWeight: 700,
-            cursor: saving ? "not-allowed" : "pointer",
-            transition: "opacity 150ms",
-            boxShadow: "0 2px 12px rgba(201,169,110,0.35)",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Save size={13} />
-          {saving ? "Saving…" : "Save Form"}
-        </button>
+        <div style={{
+          display: "flex", alignItems: "center", gap: "7px",
+          padding: "8px 12px", borderRadius: "9px",
+          background: "rgba(255,255,255,0.07)",
+          border: `1px solid ${autosaveStatus === "error" ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.12)"}`,
+          color: statusColor,
+          fontSize: "11.5px", fontWeight: 650,
+          maxWidth: "260px",
+          whiteSpace: "nowrap",
+        }}>
+          <StatusIcon size={13} style={{ flexShrink: 0, animation: autosaveStatus === "saving" ? "spin 900ms linear infinite" : "none" }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{autosaveMessage}</span>
+        </div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </header>
   );
 }

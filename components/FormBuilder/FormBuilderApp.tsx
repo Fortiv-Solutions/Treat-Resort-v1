@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useId } from "react";
-import type { FormConfig, Toast, Question } from "@/lib/formBuilderTypes";
+import { useState, useCallback, useEffect, useId, useRef } from "react";
+import type { FormConfig, Toast } from "@/lib/formBuilderTypes";
 import { DEFAULT_FORM } from "@/lib/formBuilderConstants";
 import BuilderHeader from "./BuilderHeader";
 import ToastContainer from "./Toast";
@@ -23,11 +23,24 @@ const SECTIONS = [
 ] as const;
 
 type SectionKey = (typeof SECTIONS)[number]["key"];
+type AutosaveStatus = "idle" | "saving" | "saved" | "error";
+
+function isAutosaveReady(form: FormConfig) {
+  return Boolean(
+    form.settings.propertyId.trim() &&
+    form.settings.propertyName.trim() &&
+    form.settings.title.trim() &&
+    form.questions.length > 0,
+  );
+}
 
 export default function FormBuilderApp() {
   const [form, setForm] = useState<FormConfig>(DEFAULT_FORM);
   const [openSection, setOpenSection] = useState<SectionKey | null>("settings");
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle");
+  const [autosaveMessage, setAutosaveMessage] = useState("Waiting for form details");
+  const lastSavedSnapshotRef = useRef("");
   const uid = useId();
 
   const updateForm = useCallback((updater: (prev: FormConfig) => FormConfig) => {
@@ -48,6 +61,59 @@ export default function FormBuilderApp() {
     setOpenSection(prev => prev === key ? null : key);
   }, []);
 
+  useEffect(() => {
+    const snapshot = JSON.stringify(form);
+
+    if (!isAutosaveReady(form)) {
+      return;
+    }
+
+    if (snapshot === lastSavedSnapshotRef.current) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setAutosaveStatus("saving");
+      setAutosaveMessage("Saving changes...");
+
+      fetch("/api/forms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-form-autosave": "true",
+        },
+        body: snapshot,
+        signal: controller.signal,
+      })
+        .then(async response => {
+          const data = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(data?.error || `Autosave failed with status ${response.status}`);
+          }
+          if (!data?.form) {
+            throw new Error("Autosave response did not include a form.");
+          }
+          const savedSnapshot = JSON.stringify(data.form);
+          lastSavedSnapshotRef.current = savedSnapshot;
+          setForm(data.form);
+          setAutosaveStatus("saved");
+          setAutosaveMessage("All changes saved");
+        })
+        .catch(error => {
+          if (controller.signal.aborted) return;
+          const message = error instanceof Error ? error.message : "Autosave failed";
+          setAutosaveStatus("error");
+          setAutosaveMessage(message);
+        });
+    }, 900);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [form]);
+
   return (
     <div className="form-builder-shell" style={{
       minHeight: "100vh",
@@ -56,7 +122,7 @@ export default function FormBuilderApp() {
       flexDirection: "column",
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     }}>
-      <BuilderHeader form={form} updateForm={updateForm} addToast={addToast} />
+      <BuilderHeader form={form} autosaveStatus={autosaveStatus} autosaveMessage={autosaveMessage} addToast={addToast} />
 
       {/* Two-panel content */}
       <div style={{

@@ -25,7 +25,9 @@ const OTHER_NAV_ITEMS = [
 ];
 
 export default function Sidebar({ activeModule, setActiveModule, role, setRole }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 1023px)").matches : false
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [roleOpen, setRoleOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(true);
@@ -39,7 +41,6 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
       if (e.matches) setCollapsed(true);
       else setCollapsed(false);
     };
-    setCollapsed(mq.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
@@ -50,11 +51,12 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
     document.documentElement.style.setProperty("--sidebar-current-w", w);
   }, [collapsed]);
 
-  /* Close mobile sidebar on module change */
-  useEffect(() => { setMobileOpen(false); }, [activeModule]);
-
   const isCollapsed = collapsed;
   const currentRole = ROLES.find(r => r.value === role);
+  const switchModule = (module: Module) => {
+    setActiveModule(module);
+    setMobileOpen(false);
+  };
 
   return (
     <>
@@ -167,7 +169,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
                 {/* Parent row */}
                 <button
                   onClick={() => {
-                    setActiveModule("feedback");
+                    switchModule("feedback");
                     setFeedbackOpen(o => !o);
                   }}
                   aria-current={isFeedbackActive ? "page" : undefined}
@@ -233,7 +235,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
                   }}>
                     {/* Reviews & Insights */}
                     <button
-                      onClick={() => { setActiveModule("feedback"); }}
+                      onClick={() => { switchModule("feedback"); }}
                       style={{
                         width: "100%", display: "flex", alignItems: "center", gap: "10px",
                         padding: "8px 10px", borderRadius: "8px", border: "none", cursor: "pointer",
@@ -296,7 +298,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
             return (
               <button
                 key={key}
-                onClick={() => setActiveModule(key)}
+                onClick={() => switchModule(key)}
                 aria-current={active ? "page" : undefined}
                 style={{
                   width: "100%", display: "flex", alignItems: "center",

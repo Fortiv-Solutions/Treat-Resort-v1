@@ -38,6 +38,27 @@ export interface RoutingRule {
   questionId: string;
 }
 
+export type AnswerValue = string | number | string[];
+
+export interface SubmittedAnswer {
+  questionId: string;
+  questionLabel: string;
+  questionType: QuestionType;
+  value: AnswerValue;
+}
+
+export interface TriggeredRoutingAction {
+  action: RoutingRule["action"];
+  triggered: true;
+  questionId: string;
+  questionLabel: string;
+  condition: RoutingRule["condition"];
+  value: number;
+  value2?: number;
+  answerValue: number;
+  reason: string;
+}
+
 export interface RoutingConfig {
   enabled: boolean;
   rules: RoutingRule[];
@@ -57,6 +78,7 @@ export interface BrandingConfig {
   thankYouMessage: string;
   showPropertyName: boolean;
   fontFamily: string;
+  collectGuestPhone?: boolean;
 }
 
 export interface FormSettings {
@@ -67,15 +89,16 @@ export interface FormSettings {
   language: string;
   collectGuestName: boolean;
   collectGuestEmail: boolean;
+  collectGuestPhone?: boolean;
   collectRoomNumber: boolean;
   expiresAt: string;
   isActive: boolean;
-  n8nSaveWebhook?: string;
   n8nSubmitWebhook?: string;
 }
 
 export interface FormConfig {
   id: string;
+  slug?: string;
   settings: FormSettings;
   questions: Question[];
   routing: RoutingConfig;
