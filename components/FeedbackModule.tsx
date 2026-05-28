@@ -81,6 +81,8 @@ function DetailRow({ label, value }: { label: string; value: ReactNode }) {
 }
 
 function DetailDrawer({ selection, onClose }: { selection: DetailSelection | null; onClose: () => void }) {
+  const zoomAdjustedViewport = "calc(100dvh / 0.9)";
+
   useEffect(() => {
     if (!selection) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -102,18 +104,23 @@ function DetailDrawer({ selection, onClose }: { selection: DetailSelection | nul
   const subtitle = isProperty ? "Property performance details" : selection.item.property;
 
   return createPortal(
-    <div className="fixed inset-0 z-[900] min-h-[100dvh]">
+    <div
+      className="fixed left-0 top-0 z-[900] w-[calc(100vw/0.9)]"
+      style={{ height: zoomAdjustedViewport }}
+    >
       <button
         type="button"
         aria-label="Close details"
-        className="fixed inset-0 min-h-[100dvh] bg-slate-950/35 backdrop-blur-[3px]"
+        className="fixed left-0 top-0 w-[calc(100vw/0.9)] bg-slate-950/35 backdrop-blur-[3px]"
+        style={{ height: zoomAdjustedViewport }}
         onClick={onClose}
       />
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby="feedback-detail-title"
-        className="fixed bottom-0 right-0 top-0 z-[901] flex h-[100dvh] max-h-[100dvh] w-full max-w-[520px] flex-col border-l border-[#B9D9CF] bg-[#F8FCFA] shadow-2xl"
+        className="fixed right-0 top-0 z-[901] flex w-full max-w-[520px] flex-col border-l border-[#B9D9CF] bg-[#F8FCFA] shadow-2xl"
+        style={{ height: zoomAdjustedViewport, maxHeight: zoomAdjustedViewport }}
       >
         <div className="shrink-0 border-b border-[#B9D9CF] bg-white/95 px-6 py-4 shadow-[0_8px_24px_rgba(0,115,95,0.06)] backdrop-blur-xl">
           <div className="flex items-start justify-between gap-4">
@@ -137,7 +144,7 @@ function DetailDrawer({ selection, onClose }: { selection: DetailSelection | nul
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">
           {isProperty ? (
             <div className="space-y-5">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
