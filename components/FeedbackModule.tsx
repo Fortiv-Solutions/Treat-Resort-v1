@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
 import {
   type Role, PROPERTIES,
   type PropertyStatus, type FeedbackSentiment,
@@ -399,14 +398,14 @@ export default function FeedbackModule({ role, data }: Props) {
         </div>
 
         {/* Overview Insights */}
-        <div className="order-1 grid grid-cols-1 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] gap-6 w-full">
+        <div className="order-1 grid grid-cols-1 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] gap-6 w-full items-stretch">
           {/* Performance Chart */}
-          <div className="anim-fade-up" style={{ animationDelay: "220ms" }}>
+          <div className="anim-fade-up h-full" style={{ animationDelay: "220ms" }}>
             <PerformanceChart properties={allProps} />
           </div>
 
           {/* Live Feedback Feed */}
-          <div className="glass-card overflow-hidden anim-fade-up flex flex-col" style={{ animationDelay: "230ms", maxHeight: "420px" }}>
+          <div className="glass-card overflow-hidden anim-fade-up flex flex-col h-[420px]" style={{ animationDelay: "230ms" }}>
           <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50 shrink-0">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Live Feedback</h2>
@@ -425,7 +424,7 @@ export default function FeedbackModule({ role, data }: Props) {
                 <p className="text-sm font-bold text-brand-text-1 mb-1">All clear</p>
                 <p className="text-sm text-brand-text-3">No feedback submissions are available yet.</p>
               </div>
-            ) : visibleFeed.map((entry, i) => {
+            ) : visibleFeed.map((entry) => {
               const sentStyle     = SENTIMENT_STYLE[entry.sentiment];
               const isResolved    = resolvedIds.has(entry.id);
               const isAssigned    = assignedIds.has(entry.id);

@@ -13,7 +13,7 @@ import type { Property } from "@/lib/data";
 
 function EmptyChart() {
   return (
-    <div style={{ height: "200px", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color: "var(--text-3)", fontSize: "12px" }}>
+    <div style={{ minHeight: "250px", flex: 1, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color: "var(--text-3)", fontSize: "12px" }}>
       No property performance data yet.
     </div>
   );
@@ -28,7 +28,7 @@ export default function PerformanceChart({ properties }: { properties: Property[
   }));
 
   return (
-    <div className="glass-card" style={{ padding: "22px 24px" }}>
+    <div className="glass-card h-full min-h-[420px] flex flex-col" style={{ padding: "22px 24px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
         <div>
           <h2 style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-1)", lineHeight: 1.2 }}>
@@ -56,7 +56,8 @@ export default function PerformanceChart({ properties }: { properties: Property[
       {data.length === 0 ? (
         <EmptyChart />
       ) : (
-        <ResponsiveContainer width="100%" height={200} minWidth={1} minHeight={1}>
+        <div style={{ flex: 1, minHeight: "250px" }}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
           <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="gradOcc" x1="0" y1="0" x2="0" y2="1">
@@ -81,6 +82,7 @@ export default function PerformanceChart({ properties }: { properties: Property[
             <Area type="monotone" dataKey="reviewScore" name="Review Score" stroke="var(--teal)" strokeWidth={2} fill="url(#gradRev)" dot={false} />
           </AreaChart>
         </ResponsiveContainer>
+        </div>
       )}
     </div>
   );
