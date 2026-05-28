@@ -280,10 +280,10 @@ export default function FeedbackModule({ role, data }: Props) {
       )}
 
       {/* ── Main Dashboard Layout ── */}
-      <div className="grid grid-cols-1 2xl:grid-cols-[minmax(0,1fr)_420px] gap-6 items-start">
+      <div className="grid grid-cols-1 gap-6 items-start">
 
         {/* Property Performance Table */}
-        <div className="glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "200ms" }}>
+        <div className="order-2 glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "240ms" }}>
           <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white/50">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Property Performance</h2>
@@ -398,15 +398,15 @@ export default function FeedbackModule({ role, data }: Props) {
           )}
         </div>
 
-        {/* Right Sidebar: Chart + Feed */}
-        <div className="flex flex-col gap-6 w-full">
+        {/* Overview Insights */}
+        <div className="order-1 grid grid-cols-1 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] gap-6 w-full">
           {/* Performance Chart */}
           <div className="anim-fade-up" style={{ animationDelay: "220ms" }}>
             <PerformanceChart properties={allProps} />
           </div>
 
           {/* Live Feedback Feed */}
-          <div className="glass-card overflow-hidden anim-fade-up flex flex-col" style={{ animationDelay: "240ms", maxHeight: "600px" }}>
+          <div className="glass-card overflow-hidden anim-fade-up flex flex-col" style={{ animationDelay: "230ms", maxHeight: "420px" }}>
           <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50 shrink-0">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Live Feedback</h2>

@@ -42,7 +42,7 @@ export default function HelpDeskPage() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1200px] mx-auto">
           
           {/* Hero Section */}
-          <div className="bg-brand-green-900 rounded-2xl p-10 md:p-14 text-center mb-8 relative overflow-hidden shadow-lg border border-brand-green-800">
+          <div className="bg-[#00735F] rounded-2xl p-10 md:p-14 text-center mb-8 relative overflow-hidden shadow-lg border border-[#00735F]">
             {/* Decorative background circles */}
             <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
             <div className="absolute bottom-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
