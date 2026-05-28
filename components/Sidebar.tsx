@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { type Role } from "@/lib/data";
 import {
   LayoutDashboard, Inbox, ChevronLeft, ChevronRight,
@@ -24,20 +24,35 @@ const NAV_ITEMS = [
   { key: "inbox"   as Module, icon: Inbox,       label: "Message",       sub: "Unified Inbox" },
 ];
 
+const SIDEBAR_AUTO_COLLAPSE_QUERY = "(max-width: 1023px)";
+
+function subscribeToSidebarMedia(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+
+  const mq = window.matchMedia(SIDEBAR_AUTO_COLLAPSE_QUERY);
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+
+function getSidebarMediaSnapshot() {
+  return typeof window !== "undefined" && window.matchMedia(SIDEBAR_AUTO_COLLAPSE_QUERY).matches;
+}
+
+function getSidebarServerSnapshot() {
+  return false;
+}
+
 export default function Sidebar({ activeModule, setActiveModule, role, setRole }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [userCollapsed, setUserCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const autoCollapsed = useSyncExternalStore(
+    subscribeToSidebarMedia,
+    getSidebarMediaSnapshot,
+    getSidebarServerSnapshot
+  );
+  const collapsed = autoCollapsed || userCollapsed;
 
   const pathname = usePathname();
-
-  /* Auto-collapse on tablet */
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1023px)");
-    setCollapsed(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setCollapsed(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.collapsed = String(collapsed);
@@ -79,7 +94,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
           
           {collapsed ? (
             <button
-              onClick={() => setCollapsed(false)}
+              onClick={() => setUserCollapsed(false)}
               className="bg-transparent border-none p-0 flex items-center justify-center cursor-pointer group"
               aria-label="Expand sidebar"
             >
@@ -105,7 +120,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
                 </div>
               </div>
               <button
-                onClick={() => setCollapsed(true)}
+                onClick={() => setUserCollapsed(true)}
                 className="w-8 h-8 rounded-lg bg-brand-surface-2 flex items-center justify-center shrink-0 hover:bg-brand-green-700/10 hover:text-brand-green-700 transition-colors text-brand-text-3"
                 aria-label="Collapse sidebar"
               >
@@ -244,7 +259,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
         {/* Collapsed Expand Button */}
         {collapsed && (
           <button
-            onClick={() => setCollapsed(false)}
+            onClick={() => setUserCollapsed(false)}
             className="my-2 mx-auto w-9 h-9 flex items-center justify-center bg-brand-surface-2 rounded-[9px] cursor-pointer hover:bg-brand-border-soft transition-all shrink-0"
             aria-label="Expand sidebar"
           >

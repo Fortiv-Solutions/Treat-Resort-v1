@@ -46,7 +46,7 @@ export default function Dashboard() {
       />
 
       {/* ── Main ── */}
-      <div className="flex flex-col flex-1 min-h-screen w-full transition-all duration-300 ease-out-expo lg:ml-[248px] peer-data-[collapsed=true]:lg:ml-[72px]">
+      <div className="app-content-shell">
         {/* Top Header */}
         <header className="sticky top-0 z-40 bg-[#f6f8fa] px-4 sm:px-8 h-[88px] flex items-center justify-between gap-4">
           {/* Page title */}
