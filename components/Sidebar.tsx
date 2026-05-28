@@ -54,7 +54,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
     }`;
 
   return (
-    <header className="sticky top-0 z-[500] border-b border-brand-border bg-brand-green-100/90 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,115,95,0.08)]">
+    <header className="sticky top-0 z-[500] border-b border-white/70 bg-white/75 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,115,95,0.08)]">
       <div className="mx-auto flex h-[76px] w-full max-w-[1920px] items-center justify-between gap-4 px-4 sm:px-8">
         <Link href="/?module=feedback" onClick={() => setActiveModule("feedback")} className="flex min-w-0 items-center gap-3 no-underline">
           <img

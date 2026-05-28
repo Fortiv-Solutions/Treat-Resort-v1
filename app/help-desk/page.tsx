@@ -29,15 +29,6 @@ export default function HelpDeskPage() {
 
       {/* ── Main ── */}
       <div className="app-content-shell">
-        {/* Top Header */}
-        <header className="bg-transparent px-4 sm:px-8 h-[88px] flex items-center gap-4">
-          <div className="flex items-center min-w-0">
-            <h1 className="text-xl sm:text-[22px] font-bold text-brand-text-1 leading-tight truncate">
-              Help Desk
-            </h1>
-          </div>
-        </header>
-
         {/* Page Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1200px] mx-auto">
           

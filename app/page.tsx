@@ -11,12 +11,6 @@ import { useSearchParams } from "next/navigation";
 
 type Module = "feedback" | "inbox" | "finance";
 
-const MODULE_META: Record<Module, { title: string; subtitle: string }> = {
-  feedback: { title: "Guest Feedback & Reviews", subtitle: "Automated feedback collection, Google review funneling, and complaint alerts" },
-  inbox:    { title: "Unified Email Inbox",       subtitle: "Email thread management from Supabase" },
-  finance:  { title: "Finance Intelligence",      subtitle: "Revenue, occupancy, receivables, and Tally metadata from Supabase" },
-};
-
 function getModuleFromParam(value: string | null): Module | null {
   return value === "feedback" || value === "inbox" || value === "finance" ? value : null;
 }
@@ -36,8 +30,6 @@ function DashboardContent() {
   const [dashboardData, setDashboardData] = useState<DashboardPayload | null>(null);
 
   const activeModule = getModuleFromParam(searchParams.get("module")) ?? selectedModule;
-  const meta = MODULE_META[activeModule];
-
   useEffect(() => {
     let active = true;
     fetch("/api/dashboard")
@@ -59,16 +51,6 @@ function DashboardContent() {
 
       {/* ── Main ── */}
       <div className="app-content-shell">
-        {/* Top Header */}
-        <header className="bg-transparent px-4 sm:px-8 h-[88px] flex items-center gap-4">
-          {/* Page title */}
-          <div className="flex items-center min-w-0">
-            <h1 className="text-xl sm:text-[22px] font-bold text-brand-text-1 leading-tight truncate">
-              {activeModule === "feedback" ? "Guest Feedback" : meta.title === "Finance Intelligence" ? "Dashboard" : meta.title}
-            </h1>
-          </div>
-        </header>
-
         {/* Page Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
           {activeModule === "feedback"
