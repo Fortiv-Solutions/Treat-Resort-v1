@@ -107,16 +107,6 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .app-content-shell {
-    margin-left: 248px;
-  }
-
-  html[data-collapsed="true"] .app-content-shell {
-    margin-left: 72px;
-  }
-}
-
 /* Maintain keyframes for the simple animations */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }

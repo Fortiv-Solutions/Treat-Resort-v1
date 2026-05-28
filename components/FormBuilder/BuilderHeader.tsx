@@ -69,7 +69,7 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
       justifyContent: "space-between",
       gap: "16px",
       position: "sticky",
-      top: 0,
+      top: 76,
       zIndex: 100,
     }}>
       {/* Left: back + brand */}
@@ -85,7 +85,7 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
           onMouseLeave={e => (e.currentTarget.style.color = "rgba(0,0,0,0.6)")}
         >
           <ChevronLeft size={14} />
-          Dashboard
+          Guest Feedback
         </Link>
 
         <div style={{ width: "1px", height: "20px", background: "rgba(0,0,0,0.1)" }} />
@@ -95,7 +95,7 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
           <img src="/treat-resort-logo.webp" alt="Treat Hotels & Resorts" style={{ height: "36px", width: "auto", objectFit: "contain", flexShrink: 0, filter: "brightness(0)" }} />
           <div>
             <div style={{ fontSize: "13.5px", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
-              Feedback Form Builder
+              Guest Feedback Form Builder
             </div>
             <div style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)", marginTop: "1px" }}>
               Treat Hotels & Resorts

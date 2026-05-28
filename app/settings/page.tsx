@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import { type Role, ROLES } from "@/lib/data";
-import { Search, Bell, HelpCircle, ChevronDown, User, Shield, BellRing, CreditCard, Building, MonitorSmartphone } from "lucide-react";
+import { type Role } from "@/lib/data";
+import { User, BellRing } from "lucide-react";
 
 type SettingsTab = "account" | "notifications" | "security" | "billing" | "appearance";
 
@@ -20,7 +20,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f6f8fa] flex">
+    <div className="min-h-screen bg-[#f6f8fa] flex flex-col">
       {/* ── Sidebar ── */}
       <Sidebar
         activeModule={activeModule}
@@ -32,35 +32,11 @@ export default function SettingsPage() {
       {/* ── Main ── */}
       <div className="app-content-shell">
         {/* Top Header */}
-        <header className="sticky top-0 z-40 bg-[#f6f8fa] px-4 sm:px-8 h-[88px] flex items-center justify-between gap-4">
+        <header className="bg-[#f6f8fa] px-4 sm:px-8 h-[88px] flex items-center gap-4">
           <div className="flex items-center min-w-0">
             <h1 className="text-xl sm:text-[22px] font-bold text-brand-text-1 leading-tight truncate">
               Settings
             </h1>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-            {/* Search */}
-            <div className="hidden md:flex items-center gap-2 bg-white rounded-full px-4 h-10 shadow-sm transition-all duration-200 focus-within:ring-2 focus-within:ring-brand-gold/20 w-[240px] lg:w-[280px]">
-              <Search className="w-4 h-4 text-brand-text-3 shrink-0" />
-              <input
-                placeholder="Search settings..."
-                className="border-none bg-transparent outline-none text-[13px] text-brand-text-1 flex-1 min-w-0 placeholder:text-brand-text-3 h-full"
-              />
-            </div>
-            {/* Notifications */}
-            <button className="w-10 h-10 shrink-0 rounded-full bg-white flex items-center justify-center relative transition-all duration-200 hover:shadow-md shadow-sm text-brand-text-2">
-              <Bell className="w-[18px] h-[18px]" />
-            </button>
-            {/* Profile */}
-            <div className="flex items-center gap-2.5 bg-white rounded-full p-1 pr-3.5 shadow-sm h-10">
-              <div className="w-8 h-8 shrink-0 rounded-full bg-brand-green-900 flex items-center justify-center overflow-hidden">
-                <img src="https://ui-avatars.com/api/?name=Admin&background=0F5132&color=fff" alt="Profile" className="w-full h-full object-cover" />
-              </div>
-              <div className="hidden sm:flex flex-col justify-center min-w-0">
-                <div className="text-[13px] font-bold text-brand-text-1 leading-none mb-0.5">Admin</div>
-                <div className="text-[10px] text-brand-text-3 leading-none">Treat Hotels</div>
-              </div>
-            </div>
           </div>
         </header>
 
