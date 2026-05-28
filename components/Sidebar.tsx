@@ -43,9 +43,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
   function switchModule(module: Module) {
     setActiveModule(module);
     setMobileOpen(false);
-    if (pathname !== "/") {
-      router.push(`/?module=${module}`);
-    }
+    router.push(`/?module=${module}`);
   }
 
   const moduleButtonClass = (active: boolean) =>
