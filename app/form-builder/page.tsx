@@ -10,7 +10,7 @@ export default function FormBuilderPage() {
   const [activeModule, setActiveModule] = useState<"feedback" | "inbox" | "finance">("feedback");
 
   return (
-    <div className="min-h-screen bg-[#f6f8fa] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       <Sidebar
         activeModule={activeModule}
         setActiveModule={setActiveModule}

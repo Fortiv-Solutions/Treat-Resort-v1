@@ -20,7 +20,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f6f8fa] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* ── Sidebar ── */}
       <Sidebar
         activeModule={activeModule}
@@ -32,7 +32,7 @@ export default function SettingsPage() {
       {/* ── Main ── */}
       <div className="app-content-shell">
         {/* Top Header */}
-        <header className="bg-[#f6f8fa] px-4 sm:px-8 h-[88px] flex items-center gap-4">
+        <header className="bg-transparent px-4 sm:px-8 h-[88px] flex items-center gap-4">
           <div className="flex items-center min-w-0">
             <h1 className="text-xl sm:text-[22px] font-bold text-brand-text-1 leading-tight truncate">
               Settings

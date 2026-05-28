@@ -141,17 +141,17 @@ export default function FeedbackModule({ role, data }: Props) {
         
         {/* 1. Hero Card: Guest Automation (col-span-2, row-span-2) */}
         <div className="col-span-1 md:col-span-2 xl:col-span-2 xl:row-span-2 glass-card relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/0 to-transparent pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00735F]/12 via-[#00735F]/0 to-transparent pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[#00735F]/18 blur-3xl rounded-full pointer-events-none" />
           <div className="p-6 sm:p-8 flex flex-col justify-between h-full relative z-10">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-6 border border-emerald-100 shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-green-50 text-[#00735F] text-xs font-bold mb-6 border border-brand-border-soft shadow-sm">
                 <Bot className="w-4 h-4" /> Guest Automation
               </div>
               <p className="text-[15px] font-medium text-brand-text-2 mb-2">Automated Checkouts</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-6xl font-black text-brand-text-1 tracking-tighter">{automationPct.toFixed(1)}</span>
-                <span className="text-3xl font-bold text-emerald-600">%</span>
+                <span className="text-3xl font-bold text-[#00735F]">%</span>
               </div>
               <p className="text-sm text-brand-text-3 mt-4 max-w-xs leading-relaxed">
                 Successfully automated checkout workflows through the WhatsApp funnel, reducing manual front-desk effort.
@@ -161,7 +161,7 @@ export default function FeedbackModule({ role, data }: Props) {
             <div className="mt-8 flex items-center gap-6 bg-white/60 p-5 rounded-2xl border border-white shadow-sm backdrop-blur-md">
                <div className="flex-1">
                  <div className="flex items-center gap-2 mb-1">
-                   <FileText className="w-4 h-4 text-emerald-600" />
+                   <FileText className="w-4 h-4 text-[#00735F]" />
                    <p className="text-xs text-brand-text-3 font-medium">Submissions</p>
                  </div>
                  <p className="text-2xl font-bold text-brand-text-1">{totalCheckouts}</p>
@@ -169,7 +169,7 @@ export default function FeedbackModule({ role, data }: Props) {
                <div className="w-px h-10 bg-brand-border-soft" />
                <div className="flex-1">
                  <div className="flex items-center gap-2 mb-1">
-                   <MessageSquare className="w-4 h-4 text-emerald-600" />
+                   <MessageSquare className="w-4 h-4 text-[#00735F]" />
                    <p className="text-xs text-brand-text-3 font-medium">Feedback</p>
                  </div>
                  <p className="text-2xl font-bold text-brand-text-1">{totalFeedback}</p>

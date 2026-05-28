@@ -54,7 +54,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
     }`;
 
   return (
-    <header className="sticky top-0 z-[500] border-b border-brand-border-soft bg-white/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-[500] border-b border-brand-border bg-brand-green-100/90 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,115,95,0.08)]">
       <div className="mx-auto flex h-[76px] w-full max-w-[1920px] items-center justify-between gap-4 px-4 sm:px-8">
         <Link href="/?module=feedback" onClick={() => setActiveModule("feedback")} className="flex min-w-0 items-center gap-3 no-underline">
           <img
@@ -80,7 +80,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
               Guest Feedback
               <ChevronDown className="h-4 w-4 opacity-70" />
             </Link>
-            <div className="invisible absolute left-0 top-[calc(100%+10px)] w-52 translate-y-1 rounded-2xl border border-brand-border-soft bg-white p-2 opacity-0 shadow-premium-popover transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+            <div className="invisible absolute left-0 top-[calc(100%+10px)] w-52 translate-y-1 rounded-2xl border border-brand-border-soft bg-white/95 p-2 opacity-0 shadow-premium-popover backdrop-blur-xl transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               <Link
                 href="/?module=feedback"
                 onClick={() => setActiveModule("feedback")}
@@ -133,7 +133,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
                 <option key={r.value} value={r.value}>{r.label}</option>
               ))}
             </select>
-            <div className="flex h-11 items-center gap-2.5 rounded-full border border-brand-border-soft bg-white p-1 pr-3.5 shadow-sm transition-shadow hover:shadow-md">
+            <div className="flex h-11 items-center gap-2.5 rounded-full border border-brand-border-soft bg-white/90 p-1 pr-3.5 shadow-sm transition-shadow hover:shadow-md">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-green-900 text-xs font-bold text-white">
                 {roleName.slice(0, 2).toUpperCase()}
               </div>
@@ -152,7 +152,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
           <button
             type="button"
             onClick={() => setMobileOpen(open => !open)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border-soft bg-white text-brand-text-2 shadow-sm lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border-soft bg-white/90 text-brand-text-2 shadow-sm lg:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -161,7 +161,7 @@ export default function Sidebar({ activeModule, setActiveModule, role, setRole }
       </div>
 
       {mobileOpen && (
-        <nav className="border-t border-brand-border-soft bg-white px-4 py-3 shadow-premium-lg lg:hidden">
+        <nav className="border-t border-brand-border-soft bg-brand-green-50/95 px-4 py-3 shadow-premium-lg lg:hidden">
           <div className="flex flex-col gap-2">
             <Link
               href="/?module=feedback"

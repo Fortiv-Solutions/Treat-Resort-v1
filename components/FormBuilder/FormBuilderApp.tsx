@@ -51,7 +51,7 @@ export default function FormBuilderApp() {
   return (
     <div className="form-builder-shell" style={{
       minHeight: "100vh",
-      background: "#f6f8fa",
+      background: "#e7f4ef",
       display: "flex",
       flexDirection: "column",
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",

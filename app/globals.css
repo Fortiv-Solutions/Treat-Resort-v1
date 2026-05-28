@@ -4,12 +4,12 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-bg: #f6f1e7;
+  --color-brand-bg: #e7f4ef;
   --color-brand-surface: #ffffff;
-  --color-brand-surface-2: #fbf8f1;
-  --color-brand-surface-3: #eee6d8;
-  --color-brand-border: #dfd4c2;
-  --color-brand-border-soft: #ebe2d4;
+  --color-brand-surface-2: #e0f0ea;
+  --color-brand-surface-3: #c8e3d9;
+  --color-brand-border: #9bcabe;
+  --color-brand-border-soft: #bddbd2;
   --color-brand-text-1: #151915;
   --color-brand-text-2: #50594f;
   --color-brand-text-3: #7d8378;
@@ -18,8 +18,12 @@
   --color-brand-green-900: #0b2118;
   --color-brand-green-850: #102f22;
   --color-brand-green-800: #153c2c;
+  --color-brand-green-750: #00735f;
   --color-brand-green-700: #245542;
   --color-brand-green-600: #31735a;
+  --color-brand-green-500: #3d8b71;
+  --color-brand-green-100: #cce9df;
+  --color-brand-green-50: #e7f4ef;
   --color-brand-gold: #c8a45d;
   --color-brand-gold-rich: #a77a34;
   --color-brand-gold-soft: #e8d2a2;
@@ -27,9 +31,9 @@
   --color-brand-teal: #28737a;
 
   /* Premium Box Shadows */
-  --shadow-premium-sm: 0 1px 2px rgba(73, 54, 28, 0.05), 0 1px 3px rgba(73, 54, 28, 0.08);
-  --shadow-premium-md: 0 4px 6px -1px rgba(73, 54, 28, 0.05), 0 2px 4px -2px rgba(73, 54, 28, 0.05), 0 0 0 1px rgba(73, 54, 28, 0.05);
-  --shadow-premium-lg: 0 10px 15px -3px rgba(73, 54, 28, 0.05), 0 4px 6px -4px rgba(73, 54, 28, 0.05), 0 0 0 1px rgba(73, 54, 28, 0.05);
+  --shadow-premium-sm: 0 1px 2px rgba(0, 115, 95, 0.04), 0 1px 3px rgba(7, 21, 15, 0.06);
+  --shadow-premium-md: 0 4px 6px -1px rgba(0, 115, 95, 0.05), 0 2px 4px -2px rgba(7, 21, 15, 0.05), 0 0 0 1px rgba(0, 115, 95, 0.05);
+  --shadow-premium-lg: 0 10px 15px -3px rgba(0, 115, 95, 0.06), 0 4px 6px -4px rgba(7, 21, 15, 0.05), 0 0 0 1px rgba(0, 115, 95, 0.05);
   --shadow-premium-popover: 0 0 0 1px rgba(73, 54, 28, 0.1), 0 20px 48px -24px rgba(32, 25, 16, 0.5);
   --shadow-premium-card: 0 0 0 1px rgba(73, 54, 28, 0.07), 0 1px 2px -1px rgba(73, 54, 28, 0.1), 0 18px 34px -28px rgba(47, 36, 19, 0.42);
 }
@@ -40,7 +44,10 @@
   }
   
   body {
-    background: #f6f8fa; /* Clean, modern light-grey background */
+    background:
+      radial-gradient(circle at top left, rgba(0, 115, 95, 0.15), transparent 34rem),
+      radial-gradient(circle at bottom right, rgba(0, 115, 95, 0.09), transparent 30rem),
+      linear-gradient(180deg, #e7f4ef 0%, #f0f8f5 46%, #e5f2ed 100%);
   }
 
   /* Form outline overrides */
@@ -61,14 +68,15 @@
   }
 
   .glass-card {
-    @apply bg-white rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.02)] border border-brand-border-soft/40 transition-all duration-300;
+    @apply rounded-3xl shadow-[0_4px_24px_rgba(0,115,95,0.07)] border border-brand-border-soft transition-all duration-300;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(237, 248, 243, 0.95));
   }
   .glass-card:hover {
-    @apply shadow-[0_8px_32px_rgba(0,0,0,0.04)] border-brand-border-soft/80;
+    @apply shadow-[0_8px_32px_rgba(0,115,95,0.07)] border-brand-border;
   }
 
   .premium-table-row {
-    @apply transition-colors duration-150 border-b border-brand-border-soft/50 hover:bg-brand-surface-2 cursor-pointer;
+    @apply transition-colors duration-150 border-b border-brand-border-soft/60 hover:bg-brand-green-50 cursor-pointer;
   }
 
   .premium-table-header {
