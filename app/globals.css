@@ -79,6 +79,14 @@
     @apply px-3 sm:px-4 py-3 text-sm;
   }
 
+  .performance-table .premium-table-header {
+    @apply px-2 sm:px-3;
+  }
+
+  .performance-table .premium-table-cell {
+    @apply px-2 sm:px-3;
+  }
+
   .badge-emerald {
     @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
   }

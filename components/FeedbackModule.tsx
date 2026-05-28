@@ -120,15 +120,15 @@ export default function FeedbackModule({ role, data }: Props) {
       : <ChevronDown className="w-3 h-3 text-brand-text-3/40" />;
 
   const TABLE_COLS = [
-    { key: "name",               label: "Property",    sortable: false, w: "w-48" },
-    { key: "occupancyRate",      label: "Occ %",       sortable: true,  w: "w-20" },
-    { key: "checkouts",          label: "Submissions", sortable: true,  w: "w-28" },
-    { key: "responseRate",       label: "Response",    sortable: true,  w: "w-32" },
-    { key: "googleReviews",      label: "Reviews",     sortable: true,  w: "w-24" },
-    { key: "avgRating",          label: "Avg ★",       sortable: true,  w: "w-20" },
-    { key: "negativeComplaints", label: "Complaints",  sortable: true,  w: "w-28" },
-    { key: "responseSLAHours",   label: "SLA",         sortable: true,  w: "w-24" },
-    { key: "status",             label: "Status",      sortable: false, w: "w-32" },
+    { key: "name",               label: "Property",    sortable: false, w: "w-[220px]" },
+    { key: "occupancyRate",      label: "Occ %",       sortable: true,  w: "w-[74px]" },
+    { key: "checkouts",          label: "Submissions", sortable: true,  w: "w-[108px]" },
+    { key: "responseRate",       label: "Response",    sortable: true,  w: "w-[134px]" },
+    { key: "googleReviews",      label: "Reviews",     sortable: true,  w: "w-[88px]" },
+    { key: "avgRating",          label: "Avg ★",       sortable: true,  w: "w-[78px]" },
+    { key: "negativeComplaints", label: "Complaints",  sortable: true,  w: "w-[112px]" },
+    { key: "responseSLAHours",   label: "SLA",         sortable: true,  w: "w-[90px]" },
+    { key: "status",             label: "Status",      sortable: false, w: "w-[126px]" },
   ];
 
   const syncFailProps = allProps.filter(p => p.lastSync === "Sync failed");
@@ -280,16 +280,16 @@ export default function FeedbackModule({ role, data }: Props) {
       )}
 
       {/* ── Main Dashboard Layout ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6 items-start">
+      <div className="grid grid-cols-1 2xl:grid-cols-[minmax(0,1fr)_420px] gap-6 items-start">
 
         {/* Property Performance Table */}
-        <div className="glass-card overflow-hidden anim-fade-up h-full flex flex-col" style={{ animationDelay: "200ms" }}>
-          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50">
+        <div className="glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "200ms" }}>
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white/50">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Property Performance</h2>
               <p className="text-xs text-brand-text-3 mt-0.5">Supabase aggregates · click headers to sort</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               {role === "MD" && (
                 <span className="badge-amber">
                   {allProps.length} Properties
@@ -301,8 +301,8 @@ export default function FeedbackModule({ role, data }: Props) {
               </span>
             </div>
           </div>
-          <div className="overflow-x-auto flex-1 min-h-[400px]">
-            <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+            <table className="performance-table w-full min-w-[1040px] border-collapse table-fixed">
               <thead className="sticky top-0 z-10">
                 <tr>
                   {TABLE_COLS.map(col => (
@@ -325,7 +325,7 @@ export default function FeedbackModule({ role, data }: Props) {
                     <td className="premium-table-cell">
                       <div className="flex items-center gap-2.5">
                         <span className={`w-2 h-2 rounded-full shrink-0 ${STATUS_STYLE[prop.status].dot}`} />
-                        <span className="font-semibold text-brand-text-1 truncate max-w-[140px]">
+                        <span className="font-semibold text-brand-text-1 truncate max-w-[170px]">
                           {prop.name.replace("Treat ", "")}
                         </span>
                       </div>
