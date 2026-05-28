@@ -9,15 +9,17 @@ import { Star, CheckCircle, ChevronRight, AlertCircle } from "lucide-react";
 function StarRating({ max = 5, value, onChange }: { max?: number; value: number; onChange: (v: number) => void }) {
   const [hover, setHover] = useState(0);
   return (
-    <div style={{ display: "flex", gap: "4px" }}>
+    <div style={{ display: "grid", gridTemplateColumns: `repeat(${max}, minmax(0, 1fr))`, gap: "6px", width: "100%", alignItems: "center" }}>
       {Array.from({ length: max }, (_, i) => i + 1).map(i => (
         <button
           key={i}
           type="button"
+          aria-label={`Set rating to ${i}`}
           onMouseEnter={() => setHover(i)}
           onMouseLeave={() => setHover(0)}
           onClick={() => onChange(i)}
           style={{
+            width: "100%", display: "flex", alignItems: "center", justifyContent: "center",
             background: "none", border: "none", cursor: "pointer", padding: "2px",
             color: i <= (hover || value) ? "#C9A96E" : "#D1D5DB",
             transition: "color 100ms, transform 100ms",
@@ -327,7 +329,7 @@ export default function GuestFormPage() {
     background: "#FFFFFF", border: "1.5px solid #E4DDD4",
     borderRadius: "10px", fontSize: "13px", color: "#1A2B4A",
     fontFamily: fontFam,
-    outline: "none", resize: "vertical" as const, boxSizing: "border-box" as const,
+    outline: "none", boxSizing: "border-box" as const,
     lineHeight: 1.5,
   };
 
@@ -431,9 +433,20 @@ export default function GuestFormPage() {
               )}
               {!branding.logoUrl && (
                 <div style={{ marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <div style={{ width: "28px", height: "28px", borderRadius: "7px", background: accColor, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Star size={13} color={primColor} fill={primColor} />
-                  </div>
+                  <div style={{
+                    width: "32px",
+                    height: "32px",
+                    backgroundColor: accColor,
+                    WebkitMaskImage: `url(/treat-resort-logo.webp)`,
+                    WebkitMaskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                    maskImage: `url(/treat-resort-logo.webp)`,
+                    maskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    flexShrink: 0,
+                  }} />
                   <span style={{ fontSize: "12.5px", fontWeight: 700, color: accColor }}>
                     {branding.headerText}
                   </span>
@@ -455,22 +468,17 @@ export default function GuestFormPage() {
               )}
             </div>
 
-            {/* Guest info card (Matches LivePreview exactly) */}
+            {/* Guest details */}
             {(settings.collectGuestName || settings.collectGuestEmail || settings.collectGuestPhone || settings.collectRoomNumber) && (
-              <div style={{ padding: "16px 16px 0" }}>
-                <div style={{
-                  background: "#FFFFFF", borderRadius: "12px",
-                  border: "1px solid #E4DDD4",
-                  padding: "14px",
-                  marginBottom: "4px",
-                }}>
-                  <div style={{ fontSize: "10px", fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
+              <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div style={{ fontSize: "10px", fontWeight: 800, color: "#7A8494", textTransform: "uppercase", letterSpacing: "0.08em", padding: "0 2px" }}>
                     Guest Details
                   </div>
                   {settings.collectGuestName && (
-                    <div style={{ marginBottom: "12px" }}>
-                      <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Full Name</div>
+                    <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                      <label htmlFor="guest-name" style={{ display: "block", fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Full Name</label>
                       <input 
+                        id="guest-name"
                         type="text" 
                         placeholder="Your name…"
                         value={guestName}
@@ -482,9 +490,10 @@ export default function GuestFormPage() {
                     </div>
                   )}
                   {settings.collectGuestEmail && (
-                    <div style={{ marginBottom: "12px" }}>
-                      <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Email</div>
+                    <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                      <label htmlFor="guest-email" style={{ display: "block", fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Email</label>
                       <input 
+                        id="guest-email"
                         type="email" 
                         placeholder="name@email.com"
                         value={guestEmail}
@@ -502,9 +511,10 @@ export default function GuestFormPage() {
                     </div>
                   )}
                   {settings.collectGuestPhone && (
-                    <div style={{ marginBottom: "12px" }}>
-                      <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Phone</div>
+                    <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                      <label htmlFor="guest-phone" style={{ display: "block", fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Phone</label>
                       <input
+                        id="guest-phone"
                         type="tel"
                         placeholder="+91 98765 43210"
                         value={guestPhone}
@@ -516,9 +526,10 @@ export default function GuestFormPage() {
                     </div>
                   )}
                   {settings.collectRoomNumber && (
-                    <div>
-                      <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Room Number</div>
+                    <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                      <label htmlFor="room-number" style={{ display: "block", fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Room Number</label>
                       <input 
+                        id="room-number"
                         type="text" 
                         placeholder="e.g. 204…"
                         value={roomNumber}
@@ -529,22 +540,21 @@ export default function GuestFormPage() {
                       />
                     </div>
                   )}
-                </div>
               </div>
             )}
 
             {/* Questions container (Matches LivePreview exactly) */}
             <div style={{ padding: "12px 16px 16px" }}>
-              <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #E4DDD4", padding: "16px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {form.questions.map((q: Question) => {
                   const errorMsg = validationErrors[q.id];
                   const answer = answers[q.id];
 
                   return (
-                    <div key={q.id} id={`q-container-${q.id}`} style={{ marginBottom: "20px" }}>
+                    <div key={q.id} id={`q-container-${q.id}`} style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "18px" }}>
                       
                       {/* Question Label */}
-                      <div style={{ display: "flex", gap: "4px", marginBottom: "8px", alignItems: "baseline" }}>
+                      <div style={{ display: "flex", gap: "4px", marginBottom: "18px", alignItems: "baseline" }}>
                         <div style={{ fontSize: "13.5px", fontWeight: 600, color: "#1A2B4A", lineHeight: 1.4, flex: 1 }}>
                           {q.label}
                         </div>
@@ -555,16 +565,21 @@ export default function GuestFormPage() {
 
                       {/* ── QUESTION TYPE: RATING (1-5 Stars) ── */}
                       {q.type === "rating" && (
-                        <div>
+                        <div style={{ maxWidth: "320px", margin: "0 auto" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: `repeat(${q.maxRating ?? 5}, minmax(0, 1fr))`, gap: "6px", marginBottom: "8px", textAlign: "center" }}>
+                            {Array.from({ length: q.maxRating ?? 5 }, (_, i) => (
+                              <span key={i} style={{ fontSize: "12px", color: "#111827" }}>{i + 1}</span>
+                            ))}
+                          </div>
                           <StarRating 
                             max={q.maxRating ?? 5} 
                             value={typeof answer === "number" ? answer : 0} 
                             onChange={v => handleAnswerChange(q.id, v)} 
                           />
                           {(q.lowLabel || q.highLabel) && (
-                            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "4px", width: "200px" }}>
-                              <span style={{ fontSize: "10.5px", color: "#9CA3AF" }}>{q.lowLabel}</span>
-                              <span style={{ fontSize: "10.5px", color: "#9CA3AF" }}>{q.highLabel}</span>
+                            <div style={{ display: "grid", gridTemplateColumns: `repeat(${q.maxRating ?? 5}, minmax(0, 1fr))`, gap: "6px", marginTop: "6px", width: "100%" }}>
+                              <span style={{ gridColumn: "1", justifySelf: "center", fontSize: "10.5px", color: "#9CA3AF" }}>{q.lowLabel}</span>
+                              <span style={{ gridColumn: `${q.maxRating ?? 5}`, justifySelf: "center", fontSize: "10.5px", color: "#9CA3AF" }}>{q.highLabel}</span>
                             </div>
                           )}
                         </div>
@@ -620,7 +635,7 @@ export default function GuestFormPage() {
 
                       {/* ── QUESTION TYPE: MULTISELECT CHECKBOXES ── */}
                       {q.type === "multiselect" && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                           {(q.options ?? []).map(o => {
                             const list = (answer as string[]) || [];
                             const checked = list.includes(o.label);
@@ -637,20 +652,18 @@ export default function GuestFormPage() {
                                   handleAnswerChange(q.id, updated);
                                 }}
                                 style={{ 
-                                  display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", padding: "9px 12px",
-                                  borderRadius: "9px", border: `1.5px solid ${checked ? primColor + "60" : "#E4DDD4"}`,
-                                  background: checked ? primColor + "0A" : "#FAFAFA",
-                                  transition: "all 150ms",
+                                  display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", padding: "2px 0",
+                                  transition: "color 150ms",
                                 }}
                               >
                                 <div style={{ 
-                                  width: "18px", height: "18px", borderRadius: "5px", flexShrink: 0,
+                                  width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
                                   border: `2px solid ${checked ? primColor : "#D1D5DB"}`,
                                   background: checked ? primColor : "transparent",
                                   display: "flex", alignItems: "center", justifyContent: "center",
                                   transition: "all 150ms",
                                 }}>
-                                  {checked && <div style={{ width: "6px", height: "6px", borderRadius: "2px", background: "#FFFFFF" }} />}
+                                  {checked && <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#FFFFFF" }} />}
                                 </div>
                                 <span style={{ fontSize: "13px", color: "#374151" }}>{o.label}</span>
                               </div>

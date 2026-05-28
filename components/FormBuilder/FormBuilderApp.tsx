@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useId } from "react";
+import { useState, useCallback, useEffect, useId } from "react";
 import type { FormConfig, Toast } from "@/lib/formBuilderTypes";
 import { DEFAULT_FORM } from "@/lib/formBuilderConstants";
 import BuilderHeader from "./BuilderHeader";
@@ -26,6 +26,7 @@ type SectionKey = (typeof SECTIONS)[number]["key"];
 
 export default function FormBuilderApp() {
   const [form, setForm] = useState<FormConfig>(DEFAULT_FORM);
+  const [loadingSavedForm, setLoadingSavedForm] = useState(true);
   const [openSection, setOpenSection] = useState<SectionKey | null>("settings");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const uid = useId();
@@ -48,6 +49,27 @@ export default function FormBuilderApp() {
     setOpenSection(prev => prev === key ? null : key);
   }, []);
 
+  useEffect(() => {
+    let active = true;
+
+    fetch("/api/forms")
+      .then(response => response.ok ? response.json() : [])
+      .then((forms: FormConfig[]) => {
+        if (!active) return;
+        if (Array.isArray(forms) && forms.length > 0) {
+          setForm(forms[0]);
+        }
+      })
+      .catch(() => {
+        if (active) addToast("Using a new draft because saved forms could not be loaded.", "info");
+      })
+      .finally(() => {
+        if (active) setLoadingSavedForm(false);
+      });
+
+    return () => { active = false; };
+  }, [addToast]);
+
   return (
     <div className="form-builder-shell" style={{
       minHeight: "100vh",
@@ -57,6 +79,19 @@ export default function FormBuilderApp() {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       zoom: 1.15,
     }}>
+      {loadingSavedForm ? (
+        <div style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          color: "#00735F",
+          fontSize: "13px",
+          fontWeight: 700,
+        }}>
+          Loading saved feedback form...
+        </div>
+      ) : (
+        <>
       <BuilderHeader form={form} updateForm={updateForm} addToast={addToast} />
 
       {/* Two-panel content */}
@@ -122,6 +157,8 @@ export default function FormBuilderApp() {
       </div>
 
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+        </>
+      )}
 
       <style>{`
         @media (max-width: 960px) {

@@ -11,7 +11,7 @@ interface Props {
 function StarRating({ max = 5, value, onChange }: { max?: number; value: number; onChange: (v: number) => void }) {
   const [hover, setHover] = useState(0);
   return (
-    <div style={{ display: "flex", gap: "4px" }}>
+    <div style={{ display: "grid", gridTemplateColumns: `repeat(${max}, minmax(0, 1fr))`, gap: "6px", width: "100%", alignItems: "center" }}>
       {Array.from({ length: max }, (_, i) => i + 1).map(i => (
         <button
           key={i}
@@ -20,6 +20,7 @@ function StarRating({ max = 5, value, onChange }: { max?: number; value: number;
           onMouseLeave={() => setHover(0)}
           onClick={() => onChange(i)}
           style={{
+            width: "100%", display: "flex", alignItems: "center", justifyContent: "center",
             background: "none", border: "none", cursor: "pointer", padding: "2px",
             color: i <= (hover || value) ? "#059669" : "#D1D5DB",
             transition: "color 100ms, transform 100ms",
@@ -74,8 +75,8 @@ function QuestionPreview({ q, branding, onAnswerChange }: { q: Question; brandin
   };
 
   return (
-    <div style={{ marginBottom: "20px" }}>
-      <div style={{ display: "flex", gap: "4px", marginBottom: "8px", alignItems: "baseline" }}>
+    <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "18px", marginBottom: "12px" }}>
+      <div style={{ display: "flex", gap: "4px", marginBottom: "18px", alignItems: "baseline" }}>
         <div style={{ fontSize: "13.5px", fontWeight: 600, color: "#1A2B4A", lineHeight: 1.4, fontFamily: branding.fontFamily + ", Inter, sans-serif", flex: 1 }}>
           {q.label}
         </div>
@@ -85,12 +86,17 @@ function QuestionPreview({ q, branding, onAnswerChange }: { q: Question; brandin
       </div>
 
       {q.type === "rating" && (
-        <div>
+        <div style={{ maxWidth: "320px", margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${q.maxRating ?? 5}, minmax(0, 1fr))`, gap: "6px", marginBottom: "8px", textAlign: "center" }}>
+            {Array.from({ length: q.maxRating ?? 5 }, (_, i) => (
+              <span key={i} style={{ fontSize: "12px", color: "#111827" }}>{i + 1}</span>
+            ))}
+          </div>
           <StarRating max={q.maxRating ?? 5} value={ratingVal} onChange={(v) => { setRatingVal(v); onAnswerChange(q.id, v); }} />
           {(q.lowLabel || q.highLabel) && (
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "4px" }}>
-              <span style={{ fontSize: "10.5px", color: "#9CA3AF" }}>{q.lowLabel}</span>
-              <span style={{ fontSize: "10.5px", color: "#9CA3AF" }}>{q.highLabel}</span>
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(${q.maxRating ?? 5}, minmax(0, 1fr))`, gap: "6px", marginTop: "4px" }}>
+              <span style={{ gridColumn: "1", justifySelf: "center", fontSize: "10.5px", color: "#9CA3AF" }}>{q.lowLabel}</span>
+              <span style={{ gridColumn: `${q.maxRating ?? 5}`, justifySelf: "center", fontSize: "10.5px", color: "#9CA3AF" }}>{q.highLabel}</span>
             </div>
           )}
         </div>
@@ -125,23 +131,21 @@ function QuestionPreview({ q, branding, onAnswerChange }: { q: Question; brandin
       )}
 
       {q.type === "multiselect" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {(q.options ?? []).map(o => {
             const checked = selectVal.includes(o.id);
             return (
               <label key={o.id} onClick={() => setSelectVal(prev => checked ? prev.filter(v => v !== o.id) : [...prev, o.id])}
-                style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", padding: "9px 12px",
-                  borderRadius: "9px", border: `1.5px solid ${checked ? branding.primaryColor + "60" : "#E4DDD4"}`,
-                  background: checked ? branding.primaryColor + "0A" : "#FAFAFA",
-                  transition: "all 150ms",
+                style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", padding: "2px 0",
+                  transition: "color 150ms",
                 }}>
-                <div style={{ width: "18px", height: "18px", borderRadius: "5px", flexShrink: 0,
+                <div style={{ width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
                   border: `2px solid ${checked ? branding.primaryColor : "#D1D5DB"}`,
                   background: checked ? branding.primaryColor : "transparent",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   transition: "all 150ms",
                 }}>
-                  {checked && <div style={{ width: "6px", height: "6px", borderRadius: "2px", background: "#FFFFFF" }} />}
+                  {checked && <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#FFFFFF" }} />}
                 </div>
                 <span style={{ fontSize: "13px", color: "#374151" }}>{o.label}</span>
               </label>
@@ -325,43 +329,43 @@ export default function LivePreview({ form }: Props) {
                 )}
               </div>
 
-              {/* Guest info fields */}
+              {/* Guest details */}
               {(settings.collectGuestName || settings.collectGuestEmail || settings.collectGuestPhone || settings.collectRoomNumber) && (
-                <div style={{ padding: "16px 16px 0" }}>
+                <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: "12px" }}>
                   <div style={{
-                    background: "#FFFFFF", borderRadius: "12px",
-                    border: "1px solid #E4DDD4",
-                    padding: "14px",
-                    marginBottom: "4px",
+                    background: "transparent", borderRadius: "0",
+                    border: "none",
+                    padding: "0 2px",
+                    marginBottom: "0",
                   }}>
-                    <div style={{ fontSize: "10px", fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+                    <div style={{ fontSize: "10px", fontWeight: 800, color: "#7A8494", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0" }}>
                       Guest Details
                     </div>
+                  </div>
                     {settings.collectGuestName && (
-                      <div style={{ marginBottom: "8px" }}>
-                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Full Name</div>
+                      <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Full Name</div>
                         <div style={{ padding: "8px 10px", borderRadius: "8px", border: "1.5px solid #E4DDD4", fontSize: "12px", color: "#9CA3AF", background: "#FAFAFA" }}>Your name…</div>
                       </div>
                     )}
                     {settings.collectGuestEmail && (
-                      <div style={{ marginBottom: "8px" }}>
-                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Email</div>
+                      <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Email</div>
                         <div style={{ padding: "8px 10px", borderRadius: "8px", border: "1.5px solid #E4DDD4", fontSize: "12px", color: "#9CA3AF", background: "#FAFAFA" }}>name@email.com…</div>
                       </div>
                     )}
                     {settings.collectGuestPhone && (
-                      <div style={{ marginBottom: "8px" }}>
-                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Phone</div>
+                      <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Phone</div>
                         <div style={{ padding: "8px 10px", borderRadius: "8px", border: "1.5px solid #E4DDD4", fontSize: "12px", color: "#9CA3AF", background: "#FAFAFA" }}>+91 98765 43210</div>
                       </div>
                     )}
                     {settings.collectRoomNumber && (
-                      <div>
-                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "4px" }}>Room Number</div>
+                      <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #DADCE0", padding: "16px" }}>
+                        <div style={{ fontSize: "11px", color: "#6B7280", marginBottom: "8px" }}>Room Number</div>
                         <div style={{ padding: "8px 10px", borderRadius: "8px", border: "1.5px solid #E4DDD4", fontSize: "12px", color: "#9CA3AF", background: "#FAFAFA" }}>e.g. 204…</div>
                       </div>
                     )}
-                  </div>
                 </div>
               )}
 
@@ -373,7 +377,7 @@ export default function LivePreview({ form }: Props) {
                     <div style={{ fontSize: "12px", color: "#9CA3AF" }}>Add questions to see preview</div>
                   </div>
                 ) : (
-                  <div style={{ background: "#FFFFFF", borderRadius: "12px", border: "1px solid #E4DDD4", padding: "16px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                     {form.questions.map(q => (
                       <QuestionPreview key={q.id} q={q} branding={branding} onAnswerChange={handleAnswerChange} />
                     ))}
