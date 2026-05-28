@@ -29,7 +29,7 @@ const SENTIMENT_STYLE: Record<FeedbackSentiment, { badge: string }> = {
 };
 
 const ROLE_MAP: Record<Role, string> = {
-  MD: "", GM_SILVASSA: "silvassa", GM_DAHANU: "dahanu", GM_KUMBHALGARH: "kumbhalgarh",
+  MD: "", GM_SILVASSA: "treat-silvassa", GM_DAHANU: "treat-gokarna", GM_KUMBHALGARH: "kumbhalgarh",
 };
 
 function Stars({ rating }: { rating: number }) {

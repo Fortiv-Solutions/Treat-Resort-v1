@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 const ROLE_MAP: Record<Role, string> = {
-  MD: "", GM_SILVASSA: "silvassa", GM_DAHANU: "dahanu", GM_KUMBHALGARH: "kumbhalgarh",
+  MD: "", GM_SILVASSA: "treat-silvassa", GM_DAHANU: "treat-gokarna", GM_KUMBHALGARH: "kumbhalgarh",
 };
 
 const PRI_STYLE: Record<EmailPriority, { badge: string; dot: string }> = {

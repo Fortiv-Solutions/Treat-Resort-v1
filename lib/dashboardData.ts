@@ -63,6 +63,11 @@ export type EmailRow = {
   assigned_to: string | null;
   received_at: string;
   updated_at: string;
+  property_hint: string | null;
+  ai_score: number | null;
+  ai_confidence: number | null;
+  ai_note: string | null;
+  internal_notes: string | null;
 };
 
 export type FinanceRow = {
@@ -198,7 +203,7 @@ export function buildDashboardPayload(input: {
     return {
       id: row.id,
       name: row.name,
-      role: row.id === "silvassa" ? "GM_SILVASSA" : row.id === "dahanu" ? "GM_DAHANU" : row.id === "kumbhalgarh" ? "GM_KUMBHALGARH" : "MD",
+      role: (row.id === "silvassa" || row.id === "treat-silvassa") ? "GM_SILVASSA" : (row.id === "dahanu" || row.id === "treat-gokarna") ? "GM_DAHANU" : row.id === "kumbhalgarh" ? "GM_KUMBHALGARH" : "MD",
       checkouts: submissions,
       feedbackSent: submissions,
       responseRate,
@@ -236,15 +241,36 @@ export function buildDashboardPayload(input: {
   });
 
   const emails: Email[] = input.emails.map((row, index) => {
-    const prop = row.property_id ? propertyById.get(row.property_id) : undefined;
+    let prop = row.property_id ? propertyById.get(row.property_id) : undefined;
+    
+    // If property_id is null but property_hint is provided, try to match it
+    if (!prop && row.property_hint) {
+      const hint = row.property_hint.toLowerCase().trim();
+      if (hint === "silvassa") {
+        prop = propertyById.get("treat-silvassa");
+      } else if (hint === "gokarna") {
+        prop = propertyById.get("treat-gokarna");
+      } else if (hint === "ras") {
+        prop = propertyById.get("ras-resorts");
+      } else if (hint === "tarapur") {
+        prop = propertyById.get("tarapur-resort");
+      } else {
+        // Fallback: search for any property whose ID or Name contains the hint
+        prop = input.properties.find(
+          p => p.id.toLowerCase().includes(hint) || p.name.toLowerCase().includes(hint)
+        );
+      }
+    }
+
     const age = hoursAgo(row.received_at);
     const sentiment = row.ai_sentiment === "critical" ? "Critical" : row.ai_sentiment === "negative" ? "Negative" : row.ai_sentiment === "positive" ? "Positive" : "Neutral";
 
     return {
       id: index + 1,
+      dbId: row.id,
       priority: emailPriority(row.priority),
-      property: prop?.name ?? "Unassigned Property",
-      propertyId: row.property_id ?? "",
+      property: prop?.name ?? (row.property_hint ? `Unassigned (${row.property_hint})` : "Unassigned Property"),
+      propertyId: prop?.id ?? (row.property_hint ? row.property_hint.toLowerCase() : ""),
       category: emailCategory(row.category),
       from: row.from_name ?? row.from_email,
       fromEmail: row.from_email,
@@ -254,10 +280,10 @@ export function buildDashboardPayload(input: {
       status: emailStatus(row.status),
       assignedTo: row.assigned_to ?? "Unassigned",
       body: row.body_preview ?? "",
-      aiScore: row.priority === "urgent" ? 90 : row.category === "uncategorized" ? 20 : 60,
+      aiScore: row.ai_score ?? (row.priority === "urgent" ? 90 : row.category === "uncategorized" ? 20 : 60),
       aiSentiment: sentiment,
-      aiNote: row.ai_summary ?? "No AI summary available.",
-      aiCategoryConf: row.category === "uncategorized" ? 0 : 85,
+      aiNote: row.ai_note ?? row.ai_summary ?? "No AI summary available.",
+      aiCategoryConf: row.ai_confidence ?? (row.category === "uncategorized" ? 0 : 85),
       lastUpdatedBy: row.updated_at ? `Updated ${relTime(row.updated_at)}` : undefined,
     };
   });

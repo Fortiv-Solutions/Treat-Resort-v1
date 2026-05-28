@@ -102,3 +102,17 @@ export async function supabaseDelete(
     },
   });
 }
+
+export async function supabaseUpdate<T>(
+  table: string,
+  query: string,
+  body: unknown,
+): Promise<SupabaseResult<T[]>> {
+  return request<T[]>(`${table}?${query}`, {
+    method: "PATCH",
+    headers: {
+      Prefer: "return=representation",
+    },
+    body: JSON.stringify(body),
+  });
+}
