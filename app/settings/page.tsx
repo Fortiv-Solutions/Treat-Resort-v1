@@ -34,10 +34,10 @@ export default function SettingsPage() {
         {/* Page Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1200px] mx-auto">
           
-          <div className="bg-white rounded-2xl shadow-sm border border-brand-border-soft overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+          <div className="glass-card overflow-hidden flex flex-col md:flex-row min-h-[600px]">
             {/* Sidebar inside Settings */}
-            <div className="w-full md:w-[280px] bg-brand-surface-1 border-r border-brand-border-soft p-6 flex flex-col gap-2">
-              <h2 className="text-[11px] font-bold text-brand-text-3 uppercase tracking-wider mb-4 px-2">Settings Menu</h2>
+            <div className="w-full md:w-[280px] bg-brand-green-950 border-r border-brand-gold/30 p-6 flex flex-col gap-2">
+              <h2 className="text-[11px] font-bold text-brand-gold uppercase tracking-wider mb-4 px-2">Settings Menu</h2>
               {TABS.map(tab => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -46,10 +46,10 @@ export default function SettingsPage() {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as SettingsTab)}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 group
-                      ${isActive ? "bg-brand-green-700/10 text-brand-green-700" : "hover:bg-brand-surface-2 text-brand-text-2"}
+                      ${isActive ? "bg-brand-gold text-brand-ink" : "hover:bg-white/10 text-white/75 hover:text-brand-gold"}
                     `}
                   >
-                    <Icon className={`w-[18px] h-[18px] ${isActive ? "text-brand-green-700" : "text-brand-text-3 group-hover:text-brand-text-2"}`} />
+                    <Icon className={`w-[18px] h-[18px] ${isActive ? "text-brand-ink" : "text-white/55 group-hover:text-brand-gold"}`} />
                     <span className="text-[13px] font-medium">{tab.label}</span>
                   </button>
                 )

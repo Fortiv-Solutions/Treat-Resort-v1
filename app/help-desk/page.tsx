@@ -33,14 +33,11 @@ export default function HelpDeskPage() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1200px] mx-auto">
           
           {/* Hero Section */}
-          <div className="bg-[#00735F] rounded-2xl p-10 md:p-14 text-center mb-8 relative overflow-hidden shadow-lg border border-[#00735F]">
-            {/* Decorative background circles */}
-            <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
-
+          <div className="bg-brand-green-950 rounded-2xl p-10 md:p-14 text-center mb-8 relative overflow-hidden shadow-premium-lg border border-brand-gold/30">
+            <div className="absolute inset-x-0 top-0 h-1 bg-brand-gold pointer-events-none" />
             <LifeBuoy className="w-12 h-12 text-brand-gold mx-auto mb-6 opacity-90" />
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight">How can we help you today?</h2>
-            <p className="text-brand-green-100/80 text-[15px] md:text-[17px] max-w-2xl mx-auto mb-8 font-medium">Search our knowledge base or browse categories below to find answers to common questions about TreatOS.</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">How can we help you today?</h2>
+            <p className="text-white/70 text-[15px] md:text-[17px] max-w-2xl mx-auto mb-8 font-medium">Search our knowledge base or browse categories below to find answers to common questions about TreatOS.</p>
             
           </div>
 
@@ -49,7 +46,7 @@ export default function HelpDeskPage() {
           {/* Two column layout for bottom section */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-sm border border-brand-border-soft p-8">
+              <div className="glass-card p-8">
                 <h3 className="text-xl font-bold text-brand-text-1 mb-6">Frequently Asked Questions</h3>
                 <div className="space-y-6">
                   {FAQS.map((faq, i) => (
@@ -63,7 +60,7 @@ export default function HelpDeskPage() {
             </div>
 
             <div className="lg:col-span-1 flex flex-col gap-6">
-              <div className="bg-white rounded-2xl shadow-sm border border-brand-border-soft p-6">
+              <div className="glass-card p-6">
                 <h3 className="text-[16px] font-bold text-brand-text-1 mb-4">Contact Us Directly</h3>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-3">

@@ -39,17 +39,10 @@ function useCountUp(target: number, duration = 1000, delay = 0) {
   return count;
 }
 
-const ACCENT_LINE: Record<string, string> = {
-  gold:  "bg-brand-gold",
-  green: "bg-emerald-600",
-  amber: "bg-amber-600",
-  red:   "bg-red-600",
-};
-
 const ICON_STYLE: Record<string, string> = {
-  gold:  "bg-brand-green-800 text-brand-gold",
-  green: "bg-emerald-800 text-white",
-  amber: "bg-amber-800 text-white",
+  gold:  "bg-brand-green-900 text-brand-gold",
+  green: "bg-brand-green-800 text-white",
+  amber: "bg-brand-gold text-brand-ink",
   red:   "bg-red-800 text-white",
 };
 
@@ -61,7 +54,6 @@ export default function StatCard({
   accent = "gold", trend,
   animateNumber = true, delay = 0,
 }: StatCardProps) {
-  const accentLineClass = ACCENT_LINE[accent];
   const iconClass = ICON_STYLE[accent];
 
   const numTarget = typeof value === "number"

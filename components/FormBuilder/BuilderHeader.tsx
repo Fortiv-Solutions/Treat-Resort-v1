@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { FormConfig, Toast } from "@/lib/formBuilderTypes";
-import { Download, Save, Sparkles, ChevronLeft } from "lucide-react";
+import { Download, Save, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 interface Props {
@@ -58,10 +58,10 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
 
   return (
     <header style={{
-      background: "rgba(255,255,255,0.85)",
+      background: "rgba(3,19,15,0.94)",
       backdropFilter: "blur(20px)",
       WebkitBackdropFilter: "blur(20px)",
-      borderBottom: "1px solid rgba(0,0,0,0.05)",
+      borderBottom: "1px solid rgba(200,172,97,0.28)",
       padding: "0 24px",
       height: "64px",
       display: "flex",
@@ -69,35 +69,35 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
       justifyContent: "space-between",
       gap: "16px",
       position: "sticky",
-      top: 76,
+      top: 66.1,
       zIndex: 100,
     }}>
       {/* Left: back + brand */}
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
         <Link href="/" style={{
           display: "flex", alignItems: "center", gap: "6px",
-          color: "rgba(0,0,0,0.6)", textDecoration: "none",
+          color: "rgba(255,255,255,0.72)", textDecoration: "none",
           fontSize: "12px", fontWeight: 500,
           transition: "color 150ms",
           whiteSpace: "nowrap",
         }}
-          onMouseEnter={e => (e.currentTarget.style.color = "#000")}
-          onMouseLeave={e => (e.currentTarget.style.color = "rgba(0,0,0,0.6)")}
+          onMouseEnter={e => (e.currentTarget.style.color = "#C8AC61")}
+          onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.72)")}
         >
           <ChevronLeft size={14} />
           Guest Feedback
         </Link>
 
-        <div style={{ width: "1px", height: "20px", background: "rgba(0,0,0,0.1)" }} />
+        <div style={{ width: "1px", height: "20px", background: "rgba(200,172,97,0.3)" }} />
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/treat-resort-logo.webp" alt="Treat Hotels & Resorts" style={{ height: "36px", width: "auto", objectFit: "contain", flexShrink: 0, filter: "brightness(0)" }} />
+          <img src="/treat-resort-logo.webp" alt="Treat Hotels & Resorts" style={{ height: "36px", width: "auto", objectFit: "contain", flexShrink: 0 }} />
           <div>
-            <div style={{ fontSize: "13.5px", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+            <div style={{ fontSize: "13.5px", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, fontFamily: "var(--font-roboto-slab)" }}>
               Guest Feedback Form Builder
             </div>
-            <div style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)", marginTop: "1px" }}>
+            <div style={{ fontSize: "11px", color: "rgba(200,172,97,0.82)", marginTop: "1px" }}>
               Treat Hotels & Resorts
             </div>
           </div>
@@ -109,14 +109,14 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
         {/* Property badge */}
         <span style={{
           padding: "5px 12px", borderRadius: "20px",
-          background: "rgba(5,150,105,0.12)",
-          border: "1px solid rgba(5,150,105,0.2)",
+          background: "rgba(200,172,97,0.14)",
+          border: "1px solid rgba(200,172,97,0.28)",
           fontSize: "11.5px", fontWeight: 600,
-          color: "#064e3b",
+          color: "#C8AC61",
           whiteSpace: "nowrap",
           display: "inline-flex", alignItems: "center", gap: "5px",
         }}>
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#059669", flexShrink: 0 }} />
+          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#C8AC61", flexShrink: 0 }} />
           {form.settings.propertyName}
         </span>
 
@@ -125,14 +125,14 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
           style={{
             display: "flex", alignItems: "center", gap: "6px",
             padding: "8px 14px", borderRadius: "9px",
-            background: "rgba(0,0,0,0.03)",
-            border: "1px solid rgba(0,0,0,0.08)",
-            color: "rgba(0,0,0,0.7)", fontSize: "12px", fontWeight: 500,
+            background: "rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.14)",
+            color: "rgba(255,255,255,0.78)", fontSize: "12px", fontWeight: 500,
             cursor: "pointer", transition: "background 150ms, border-color 150ms",
             whiteSpace: "nowrap",
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,0,0,0.06)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,0,0,0.03)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.borderColor = "rgba(200,172,97,0.35)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; }}
         >
           <Download size={13} />
           Export
@@ -144,12 +144,12 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
           style={{
             display: "flex", alignItems: "center", gap: "6px",
             padding: "8px 16px", borderRadius: "9px",
-            background: saving ? "rgba(5,150,105,0.6)" : "linear-gradient(135deg, #059669 0%, #047857 100%)",
+            background: saving ? "rgba(200,172,97,0.6)" : "linear-gradient(135deg, #C8AC61 0%, #9F7731 100%)",
             border: "none",
-            color: "#ffffff", fontSize: "12px", fontWeight: 700,
+            color: "#070706", fontSize: "12px", fontWeight: 800,
             cursor: saving ? "not-allowed" : "pointer",
             transition: "opacity 150ms",
-            boxShadow: "0 2px 12px rgba(5,150,105,0.35)",
+            boxShadow: "0 2px 12px rgba(200,172,97,0.34)",
             whiteSpace: "nowrap",
           }}
         >

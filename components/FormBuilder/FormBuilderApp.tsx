@@ -73,10 +73,10 @@ export default function FormBuilderApp() {
   return (
     <div className="form-builder-shell" style={{
       minHeight: "100vh",
-      background: "#e7f4ef",
+      background: "linear-gradient(135deg, #efe9dc 0%, #fff8ea 46%, #e7dcc3 100%)",
       display: "flex",
       flexDirection: "column",
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontFamily: "var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif",
       zoom: 1.15,
     }}>
       {loadingSavedForm ? (
@@ -84,7 +84,7 @@ export default function FormBuilderApp() {
           minHeight: "100vh",
           display: "grid",
           placeItems: "center",
-          color: "#00735F",
+          color: "#055C4C",
           fontSize: "13px",
           fontWeight: 700,
         }}>
@@ -103,7 +103,7 @@ export default function FormBuilderApp() {
         maxWidth: "1440px",
         width: "100%",
         margin: "0 auto",
-        padding: "24px 24px 32px",
+        padding: "0 24px 32px",
         alignItems: "start",
         }} className="fb-grid">
 
@@ -162,7 +162,7 @@ export default function FormBuilderApp() {
 
       <style>{`
         @media (max-width: 960px) {
-          .fb-grid { grid-template-columns: 1fr !important; padding: 16px !important; }
+          .fb-grid { grid-template-columns: 1fr !important; padding: 0 16px 16px !important; }
           .fb-preview-sticky { position: static !important; }
         }
       `}</style>

@@ -73,7 +73,7 @@ type DetailSelection =
 
 function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="rounded-lg border border-[#B9D9CF] bg-white px-3.5 py-3 shadow-[0_1px_0_rgba(0,115,95,0.04)]">
+    <div className="rounded-lg border border-brand-border-soft bg-brand-ivory px-3.5 py-3 shadow-premium-sm">
       <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-brand-text-3">{label}</div>
       <div className="mt-1.5 min-h-[20px] text-sm font-semibold leading-snug text-brand-text-1">{value}</div>
     </div>
@@ -119,25 +119,25 @@ function DetailDrawer({ selection, onClose }: { selection: DetailSelection | nul
         role="dialog"
         aria-modal="true"
         aria-labelledby="feedback-detail-title"
-        className="fixed right-0 top-0 z-[901] flex w-full max-w-[520px] flex-col border-l border-[#B9D9CF] bg-[#F8FCFA] shadow-2xl"
+        className="fixed right-0 top-0 z-[901] flex w-full max-w-[520px] flex-col border-l border-brand-gold/30 bg-brand-surface shadow-2xl"
         style={{ height: zoomAdjustedViewport, maxHeight: zoomAdjustedViewport }}
       >
-        <div className="shrink-0 border-b border-[#B9D9CF] bg-white/95 px-6 py-4 shadow-[0_8px_24px_rgba(0,115,95,0.06)] backdrop-blur-xl">
+        <div className="shrink-0 border-b border-brand-gold/25 bg-brand-green-950 px-6 py-4 shadow-premium-lg backdrop-blur-xl">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-[#00735F]">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-brand-gold">
                 {isProperty ? "Property" : "Feedback"}
               </p>
-              <h2 id="feedback-detail-title" className="mt-1 truncate text-lg font-black text-brand-text-1">
+              <h2 id="feedback-detail-title" className="mt-1 truncate font-serif text-lg font-black text-white">
                 {title}
               </h2>
-              <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-brand-text-3">{subtitle}</p>
+              <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-white/65">{subtitle}</p>
             </div>
             <button
               type="button"
               aria-label="Close details"
               onClick={onClose}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand-border-soft bg-white text-brand-text-2 shadow-sm transition hover:border-[#00735F]/40 hover:text-[#00735F]"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand-gold/30 bg-white/10 text-white/70 shadow-sm transition hover:border-brand-gold hover:text-brand-gold"
             >
               <X className="h-4 w-4" />
             </button>
@@ -158,7 +158,7 @@ function DetailDrawer({ selection, onClose }: { selection: DetailSelection | nul
                 <DetailRow label="SLA" value={`${selection.item.responseSLAHours.toFixed(1)}h`} />
               </div>
 
-              <div className="rounded-xl border border-[#B9D9CF] bg-white p-4 shadow-sm">
+              <div className="rounded-xl border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
                 <h3 className="text-sm font-bold text-brand-text-1">Management</h3>
                 <div className="mt-3 grid gap-3">
                   <DetailRow label="GM" value={selection.item.gmName} />
@@ -169,7 +169,7 @@ function DetailDrawer({ selection, onClose }: { selection: DetailSelection | nul
               </div>
 
               {(selection.item.latitude || selection.item.longitude) && (
-                <div className="rounded-xl border border-[#B9D9CF] bg-white p-4 shadow-sm">
+                <div className="rounded-xl border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
                   <h3 className="text-sm font-bold text-brand-text-1">Location</h3>
                   <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <DetailRow label="Latitude" value={selection.item.latitude ?? "Not set"} />
@@ -180,7 +180,7 @@ function DetailDrawer({ selection, onClose }: { selection: DetailSelection | nul
             </div>
           ) : (
             <div className="space-y-5">
-              <div className="rounded-xl border border-[#B9D9CF] bg-white p-4 shadow-sm">
+              <div className="rounded-xl border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <span className={SENTIMENT_STYLE[selection.item.sentiment].badge}>{selection.item.sentiment}</span>
@@ -201,7 +201,7 @@ function DetailDrawer({ selection, onClose }: { selection: DetailSelection | nul
                 <DetailRow label="Checkout Date" value={selection.item.checkoutDate} />
               </div>
 
-              <div className="rounded-xl border border-[#B9D9CF] bg-white p-4 shadow-sm">
+              <div className="rounded-xl border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
                 <h3 className="text-sm font-bold text-brand-text-1">Escalation</h3>
                 <div className="mt-3 grid gap-3">
                   <DetailRow label="Property" value={selection.item.property} />
@@ -292,27 +292,26 @@ export default function FeedbackModule({ role, data }: Props) {
         
         {/* 1. Hero Card: Guest Automation (col-span-2, row-span-2) */}
         <div className="col-span-1 md:col-span-2 xl:col-span-2 xl:row-span-2 glass-card relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#00735F]/12 via-[#00735F]/0 to-transparent pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[#00735F]/18 blur-3xl rounded-full pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-1 bg-brand-gold pointer-events-none" />
           <div className="p-6 sm:p-8 flex flex-col justify-between h-full relative z-10">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-green-50 text-[#00735F] text-xs font-bold mb-6 border border-brand-border-soft shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-green-900 text-brand-gold text-xs font-bold mb-6 border border-brand-gold/30 shadow-sm">
                 <Bot className="w-4 h-4" /> Guest Automation
               </div>
               <p className="text-[15px] font-medium text-brand-text-2 mb-2">Automated Checkouts</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-6xl font-black text-brand-text-1 tracking-tighter">{automationPct.toFixed(1)}</span>
-                <span className="text-3xl font-bold text-[#00735F]">%</span>
+                <span className="text-3xl font-bold text-brand-gold-rich">%</span>
               </div>
               <p className="text-sm text-brand-text-3 mt-4 max-w-xs leading-relaxed">
                 Successfully automated checkout workflows through the WhatsApp funnel, reducing manual front-desk effort.
               </p>
             </div>
             
-            <div className="mt-8 flex items-center gap-6 bg-white/60 p-5 rounded-2xl border border-white shadow-sm backdrop-blur-md">
+            <div className="mt-8 flex items-center gap-6 bg-brand-ivory/75 p-5 rounded-2xl border border-brand-border-soft shadow-sm backdrop-blur-md">
                <div className="flex-1">
                  <div className="flex items-center gap-2 mb-1">
-                   <FileText className="w-4 h-4 text-[#00735F]" />
+                   <FileText className="w-4 h-4 text-brand-green-800" />
                    <p className="text-xs text-brand-text-3 font-medium">Submissions</p>
                  </div>
                  <p className="text-2xl font-bold text-brand-text-1">{totalCheckouts}</p>
@@ -320,7 +319,7 @@ export default function FeedbackModule({ role, data }: Props) {
                <div className="w-px h-10 bg-brand-border-soft" />
                <div className="flex-1">
                  <div className="flex items-center gap-2 mb-1">
-                   <MessageSquare className="w-4 h-4 text-[#00735F]" />
+                   <MessageSquare className="w-4 h-4 text-brand-green-800" />
                    <p className="text-xs text-brand-text-3 font-medium">Feedback</p>
                  </div>
                  <p className="text-2xl font-bold text-brand-text-1">{totalFeedback}</p>
@@ -331,7 +330,7 @@ export default function FeedbackModule({ role, data }: Props) {
 
         {/* 2. Reviews Generated */}
         <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/10 blur-2xl rounded-full pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-1 bg-brand-gold pointer-events-none" />
           <div className="flex justify-between items-start mb-4 relative z-10">
             <div>
               <p className="text-[15px] font-medium text-brand-text-2 mb-1">Google Reviews</p>
@@ -373,17 +372,17 @@ export default function FeedbackModule({ role, data }: Props) {
 
         {/* 4. Complaint Recovery */}
         <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-2xl rounded-full pointer-events-none" />
+           <div className="absolute inset-x-0 top-0 h-1 bg-brand-teal pointer-events-none" />
            <div className="flex justify-between items-start mb-6 relative z-10">
              <div>
                <p className="text-[15px] font-medium text-brand-text-2 mb-1">Complaint Recovery</p>
                <div className="flex items-baseline gap-1">
                  <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{complaintRecovery}</span>
-                 <span className="text-xl font-bold text-blue-600">%</span>
+                 <span className="text-xl font-bold text-brand-teal">%</span>
                </div>
              </div>
-             <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-               <ShieldCheck className="w-6 h-6 text-blue-600" />
+             <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-brand-green-100 to-brand-green-50 border border-brand-green-100 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+               <ShieldCheck className="w-6 h-6 text-brand-teal" />
              </div>
            </div>
            <div className="relative z-10">
@@ -391,28 +390,28 @@ export default function FeedbackModule({ role, data }: Props) {
                <span className="text-brand-text-3">Resolved within SLA</span>
              </div>
              <div className="w-full h-2 bg-brand-surface-2 rounded-full overflow-hidden shadow-inner border border-brand-border-soft">
-               <div className="h-full bg-blue-600 rounded-full transition-all duration-1000 ease-out" style={{ width: `${complaintRecovery}%` }} />
+               <div className="h-full bg-brand-teal rounded-full transition-all duration-1000 ease-out" style={{ width: `${complaintRecovery}%` }} />
              </div>
            </div>
         </div>
 
         {/* 5. Repeat Guest Est. */}
         <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-2xl rounded-full pointer-events-none" />
+           <div className="absolute inset-x-0 top-0 h-1 bg-brand-gold pointer-events-none" />
            <div className="flex justify-between items-start mb-6 relative z-10">
              <div>
                <p className="text-[15px] font-medium text-brand-text-2 mb-1">Repeat Guests</p>
                <div className="flex items-baseline gap-1">
                  <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">0</span>
-                 <span className="text-xl font-bold text-purple-600">%</span>
+                 <span className="text-xl font-bold text-brand-gold-rich">%</span>
                </div>
              </div>
-             <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-100 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-               <UserCheck className="w-6 h-6 text-purple-600" />
+             <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-brand-gold-light to-brand-surface border border-brand-gold/25 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+               <UserCheck className="w-6 h-6 text-brand-gold-rich" />
              </div>
            </div>
            <div className="relative z-10">
-             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-semibold">
+             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-brand-gold-light text-brand-gold-rich text-xs font-semibold">
                <Clock className="w-3.5 h-3.5" /> 30-day returning est.
              </span>
            </div>
@@ -435,7 +434,7 @@ export default function FeedbackModule({ role, data }: Props) {
 
         {/* Property Performance Table */}
         <div className="order-2 glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "240ms" }}>
-          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white/50">
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-brand-champagne/55">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Property Performance</h2>
               <p className="text-xs text-brand-text-3 mt-0.5">Supabase aggregates · click headers to sort</p>
@@ -483,7 +482,7 @@ export default function FeedbackModule({ role, data }: Props) {
                         setSelectedDetail({ type: "property", item: prop });
                       }
                     }}
-                    className={`premium-table-row cursor-pointer outline-none transition-colors hover:bg-[#E5F4EE] focus-visible:bg-[#E5F4EE] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00735F]/35 ${i % 2 === 0 ? "bg-white" : "bg-brand-surface-2"}`}
+                    className={`premium-table-row cursor-pointer outline-none transition-colors hover:bg-brand-gold-light focus-visible:bg-brand-gold-light focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-gold/45 ${i % 2 === 0 ? "bg-brand-ivory" : "bg-brand-surface-2"}`}
                   >
                     {/* Property name */}
                     <td className="premium-table-cell">
@@ -571,7 +570,7 @@ export default function FeedbackModule({ role, data }: Props) {
 
           {/* Live Feedback Feed */}
           <div className="glass-card overflow-hidden anim-fade-up flex flex-col h-[420px]" style={{ animationDelay: "230ms" }}>
-          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50 shrink-0">
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-brand-champagne/55 shrink-0">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Live Feedback</h2>
               <p className="text-xs text-brand-text-3 mt-0.5">From vw_live_feedback_feed</p>
@@ -606,7 +605,7 @@ export default function FeedbackModule({ role, data }: Props) {
                       setSelectedDetail({ type: "feedback", item: entry });
                     }
                   }}
-                  className={`p-4 sm:p-5 border-b border-brand-border-soft cursor-pointer outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00735F]/35 ${isResolved ? "opacity-60 bg-brand-surface-2 hover:bg-[#E5F4EE]" : "bg-white hover:bg-[#E5F4EE]"}`}
+                  className={`p-4 sm:p-5 border-b border-brand-border-soft cursor-pointer outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-gold/45 ${isResolved ? "opacity-60 bg-brand-surface-2 hover:bg-brand-gold-light" : "bg-brand-ivory hover:bg-brand-gold-light"}`}
                 >
                   {/* Header row */}
                   <div className="flex items-center justify-between gap-3 mb-2">
@@ -669,25 +668,25 @@ export default function FeedbackModule({ role, data }: Props) {
                           const wa = window.open(`https://wa.me/?text=Dear+${entry.guest}`, "_blank");
                           if (wa) wa.focus();
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-emerald-600/50 hover:bg-emerald-50 hover:text-emerald-700 transition-all shadow-sm"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-brand-ivory text-xs font-semibold text-brand-text-2 hover:border-brand-green-800/50 hover:bg-brand-green-50 hover:text-brand-green-800 transition-all shadow-sm"
                       >
-                        <MessageSquare className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp
+                        <MessageSquare className="w-3.5 h-3.5 text-brand-green-800" /> WhatsApp
                       </button>
                       <button
                         onClick={(event) => { event.stopPropagation(); const p = dbProperties.find(x => x.id === entry.propertyId); if (p) window.alert(`Calling GM: ${p.gmName}`); }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-blue-600/50 hover:bg-blue-50 hover:text-blue-700 transition-all shadow-sm"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-brand-ivory text-xs font-semibold text-brand-text-2 hover:border-brand-teal/50 hover:bg-brand-green-50 hover:text-brand-teal transition-all shadow-sm"
                       >
-                        <Phone className="w-3.5 h-3.5 text-blue-600" /> Call GM
+                        <Phone className="w-3.5 h-3.5 text-brand-teal" /> Call GM
                       </button>
                       <button
                         onClick={(event) => { event.stopPropagation(); setAssignedIds(s => { const n = new Set(s); n.add(entry.id); return n; }); }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-emerald-600/50 hover:bg-emerald-50 hover:text-emerald-700 transition-all shadow-sm"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-brand-ivory text-xs font-semibold text-brand-text-2 hover:border-brand-green-800/50 hover:bg-brand-green-50 hover:text-brand-green-800 transition-all shadow-sm"
                       >
-                        <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> Assign
+                        <UserCheck className="w-3.5 h-3.5 text-brand-green-800" /> Assign
                       </button>
                       <button
                         onClick={(event) => { event.stopPropagation(); setResolvedIds(s => { const n = new Set(s); n.add(entry.id); return n; }); }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-white text-xs font-semibold text-brand-text-2 hover:border-red-600/50 hover:bg-red-50 hover:text-red-700 transition-all shadow-sm ml-auto"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border-soft bg-brand-ivory text-xs font-semibold text-brand-text-2 hover:border-red-600/50 hover:bg-red-50 hover:text-red-700 transition-all shadow-sm ml-auto"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5 text-brand-text-3" /> Resolve
                       </button>

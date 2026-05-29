@@ -2,52 +2,69 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cinzel), var(--font-roboto-slab), Georgia, serif;
+  --font-serif: var(--font-roboto-slab), Georgia, serif;
 
-  --color-brand-bg: #e7f4ef;
-  --color-brand-surface: #ffffff;
-  --color-brand-surface-2: #e0f0ea;
-  --color-brand-surface-3: #c8e3d9;
-  --color-brand-border: #9bcabe;
-  --color-brand-border-soft: #bddbd2;
-  --color-brand-text-1: #151915;
-  --color-brand-text-2: #50594f;
-  --color-brand-text-3: #7d8378;
+  --color-brand-bg: #efe9dc;
+  --color-brand-ivory: #fffdf7;
+  --color-brand-champagne: #f4ead6;
+  --color-brand-surface: #fffaf0;
+  --color-brand-surface-1: #fff8ea;
+  --color-brand-surface-2: #f3ead8;
+  --color-brand-surface-3: #e7d8b8;
+  --color-brand-border: #d3bf8a;
+  --color-brand-border-soft: #e3d5b4;
+  --color-brand-ink: #070706;
+  --color-brand-text-1: #16130d;
+  --color-brand-text-2: #51493b;
+  --color-brand-text-3: #7d7463;
 
-  --color-brand-green-950: #07150f;
-  --color-brand-green-900: #0b2118;
-  --color-brand-green-850: #102f22;
-  --color-brand-green-800: #153c2c;
-  --color-brand-green-750: #00735f;
-  --color-brand-green-700: #245542;
-  --color-brand-green-600: #31735a;
-  --color-brand-green-500: #3d8b71;
-  --color-brand-green-100: #cce9df;
-  --color-brand-green-50: #e7f4ef;
-  --color-brand-gold: #c8a45d;
-  --color-brand-gold-rich: #a77a34;
-  --color-brand-gold-soft: #e8d2a2;
-  --color-brand-gold-light: #fff7e4;
-  --color-brand-teal: #28737a;
+  --color-brand-green-950: #03130f;
+  --color-brand-green-900: #04251f;
+  --color-brand-green-850: #073229;
+  --color-brand-green-800: #055c4c;
+  --color-brand-green-750: #0a6d5a;
+  --color-brand-green-700: #157561;
+  --color-brand-green-600: #278873;
+  --color-brand-green-500: #4aa08b;
+  --color-brand-green-100: #d7e7df;
+  --color-brand-green-50: #edf5f0;
+  --color-brand-gold: #c8ac61;
+  --color-brand-gold-rich: #9f7731;
+  --color-brand-gold-soft: #dfc77e;
+  --color-brand-gold-light: #fbf1d9;
+  --color-brand-teal: #0f7069;
 
   /* Premium Box Shadows */
-  --shadow-premium-sm: 0 1px 2px rgba(0, 115, 95, 0.04), 0 1px 3px rgba(7, 21, 15, 0.06);
-  --shadow-premium-md: 0 4px 6px -1px rgba(0, 115, 95, 0.05), 0 2px 4px -2px rgba(7, 21, 15, 0.05), 0 0 0 1px rgba(0, 115, 95, 0.05);
-  --shadow-premium-lg: 0 10px 15px -3px rgba(0, 115, 95, 0.06), 0 4px 6px -4px rgba(7, 21, 15, 0.05), 0 0 0 1px rgba(0, 115, 95, 0.05);
-  --shadow-premium-popover: 0 0 0 1px rgba(73, 54, 28, 0.1), 0 20px 48px -24px rgba(32, 25, 16, 0.5);
-  --shadow-premium-card: 0 0 0 1px rgba(73, 54, 28, 0.07), 0 1px 2px -1px rgba(73, 54, 28, 0.1), 0 18px 34px -28px rgba(47, 36, 19, 0.42);
+  --shadow-premium-sm: 0 1px 2px rgba(37, 24, 8, 0.08), 0 1px 3px rgba(5, 92, 76, 0.08);
+  --shadow-premium-md: 0 10px 26px -20px rgba(5, 92, 76, 0.5), 0 0 0 1px rgba(200, 172, 97, 0.18);
+  --shadow-premium-lg: 0 24px 60px -38px rgba(5, 22, 18, 0.65), 0 0 0 1px rgba(200, 172, 97, 0.2);
+  --shadow-premium-popover: 0 0 0 1px rgba(200, 172, 97, 0.22), 0 24px 58px -28px rgba(3, 19, 15, 0.72);
+  --shadow-premium-card: 0 0 0 1px rgba(200, 172, 97, 0.22), 0 18px 40px -30px rgba(3, 19, 15, 0.58);
 }
 
 @layer base {
+  :root {
+    --text-1: #16130d;
+    --text-2: #51493b;
+    --text-3: #7d7463;
+    --border: #d3bf8a;
+    --teal: #0f7069;
+  }
+
   html {
     zoom: 0.9; /* Applies a universal 90% zoom out to all elements across all pages */
   }
   
   body {
     background:
-      radial-gradient(circle at top left, rgba(0, 115, 95, 0.15), transparent 34rem),
-      radial-gradient(circle at bottom right, rgba(0, 115, 95, 0.09), transparent 30rem),
-      linear-gradient(180deg, #e7f4ef 0%, #f0f8f5 46%, #e5f2ed 100%);
+      linear-gradient(180deg, rgba(3, 19, 15, 0.95) 0, rgba(5, 92, 76, 0.88) 255px, rgba(239, 233, 220, 0) 256px),
+      linear-gradient(135deg, #efe9dc 0%, #fff8ea 42%, #e7dcc3 100%);
+    color: #16130d;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: 0;
   }
 
   /* Form outline overrides */
@@ -68,19 +85,20 @@
   }
 
   .glass-card {
-    @apply rounded-3xl shadow-[0_4px_24px_rgba(0,115,95,0.07)] border border-brand-border-soft transition-all duration-300;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(237, 248, 243, 0.95));
+    @apply rounded-2xl shadow-premium-card border border-brand-border-soft transition-all duration-300;
+    background:
+      linear-gradient(145deg, rgba(255, 253, 247, 0.98), rgba(244, 234, 214, 0.94));
   }
   .glass-card:hover {
-    @apply shadow-[0_8px_32px_rgba(0,115,95,0.07)] border-brand-border;
+    @apply shadow-premium-lg border-brand-border;
   }
 
   .premium-table-row {
-    @apply transition-colors duration-150 border-b border-brand-border-soft/60 hover:bg-brand-green-50 cursor-pointer;
+    @apply transition-colors duration-150 border-b border-brand-border-soft/70 hover:bg-brand-gold-light/70 cursor-pointer;
   }
 
   .premium-table-header {
-    @apply text-brand-text-3 font-semibold text-[11px] uppercase tracking-wider px-3 sm:px-4 py-4 text-left border-b border-brand-border-soft/60 cursor-pointer select-none whitespace-nowrap bg-transparent;
+    @apply text-brand-green-900 font-bold text-[11px] uppercase tracking-wider px-3 sm:px-4 py-4 text-left border-b border-brand-border-soft/80 cursor-pointer select-none whitespace-nowrap bg-brand-champagne/70;
   }
 
   .premium-table-cell {
@@ -96,10 +114,10 @@
   }
 
   .badge-emerald {
-    @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
+    @apply bg-brand-green-50 text-brand-green-800 ring-1 ring-brand-green-800/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
   }
   .badge-amber {
-    @apply bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
+    @apply bg-brand-gold-light text-brand-gold-rich ring-1 ring-brand-gold/35 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
   }
   .badge-red {
     @apply bg-red-50 text-red-700 ring-1 ring-red-600/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
@@ -108,10 +126,10 @@
     @apply bg-gray-50 text-gray-700 ring-1 ring-gray-600/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
   }
   .badge-blue {
-    @apply bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
+    @apply bg-brand-green-50 text-brand-teal ring-1 ring-brand-teal/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
   }
   .badge-purple {
-    @apply bg-purple-50 text-purple-700 ring-1 ring-purple-600/20 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
+    @apply bg-brand-gold-light text-brand-green-900 ring-1 ring-brand-gold/30 rounded-md px-2 py-0.5 text-xs font-semibold inline-flex items-center gap-1.5 whitespace-nowrap;
   }
 }
 
@@ -165,13 +183,13 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #c8ac61;
   border: 2px solid transparent;
   border-radius: 999px;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #055c4c;
   border: 2px solid transparent;
   background-clip: padding-box;
 }

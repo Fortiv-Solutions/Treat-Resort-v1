@@ -54,7 +54,7 @@ function InboxKPIs({
   leadsSaved: number; avgSLA: number; revenueAtRisk: string; escalationsPrevented: number;
 }) {
   const kpis = [
-    { icon: Target, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", colorClass: "text-purple-600", bgClass: "bg-purple-50" },
+    { icon: Target, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", colorClass: "text-brand-gold-rich", bgClass: "bg-brand-gold-light" },
     { icon: Clock,      label: "Avg Response SLA",     value: `${avgSLA}h`,    sub: "target: under 2h",         colorClass: avgSLA > 2 ? "text-red-600" : "text-emerald-600", bgClass: avgSLA > 2 ? "bg-red-50" : "bg-emerald-50" },
     { icon: AlertTriangle, label: "Urgent Open",       value: revenueAtRisk,   sub: "urgent unread threads", colorClass: "text-red-600", bgClass: "bg-red-50" },
     { icon: CheckCircle2,        label: "Replied Threads",       value: `${escalationsPrevented}`, sub: "status from email_threads", colorClass: "text-amber-600", bgClass: "bg-amber-50" },
@@ -62,7 +62,7 @@ function InboxKPIs({
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }, i) => {
+      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }) => {
         const match = String(value).match(/^([^0-9.-]*)([0-9.,]+)([^0-9]*)$/);
         const prefix = match ? match[1].trim() : "";
         const num = match ? match[2] : value;
@@ -108,7 +108,7 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
         onClick={onClose}
         className="fixed inset-0 z-[490] bg-brand-green-950/40 backdrop-blur-sm animate-fade-in"
       />
-      <aside className="fixed inset-y-0 right-0 z-[500] w-full md:w-[480px] bg-white flex flex-col shadow-2xl border-l border-brand-border anim-slide-right">
+      <aside className="fixed inset-y-0 right-0 z-[500] w-full md:w-[480px] bg-brand-surface flex flex-col shadow-2xl border-l border-brand-gold/30 anim-slide-right">
         {/* Header */}
         <div className="bg-gradient-to-br from-brand-green-900 to-brand-green-950 p-5 shrink-0 relative">
           <div className="flex justify-between items-start gap-4">
@@ -140,8 +140,8 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
         {/* AI Insight bar */}
         <div className="px-5 py-3 bg-brand-surface-2 border-b border-brand-border flex gap-3 items-start">
           <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-            <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-            <span className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">AI</span>
+            <Sparkles className="w-3.5 h-3.5 text-brand-gold-rich" />
+            <span className="text-[11px] font-bold text-brand-gold-rich uppercase tracking-wider">AI</span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[13px] text-brand-text-1 mb-2 font-medium leading-snug">{email.aiNote}</p>
@@ -178,7 +178,7 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
               value={note}
               onChange={e => setNote(e.target.value)}
               placeholder="Add a note for your team…"
-              className="flex-1 px-3 py-2 rounded-lg border border-amber-300 bg-white text-[13px] text-brand-text-1 outline-none transition-colors focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+              className="flex-1 px-3 py-2 rounded-lg border border-brand-gold/40 bg-brand-ivory text-[13px] text-brand-text-1 outline-none transition-colors focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
             />
             <button
               onClick={saveNote}
@@ -197,10 +197,10 @@ function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
           <button className="flex items-center gap-2 px-3.5 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg font-bold text-[13px] hover:bg-red-100 transition-colors shadow-sm">
             <ArrowUpCircle className="w-4 h-4" /> Escalate
           </button>
-          <button className="flex items-center gap-2 px-3.5 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg font-bold text-[13px] hover:bg-blue-100 transition-colors shadow-sm">
+          <button className="flex items-center gap-2 px-3.5 py-2 bg-brand-green-50 text-brand-teal border border-brand-teal/20 rounded-lg font-bold text-[13px] hover:bg-brand-green-100 transition-colors shadow-sm">
             <Bell className="w-4 h-4" /> Snooze
           </button>
-          <select className="flex-1 min-w-[120px] px-3 py-2 bg-white border border-brand-border rounded-lg text-[13px] text-brand-text-2 font-medium outline-none cursor-pointer focus:border-brand-gold">
+          <select className="flex-1 min-w-[120px] px-3 py-2 bg-brand-ivory border border-brand-border rounded-lg text-[13px] text-brand-text-2 font-medium outline-none cursor-pointer focus:border-brand-gold">
             <option>Assign To…</option>
             <option>Preethi (Sales)</option>
             <option>Amit (Reservations)</option>
@@ -327,7 +327,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
               <button key={p} onClick={() => setFilterPri(p)} className={`px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-all focus:outline-none shadow-sm
                 ${filterPri === p
                   ? (p === "Urgent" ? "bg-red-50 text-red-700 border-red-200" : p === "Normal" ? "bg-amber-50 text-amber-700 border-amber-200" : p === "FYI" ? "bg-gray-100 text-gray-700 border-gray-300" : "bg-brand-green-900 text-brand-gold border-brand-green-900")
-                  : "bg-white text-brand-text-2 border-brand-border hover:bg-brand-surface-2"
+                  : "bg-brand-ivory text-brand-text-2 border-brand-border hover:bg-brand-surface-2"
                 }`}>
                 {p}
               </button>
@@ -339,7 +339,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
               <button key={c} onClick={() => setFilterCat(c)} className={`px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-all focus:outline-none shadow-sm
                 ${filterCat === c
                   ? (c === "All" ? "bg-brand-green-900 text-brand-gold border-brand-green-900" : "bg-brand-surface-3 text-brand-text-1 border-brand-border-soft")
-                  : "bg-white text-brand-text-2 border-brand-border hover:bg-brand-surface-2"
+                  : "bg-brand-ivory text-brand-text-2 border-brand-border hover:bg-brand-surface-2"
                 }`}>
                 {c}
               </button>
@@ -350,7 +350,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
 
       {/* Email Table */}
       <div className="glass-card overflow-hidden anim-fade-up" style={{ animationDelay: "200ms" }}>
-        <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-white/50">
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-brand-champagne/55">
           <div>
             <h2 className="text-sm font-bold text-brand-text-1">Email Inbox</h2>
             <p className="text-xs text-brand-text-3 mt-0.5">Click any row to read & respond</p>
@@ -396,7 +396,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
                   return (
                     <tr
                       key={email.id}
-                      className={`premium-table-row ${isSelected ? "bg-brand-gold/10 border-brand-gold/20" : i % 2 === 0 ? "bg-white" : "bg-brand-surface-2"}`}
+                      className={`premium-table-row ${isSelected ? "bg-brand-gold/10 border-brand-gold/20" : i % 2 === 0 ? "bg-brand-ivory" : "bg-brand-surface-2"}`}
                       onClick={() => setSelectedEmail(isSelected ? null : email)}
                     >
                       {/* Priority */}
@@ -409,7 +409,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
                       {/* AI Score + Sentiment */}
                       <td className="premium-table-cell">
                         <div className="flex flex-col gap-1 items-start">
-                          <span className={`inline-flex items-center gap-1 text-[11px] font-bold ${email.aiScore >= 70 ? "text-purple-600" : email.aiScore >= 40 ? "text-amber-600" : "text-gray-500"}`}>
+                          <span className={`inline-flex items-center gap-1 text-[11px] font-bold ${email.aiScore >= 70 ? "text-brand-gold-rich" : email.aiScore >= 40 ? "text-amber-600" : "text-gray-500"}`}>
                             <Sparkles className="w-3 h-3" />
                             {email.aiScore}
                           </span>
@@ -444,7 +444,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
                           {email.subject}
                         </span>
                         {/* AI note snippet */}
-                        <span className="text-[11px] text-purple-600 block mt-1">
+                        <span className="text-[11px] text-brand-gold-rich block mt-1">
                           ✦ {email.aiNote}
                         </span>
                       </td>
@@ -477,21 +477,21 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
                           <button
                             onClick={() => setSelectedEmail(email)}
                             title="Reply"
-                            className="p-1.5 rounded-md border border-brand-border bg-white hover:border-brand-green-900 hover:bg-brand-green-50 transition-colors shadow-sm"
+                            className="p-1.5 rounded-md border border-brand-border bg-brand-ivory hover:border-brand-green-900 hover:bg-brand-green-50 transition-colors shadow-sm"
                           >
                             <Reply className="w-3.5 h-3.5 text-brand-green-900" />
                           </button>
                           <button
                             onClick={() => setSnoozedIds(s => { const n = new Set(s); n.add(email.id); return n; })}
                             title="Snooze"
-                            className="p-1.5 rounded-md border border-brand-border bg-white hover:border-amber-600 hover:bg-amber-50 transition-colors shadow-sm"
+                            className="p-1.5 rounded-md border border-brand-border bg-brand-ivory hover:border-brand-gold hover:bg-brand-gold-light transition-colors shadow-sm"
                           >
                             <Bell className="w-3.5 h-3.5 text-amber-600" />
                           </button>
                           <button
                             onClick={() => setSelectedEmail(email)}
                             title="Escalate"
-                            className="p-1.5 rounded-md border border-brand-border bg-white hover:border-red-600 hover:bg-red-50 transition-colors shadow-sm"
+                            className="p-1.5 rounded-md border border-brand-border bg-brand-ivory hover:border-red-600 hover:bg-red-50 transition-colors shadow-sm"
                           >
                             <ArrowUpCircle className="w-3.5 h-3.5 text-red-600" />
                           </button>
