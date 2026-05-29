@@ -16,6 +16,7 @@ import {
   YAxis,
 } from "recharts";
 import {
+  AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
   Banknote,
@@ -350,6 +351,174 @@ function FinanceDiagnostics({
   );
 }
 
+function FinancePulse({
+  properties,
+  totalRevenue,
+  totalOutstanding,
+  totalRooms,
+  occupiedRooms,
+}: {
+  properties: FinanceProperty[];
+  totalRevenue: number;
+  totalOutstanding: number;
+  totalRooms: number;
+  occupiedRooms: number;
+}) {
+  const sortedByRevenue = [...properties].sort((a, b) => b.totalRev - a.totalRev);
+  const topRevenue = sortedByRevenue[0]?.totalRev ?? 0;
+  const topRevenueShare = totalRevenue ? Math.round((topRevenue / totalRevenue) * 100) : 0;
+  const roomRevenue = properties.reduce((sum, property) => sum + property.roomRev, 0);
+  const avgAdr = occupiedRooms ? Math.round(roomRevenue / occupiedRooms) : 0;
+  const unsoldRooms = Math.max(0, totalRooms - occupiedRooms);
+  const unsoldRoomOpportunity = unsoldRooms * avgAdr;
+  const revpars = properties.map(property => property.revpar).filter(value => value > 0);
+  const bestRevpar = revpars.length ? Math.max(...revpars) : 0;
+  const weakestRevpar = revpars.length ? Math.min(...revpars) : 0;
+  const yieldSpread = bestRevpar - weakestRevpar;
+  const receivablesPressure = totalRevenue ? Math.round((totalOutstanding / totalRevenue) * 100) : 0;
+  const fnbRevenue = properties.reduce((sum, property) => sum + property.fnbRev, 0);
+  const eventsRevenue = properties.reduce((sum, property) => sum + property.eventsRev, 0);
+  const ancillaryPerOccupiedRoom = occupiedRooms ? Math.round((fnbRevenue + eventsRevenue) / occupiedRooms) : 0;
+
+  const pulse = [
+    {
+      label: "Top property dependency",
+      value: `${topRevenueShare}%`,
+      detail: sortedByRevenue[0] ? `${sortedByRevenue[0].name} share of scoped revenue` : "No property revenue yet",
+      tone: topRevenueShare >= 45 ? "text-red-700" : "text-brand-text-1",
+      icon: Landmark,
+    },
+    {
+      label: "Unsold room opportunity",
+      value: fmtINR(unsoldRoomOpportunity),
+      detail: `${unsoldRooms} room nights valued at scoped ADR`,
+      tone: unsoldRooms > 0 ? "text-brand-gold-rich" : "text-emerald-700",
+      icon: Hotel,
+    },
+    {
+      label: "Yield spread",
+      value: fmtINR(yieldSpread),
+      detail: "Gap between strongest and weakest RevPAR",
+      tone: yieldSpread > 0 ? "text-brand-text-1" : "text-brand-text-3",
+      icon: Percent,
+    },
+    {
+      label: "Receivables pressure",
+      value: `${receivablesPressure}%`,
+      detail: "Outstanding balance as a share of scoped revenue",
+      tone: receivablesPressure >= 10 ? "text-red-700" : "text-emerald-700",
+      icon: ReceiptText,
+    },
+    {
+      label: "Ancillary yield",
+      value: fmtINR(ancillaryPerOccupiedRoom),
+      detail: "F&B and events revenue per occupied room",
+      tone: "text-brand-green-800",
+      icon: WalletCards,
+    },
+    {
+      label: "Room monetization",
+      value: totalRooms ? pct((occupiedRooms / totalRooms) * 100) : "0%",
+      detail: `${occupiedRooms} occupied out of ${totalRooms} available rooms`,
+      tone: "text-brand-text-1",
+      icon: Banknote,
+    },
+  ];
+
+  return (
+    <DataPanel className="p-5 lg:p-6">
+      <PanelHeader title="Finance Pulse" subtitle="Concentration, opportunity, yield gap, and collection pressure" />
+      <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {pulse.map(({ label, value, detail, tone, icon: Icon }) => (
+          <div key={label} className="rounded-xl border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-brand-text-3">{label}</p>
+                <p className={`m-0 mt-1 text-xl font-black tabular-nums ${tone}`}>{value}</p>
+              </div>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-surface-2 text-brand-text-2">
+                <Icon className="h-4 w-4" />
+              </div>
+            </div>
+            <p className="m-0 mt-3 truncate text-xs font-semibold text-brand-text-3">{detail}</p>
+          </div>
+        ))}
+      </div>
+    </DataPanel>
+  );
+}
+
+function PropertyRiskBoard({ properties }: { properties: FinanceProperty[] }) {
+  const avgRevpar = properties.length ? properties.reduce((sum, property) => sum + property.revpar, 0) / properties.length : 0;
+  const rows = [...properties]
+    .map(property => {
+      const nonRoomRevenue = property.fnbRev + property.eventsRev;
+      const nonRoomShare = property.totalRev ? Math.round((nonRoomRevenue / property.totalRev) * 100) : 0;
+      const riskScore =
+        (property.occ < 60 ? 35 : property.occ < 75 ? 18 : 0) +
+        (avgRevpar && property.revpar < avgRevpar * 0.85 ? 28 : 0) +
+        (nonRoomShare < 20 ? 15 : 0) +
+        (property.totalRev === 0 ? 22 : 0);
+      const cue = riskScore >= 55
+        ? "Immediate yield review"
+        : riskScore >= 30
+        ? "Monitor pricing and mix"
+        : "Healthy operating range";
+      return { ...property, nonRoomShare, riskScore, cue };
+    })
+    .sort((a, b) => b.riskScore - a.riskScore)
+    .slice(0, 6);
+
+  return (
+    <DataPanel className="overflow-hidden">
+      <div className="border-b border-brand-border-soft/70 bg-brand-champagne/55 p-5 sm:p-6">
+        <PanelHeader title="Property Risk Board" subtitle="Properties ranked by occupancy, RevPAR, and revenue-mix pressure" />
+      </div>
+      {rows.length === 0 ? (
+        <EmptyState title="No risk signals yet" body="Property risk signals will appear after finance data is available." />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[860px] border-collapse">
+            <thead>
+              <tr>
+                {["Property", "Risk", "Occ", "RevPAR", "Non-room mix", "Cue"].map(header => (
+                  <th key={header} className={`premium-table-header ${header === "Cue" || header === "Property" ? "text-left" : "text-right"}`}>
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((property, index) => {
+                const riskTone = property.riskScore >= 55
+                  ? "text-red-700"
+                  : property.riskScore >= 30
+                  ? "text-brand-gold-rich"
+                  : "text-brand-green-800";
+                return (
+                  <tr key={property.id} className={`premium-table-row ${index % 2 === 0 ? "bg-brand-ivory" : "bg-brand-surface-2"}`}>
+                    <td className="premium-table-cell">
+                      <div className="flex items-center gap-2.5">
+                        <AlertTriangle className={`h-3.5 w-3.5 ${riskTone}`} />
+                        <span className="font-black text-brand-text-1">{property.name}</span>
+                      </div>
+                    </td>
+                    <td className={`premium-table-cell text-right font-black tabular-nums ${riskTone}`}>{property.riskScore}</td>
+                    <td className="premium-table-cell text-right font-bold tabular-nums text-brand-text-2">{pct(property.occ)}</td>
+                    <td className="premium-table-cell text-right font-bold tabular-nums text-brand-text-2">{fmtINR(property.revpar)}</td>
+                    <td className="premium-table-cell text-right font-bold tabular-nums text-brand-text-2">{property.nonRoomShare}%</td>
+                    <td className="premium-table-cell text-left text-xs font-semibold text-brand-text-3">{property.cue}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </DataPanel>
+  );
+}
+
 function RevenueTrend({ data }: { data: DashboardPayload["financeTrend"] }) {
   return (
     <DataPanel className="flex min-h-[390px] flex-col p-5 lg:p-6">
@@ -672,6 +841,16 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
             freshnessHours={data?.analytics.systemHealth.financeFreshnessHours}
             staleProperties={data?.analytics.systemHealth.staleFinanceProperties ?? 0}
           />
+
+          <FinancePulse
+            properties={properties}
+            totalRevenue={totalRevenue}
+            totalOutstanding={totalOutstanding}
+            totalRooms={totalRooms}
+            occupiedRooms={occupiedRooms}
+          />
+
+          <PropertyRiskBoard properties={properties} />
 
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
             <RevenueTrend data={data?.financeTrend ?? []} />
