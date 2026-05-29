@@ -23,7 +23,7 @@ async function request<T>(
   init: RequestInit = {},
 ): Promise<SupabaseResult<T>> {
   if (!url || !key) {
-    return { ok: false, error: "Supabase environment variables are not configured.", status: 503 };
+    return { ok: false, error: "Data connection is not configured.", status: 503 };
   }
 
   const headers = new Headers(init.headers);
@@ -51,7 +51,7 @@ async function request<T>(
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : "Unknown Supabase request error.",
+      error: error instanceof Error ? error.message : "Unknown data request error.",
       status: 500,
     };
   }

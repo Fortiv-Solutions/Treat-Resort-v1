@@ -449,7 +449,7 @@ export default function FeedbackModule({ role, data }: Props) {
         <div className="glass-card overflow-hidden">
           <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 bg-brand-champagne/55">
             <h2 className="text-sm font-bold text-brand-text-1">Automation Health</h2>
-            <p className="text-xs text-brand-text-3 mt-0.5">n8n workflow reliability, processing speed, and data freshness</p>
+            <p className="text-xs text-brand-text-3 mt-0.5">Automation reliability, processing speed, and data freshness</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-5 sm:p-6">
             {[
@@ -465,7 +465,7 @@ export default function FeedbackModule({ role, data }: Props) {
             ))}
           </div>
           <div className="border-t border-brand-border-soft px-5 py-3 text-xs font-semibold text-brand-text-3">
-            Audit events: {systemHealth?.auditEvents ?? 0} / Finance freshness: {systemHealth?.financeFreshnessHours === null || systemHealth?.financeFreshnessHours === undefined ? "No import timestamp" : `${systemHealth.financeFreshnessHours}h`}
+            Change events: {systemHealth?.auditEvents ?? 0} / Finance freshness: {systemHealth?.financeFreshnessHours === null || systemHealth?.financeFreshnessHours === undefined ? "No import timestamp" : `${systemHealth.financeFreshnessHours}h`}
           </div>
         </div>
       </div>
@@ -487,7 +487,7 @@ export default function FeedbackModule({ role, data }: Props) {
           <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-brand-champagne/55">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Property Performance</h2>
-              <p className="text-xs text-brand-text-3 mt-0.5">Supabase aggregates · click headers to sort</p>
+              <p className="text-xs text-brand-text-3 mt-0.5">Live performance metrics - click headers to sort</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               {role === "MD" && (
@@ -497,7 +497,7 @@ export default function FeedbackModule({ role, data }: Props) {
               )}
               <span className="text-xs text-brand-text-3 flex items-center gap-1.5 font-medium">
                 <RefreshCw className="w-3.5 h-3.5" />
-                Backend data
+                Live data
               </span>
             </div>
           </div>
@@ -623,11 +623,11 @@ export default function FeedbackModule({ role, data }: Props) {
           <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 flex justify-between items-center bg-brand-champagne/55 shrink-0">
             <div>
               <h2 className="text-sm font-bold text-brand-text-1">Live Feedback</h2>
-              <p className="text-xs text-brand-text-3 mt-0.5">From vw_live_feedback_feed</p>
+              <p className="text-xs text-brand-text-3 mt-0.5">Latest guest submissions</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="pulse-dot bg-emerald-500" />
-              <span className="text-[11px] font-medium text-brand-text-3">Backend</span>
+              <span className="text-[11px] font-medium text-brand-text-3">Live</span>
             </div>
           </div>
 
@@ -766,3 +766,5 @@ export default function FeedbackModule({ role, data }: Props) {
     </div>
   );
 }
+
+

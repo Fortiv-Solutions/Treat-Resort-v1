@@ -35,7 +35,7 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
       }
 
       updateForm(() => data.form);
-      addToast("Form saved to database", "success");
+      addToast("Form saved", "success");
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Unknown save error";
       addToast(`Failed to save: ${message}`, "error");
@@ -53,7 +53,7 @@ export default function BuilderHeader({ form, updateForm, addToast }: Props) {
     a.download = `treat-feedback-form-${form.settings.propertyId}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    addToast("Form exported as JSON", "info");
+    addToast("Form exported", "info");
   }
 
   return (

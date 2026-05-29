@@ -177,9 +177,6 @@ function FinanceCommandHeader({
   entityFilter,
   setEntityFilter,
   isGM,
-  totalRevenue,
-  avgOccupancy,
-  totalOutstanding,
 }: {
   data: DashboardPayload | null;
   properties: FinanceProperty[];
@@ -188,13 +185,10 @@ function FinanceCommandHeader({
   entityFilter: EntityFilter;
   setEntityFilter: (value: EntityFilter) => void;
   isGM: boolean;
-  totalRevenue: number;
-  avgOccupancy: number;
-  totalOutstanding: number;
 }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-brand-border-soft bg-brand-surface/95 shadow-premium-card">
-      <div className="border-b border-brand-border-soft/70 bg-brand-champagne/55 px-5 py-5 sm:px-6">
+      <div className="px-5 py-5 sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-border-soft bg-brand-ivory px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-gold-rich">
@@ -203,7 +197,7 @@ function FinanceCommandHeader({
             </div>
             <h1 className="m-0 font-display text-2xl font-bold text-brand-text-1 sm:text-3xl">Finance Intelligence</h1>
             <p className="m-0 mt-2 max-w-2xl text-sm leading-relaxed text-brand-text-3">
-              Revenue, occupancy, receivables, and Tally import health across the Treat portfolio.
+              Portfolio yield, revenue movement, receivables risk, and import freshness.
             </p>
           </div>
           {!isGM && (
@@ -218,28 +212,12 @@ function FinanceCommandHeader({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 divide-y divide-brand-border-soft sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        {[
-          { label: "Scoped revenue", value: fmtINR(totalRevenue), icon: WalletCards },
-          { label: "Portfolio occupancy", value: pct(avgOccupancy), icon: Percent },
-          { label: "Open receivables", value: fmtINR(totalOutstanding), icon: ReceiptText },
-        ].map(({ label, value, icon: Icon }) => (
-          <div key={label} className="flex items-center justify-between gap-4 px-5 py-4 sm:px-6">
-            <div>
-              <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-brand-text-3">{label}</p>
-              <p className="m-0 mt-1 text-xl font-black tabular-nums text-brand-gold-rich">{value}</p>
-            </div>
-            <Icon className="h-5 w-5 text-brand-gold-rich" />
-          </div>
-        ))}
-      </div>
-
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-border-soft bg-brand-surface-2 px-5 py-3 text-xs sm:px-6">
         <span className="inline-flex items-center gap-2 font-semibold text-brand-text-3">
           <Sparkles className="h-3.5 w-3.5 text-brand-gold-rich" />
-          {data?.configured ? "Connected to Supabase finance_records" : "Waiting for Supabase environment variables"}
+          {data?.configured ? "Connected to live finance data" : "Waiting for finance data connection"}
         </span>
-        <span className="font-bold text-brand-text-3">{properties.length} property records in current scope</span>
+        <span className="font-bold text-brand-text-3">{properties.length} properties in current scope</span>
       </div>
     </section>
   );
@@ -253,6 +231,7 @@ function ExecutiveMetrics({
   totalOutstanding,
   totalRooms,
   occupiedRooms,
+  revenueChangePct,
 }: {
   properties: FinanceProperty[];
   totalRevenue: number;
@@ -261,28 +240,123 @@ function ExecutiveMetrics({
   totalOutstanding: number;
   totalRooms: number;
   occupiedRooms: number;
+  revenueChangePct: number;
 }) {
   const roomRevenue = properties.reduce((sum, property) => sum + property.roomRev, 0);
   const roomShare = totalRevenue ? Math.round((roomRevenue / totalRevenue) * 100) : 0;
   const revpar = totalRooms ? Math.round(roomRevenue / totalRooms) : 0;
+  const revenueTone: MetricTone = revenueChangePct < 0 ? "red" : "gold";
+  const revenueDirection = revenueChangePct > 0 ? "+" : "";
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <MetricTile label="Total revenue" value={fmtINR(totalRevenue)} sub={`${properties.length} active property records`} icon={CircleDollarSign} tone="gold" />
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <MetricTile label="Revenue" value={fmtINR(totalRevenue)} sub={`${properties.length} properties in scope`} icon={CircleDollarSign} tone="gold" />
+      <MetricTile label="Revenue movement" value={`${revenueDirection}${revenueChangePct.toFixed(1)}%`} sub="Latest date vs previous import date" icon={revenueChangePct < 0 ? ArrowDownRight : ArrowUpRight} tone={revenueTone} />
       <MetricTile label="Occupancy" value={pct(avgOccupancy)} sub={`${occupiedRooms}/${totalRooms} rooms occupied`} icon={Hotel} tone="green" />
       <MetricTile label="ADR / RevPAR" value={`${fmtINR(avgAdr)} / ${fmtINR(revpar)}`} sub={`${roomShare}% revenue from rooms`} icon={Banknote} tone="teal" />
-      <MetricTile label="Receivables" value={fmtINR(totalOutstanding)} sub="Latest snapshot by property" icon={ReceiptText} tone={totalOutstanding > 0 ? "red" : "green"} />
+      <MetricTile label="Receivables risk" value={fmtINR(totalOutstanding)} sub="Latest snapshot by property" icon={ReceiptText} tone={totalOutstanding > 0 ? "red" : "green"} />
     </div>
+  );
+}
+
+function FinanceDiagnostics({
+  properties,
+  totalRevenue,
+  totalOutstanding,
+  revenueChangePct,
+  freshnessHours,
+  staleProperties,
+}: {
+  properties: FinanceProperty[];
+  totalRevenue: number;
+  totalOutstanding: number;
+  revenueChangePct: number;
+  freshnessHours: number | null | undefined;
+  staleProperties: number;
+}) {
+  const roomRevenue = properties.reduce((sum, property) => sum + property.roomRev, 0);
+  const fnbRevenue = properties.reduce((sum, property) => sum + property.fnbRev, 0);
+  const eventsRevenue = properties.reduce((sum, property) => sum + property.eventsRev, 0);
+  const avgRevpar = properties.length ? Math.round(properties.reduce((sum, property) => sum + property.revpar, 0) / properties.length) : 0;
+  const weakYield = properties.filter(property => property.occ < 60 || property.revpar < avgRevpar * 0.85);
+  const bestProperty = [...properties].sort((a, b) => b.revpar - a.revpar)[0];
+  const roomShare = totalRevenue ? Math.round((roomRevenue / totalRevenue) * 100) : 0;
+  const ancillaryShare = totalRevenue ? Math.round(((fnbRevenue + eventsRevenue) / totalRevenue) * 100) : 0;
+  const receivableShare = totalRevenue ? Math.round((totalOutstanding / totalRevenue) * 100) : 0;
+
+  const diagnostics = [
+    {
+      label: "Yield watchlist",
+      value: weakYield.length,
+      detail: weakYield.length ? `${weakYield.length} properties below occupancy or RevPAR threshold` : "All scoped properties are above the yield threshold",
+      tone: weakYield.length ? "text-red-700" : "text-emerald-700",
+      icon: Hotel,
+    },
+    {
+      label: "Best RevPAR",
+      value: bestProperty ? fmtINR(bestProperty.revpar) : "No data",
+      detail: bestProperty ? bestProperty.name : "Add finance data to rank properties",
+      tone: "text-brand-green-800",
+      icon: Landmark,
+    },
+    {
+      label: "Room revenue mix",
+      value: `${roomShare}%`,
+      detail: `${ancillaryShare}% from F&B and events`,
+      tone: "text-brand-gold-rich",
+      icon: WalletCards,
+    },
+    {
+      label: "Receivables intensity",
+      value: `${receivableShare}%`,
+      detail: totalOutstanding > 0 ? `${fmtINR(totalOutstanding)} open against scoped revenue` : "No outstanding balance in latest snapshot",
+      tone: totalOutstanding > 0 ? "text-red-700" : "text-emerald-700",
+      icon: ReceiptText,
+    },
+    {
+      label: "Import freshness",
+      value: freshnessHours === null || freshnessHours === undefined ? "Unknown" : `${freshnessHours}h`,
+      detail: staleProperties ? `${staleProperties} stale property imports` : "No stale import detected",
+      tone: staleProperties ? "text-red-700" : "text-brand-text-1",
+      icon: FileCheck2,
+    },
+    {
+      label: "Revenue direction",
+      value: `${revenueChangePct > 0 ? "+" : ""}${revenueChangePct.toFixed(1)}%`,
+      detail: "Latest import date compared with previous import date",
+      tone: revenueChangePct < 0 ? "text-red-700" : "text-emerald-700",
+      icon: Percent,
+    },
+  ];
+
+  return (
+    <DataPanel className="p-5 lg:p-6">
+      <PanelHeader title="Finance Diagnostics" subtitle="Action cues for yield, mix, receivables, and data freshness" />
+      <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {diagnostics.map(({ label, value, detail, tone, icon: Icon }) => (
+          <div key={label} className="grid grid-cols-[36px_minmax(0,1fr)] gap-3 rounded-xl border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-surface-2 text-brand-text-2">
+              <Icon className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-brand-text-3">{label}</p>
+              <p className={`m-0 mt-1 text-xl font-black tabular-nums ${tone}`}>{value}</p>
+              <p className="m-0 mt-1 truncate text-xs font-semibold text-brand-text-3">{detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </DataPanel>
   );
 }
 
 function RevenueTrend({ data }: { data: DashboardPayload["financeTrend"] }) {
   return (
     <DataPanel className="flex min-h-[390px] flex-col p-5 lg:p-6">
-      <PanelHeader title="Revenue Runway" subtitle="Total, room, F&B, and event revenue over the latest imported dates" />
+      <PanelHeader title="Revenue Runway" subtitle="Total, room, F&B, and event revenue over the latest reporting dates" />
       <div className="mt-6 min-h-[300px] flex-1">
         {data.length === 0 ? (
-          <EmptyState title="No revenue timeline" body="Finance trend appears after dated finance_records rows are imported." />
+          <EmptyState title="No revenue timeline" body="Finance trend appears after dated revenue entries are available." />
         ) : (
           <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={300}>
             <AreaChart data={data} margin={{ top: 8, right: 14, bottom: 0, left: 0 }}>
@@ -322,7 +396,7 @@ function RevenueMix({ data }: { data: DashboardPayload["revenueMix"] }) {
 
   return (
     <DataPanel className="p-5 lg:p-6">
-      <PanelHeader title="Revenue Mix" subtitle="Latest imported revenue by stream" />
+      <PanelHeader title="Revenue Mix" subtitle="Latest revenue by stream" />
       {enriched.length === 0 ? (
         <EmptyState title="No channel mix yet" body="Room, F&B, events, adventure, and other revenue will appear here." />
       ) : (
@@ -368,7 +442,7 @@ function EntityHealth({ data }: { data: DashboardPayload["entitySummary"] }) {
       <PanelHeader title="Entity Health" subtitle="Revenue and average occupancy by legal entity" />
       <div className="mt-6 min-h-[220px]">
         {data.length === 0 ? (
-          <EmptyState title="No entity finance data" body="Entity totals will appear after finance records are inserted." />
+          <EmptyState title="No entity finance data" body="Entity totals will appear after finance data is available." />
         ) : (
           <ResponsiveContainer width="100%" height={230} minWidth={1} minHeight={1}>
             <BarChart data={data} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
@@ -430,7 +504,7 @@ function PropertyYieldBoard({ properties }: { properties: FinanceProperty[] }) {
         />
       </div>
       {sorted.length === 0 ? (
-        <EmptyState title="No property finance rows" body="Insert finance_records rows to populate the property yield board." />
+        <EmptyState title="No property finance rows" body="Add finance data to populate the property yield board." />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1060px] border-collapse">
@@ -497,9 +571,9 @@ function PropertyYieldBoard({ properties }: { properties: FinanceProperty[] }) {
 function TallyImports({ imports }: { imports: DashboardPayload["latestTallyImports"] }) {
   return (
     <DataPanel className="p-5 lg:p-6">
-      <PanelHeader title="Import Reconciliation" subtitle="Latest Tally files received by property" />
+      <PanelHeader title="Import Reconciliation" subtitle="Latest finance files received by property" />
       {imports.length === 0 ? (
-        <EmptyState title="No Tally import metadata" body="When finance_records include tally file metadata, import status will be listed here." />
+        <EmptyState title="No finance import metadata" body="When finance file details are available, import status will be listed here." />
       ) : (
         <div className="mt-5 grid gap-3">
           {imports.map(item => (
@@ -509,7 +583,7 @@ function TallyImports({ imports }: { imports: DashboardPayload["latestTallyImpor
               </div>
               <div className="min-w-0">
                 <p className="m-0 truncate text-[13px] font-black text-brand-text-1">{item.fileName}</p>
-                <p className="m-0 mt-0.5 truncate text-[11px] font-semibold text-brand-text-3">{item.property} - {item.source}</p>
+                <p className="m-0 mt-0.5 truncate text-[11px] font-semibold text-brand-text-3">{item.property} - finance file</p>
               </div>
               <span className="rounded-lg border border-brand-border-soft bg-brand-surface-2 px-2.5 py-1 text-xs font-bold text-brand-text-3">
                 {item.receivedAt}
@@ -529,9 +603,9 @@ function NoDataLedger() {
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-green-900 text-brand-gold">
           <FileText className="h-6 w-6" />
         </div>
-        <h2 className="m-0 font-display text-2xl font-bold text-brand-text-1">Finance records are not available yet</h2>
+        <h2 className="m-0 font-display text-2xl font-bold text-brand-text-1">Finance data is not available yet</h2>
         <p className="m-0 mt-3 text-sm leading-relaxed text-brand-text-3">
-          Once Supabase finance_records are imported, this page will show revenue runway, entity health, property yield, receivables, and Tally reconciliation.
+          Once finance data is available, this page will show revenue runway, entity health, property yield, receivables, and import reconciliation.
         </p>
       </div>
     </DataPanel>
@@ -560,6 +634,7 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
   const roomRevenue = properties.reduce((sum, property) => sum + property.roomRev, 0);
   const avgAdr = occupiedRooms ? Math.round(roomRevenue / occupiedRooms) : 0;
   const totalOutstanding = data?.financeKpis.outstandingReceivables ?? 0;
+  const revenueChangePct = data?.financeKpis.revenueChangePct ?? 0;
   const hasFinanceData = properties.length > 0 || (data?.financeTrend.length ?? 0) > 0 || (data?.entitySummary.length ?? 0) > 0;
 
   return (
@@ -572,9 +647,6 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
         entityFilter={entityFilter}
         setEntityFilter={setEntityFilter}
         isGM={isGM}
-        totalRevenue={totalRevenue}
-        avgOccupancy={avgOccupancy}
-        totalOutstanding={totalOutstanding}
       />
 
       {!hasFinanceData ? (
@@ -589,6 +661,16 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
             totalOutstanding={totalOutstanding}
             totalRooms={totalRooms}
             occupiedRooms={occupiedRooms}
+            revenueChangePct={revenueChangePct}
+          />
+
+          <FinanceDiagnostics
+            properties={properties}
+            totalRevenue={totalRevenue}
+            totalOutstanding={totalOutstanding}
+            revenueChangePct={revenueChangePct}
+            freshnessHours={data?.analytics.systemHealth.financeFreshnessHours}
+            staleProperties={data?.analytics.systemHealth.staleFinanceProperties ?? 0}
           />
 
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">

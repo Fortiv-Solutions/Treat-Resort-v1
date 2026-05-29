@@ -49,7 +49,7 @@ export default function AutomationPanel() {
               Feedback Automation
             </h2>
             <p style={{ fontSize: "11px", color: "var(--text-3)", marginTop: "1px" }}>
-              Fortiv Form → routing rules → guest & manager actions
+              Guest form routing rules and manager actions
             </p>
           </div>
         </div>
@@ -77,12 +77,12 @@ export default function AutomationPanel() {
         {/* Two URL inputs */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }} className="auto-inputs-row">
 
-          {/* Fortiv Form URL */}
+          {/* Guest form URL */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "7px" }}>
               <Link2 size={12} color="#6B7280" />
               <label style={{ fontSize: "11px", fontWeight: 600, color: "#374151" }}>
-                Fortiv Form Link
+                Guest Form Link
               </label>
             </div>
             <div style={{ display: "flex", gap: "6px" }}>

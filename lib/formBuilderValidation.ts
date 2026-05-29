@@ -116,7 +116,7 @@ export function validateFormConfig(form: FormConfig): ValidationResult<FormConfi
 
   const webhooks = [form?.settings?.n8nSubmitWebhook].filter(Boolean) as string[];
   webhooks.forEach(webhook => {
-    if (webhook.trim() && !looksLikeHttpUrl(webhook.trim())) errors.push("Webhook URLs must start with http:// or https://.");
+    if (webhook.trim() && !looksLikeHttpUrl(webhook.trim())) errors.push("Automation URLs must start with http:// or https://.");
   });
 
   return errors.length ? { ok: false, errors } : { ok: true, data: form };

@@ -202,7 +202,7 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
         <StatCard
           title="Email Threads"
           value={allScope.length}
-          subtitle="From email_threads"
+          subtitle="Current inbox volume"
           icon={Mail}
           accent="gold"
           delay={0}

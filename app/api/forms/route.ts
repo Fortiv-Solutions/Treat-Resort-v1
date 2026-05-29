@@ -13,7 +13,7 @@ function isUnavailableForGuest(form: FormConfig) {
 
 export async function GET(req: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
+    return NextResponse.json({ error: "Data connection is not configured." }, { status: 503 });
   }
 
   const { searchParams } = new URL(req.url);
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
+    return NextResponse.json({ error: "Data connection is not configured." }, { status: 503 });
   }
 
   try {

@@ -35,7 +35,7 @@ function isInactiveOrExpired(expiresAt: string, isActive: boolean) {
 
 export async function POST(req: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
+    return NextResponse.json({ error: "Data connection is not configured." }, { status: 503 });
   }
 
   try {
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
 
     const webhookUrl = effectiveSubmitWebhookUrl(form);
     let n8nSuccess = false;
-    let n8nMessage = "No webhook configured";
+    let n8nMessage = "No automation destination configured";
 
     if (webhookUrl) {
       try {
@@ -127,10 +127,10 @@ export async function POST(req: Request) {
         });
         n8nSuccess = response.ok;
         n8nMessage = response.ok
-          ? "Feedback forwarded to n8n successfully"
-          : `n8n webhook returned status ${response.status}`;
+          ? "Feedback forwarded to automation successfully"
+          : `Automation destination returned status ${response.status}`;
       } catch (error) {
-        n8nMessage = `Failed to contact n8n webhook: ${error instanceof Error ? error.message : "Unknown error"}`;
+        n8nMessage = `Failed to contact automation destination: ${error instanceof Error ? error.message : "Unknown error"}`;
       }
     }
 

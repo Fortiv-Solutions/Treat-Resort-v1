@@ -113,7 +113,7 @@ export default function FormSettingsSection({ form, updateForm }: Props) {
         >
           {properties.length === 0 && (
             <option value="" style={{ background: "#ffffff", color: "#111827" }}>
-              No active properties in database
+              No active properties available
             </option>
           )}
           {properties.map(p => (

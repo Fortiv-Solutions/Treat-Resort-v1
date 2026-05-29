@@ -5,7 +5,7 @@ export async function GET() {
   if (!isSupabaseConfigured()) {
     return NextResponse.json({
       connected: false,
-      error: "Supabase environment variables are not configured.",
+      error: "Data connection is not configured.",
     }, { status: 503 });
   }
 

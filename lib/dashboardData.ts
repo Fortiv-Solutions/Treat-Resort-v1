@@ -575,7 +575,7 @@ export function buildDashboardPayload(input: {
       .slice(0, 10)
       .map(row => ({
         property: propertyById.get(row.property_id)?.name ?? row.property_id,
-        fileName: String(row.tally_file_name ?? "Tally import"),
+        fileName: String(row.tally_file_name ?? "Finance import"),
         receivedAt: row.tally_received_at ? relTime(String(row.tally_received_at)) : "No received timestamp",
         source: String(row.source ?? "tally"),
       })),

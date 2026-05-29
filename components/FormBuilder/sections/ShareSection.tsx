@@ -129,7 +129,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
       <div>
         <div style={{ fontSize: "10.5px", fontWeight: 600, color: "rgba(0,0,0,0.5)", marginBottom: "7px", letterSpacing: "0.04em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px" }}>
           <Code2 size={12} />
-          Embed Code
+          Website Embed
         </div>
         <div style={{ position: "relative" }}>
           <textarea
@@ -187,7 +187,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
         ))}
       </div>
 
-      {/* n8n Backend Integration */}
+      {/* Automation connection */}
       <div style={{
         marginTop: "12px",
         padding: "16px",
@@ -201,15 +201,15 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ fontSize: "16px" }}>🔌</span>
           <div>
-            <h4 style={{ fontSize: "13px", fontWeight: 700, color: "#111827", margin: 0 }}>n8n Webhook Integration</h4>
-            <p style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.5)", margin: "1px 0 0" }}>Connect your form to your n8n workflow server</p>
+            <h4 style={{ fontSize: "13px", fontWeight: 700, color: "#111827", margin: 0 }}>Automation Connection</h4>
+            <p style={{ fontSize: "10.5px", color: "rgba(0,0,0,0.5)", margin: "1px 0 0" }}>Send completed forms to your guest operations flow</p>
           </div>
         </div>
 
-        {/* Submit Webhook Input */}
+        {/* Submission connection input */}
         <div>
           <div style={{ fontSize: "10.5px", fontWeight: 600, color: "rgba(0,0,0,0.5)", marginBottom: "5px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-            n8n Submission Webhook URL
+            Submission Automation URL
           </div>
           <input
             type="text"
@@ -220,7 +220,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
                 settings: { ...prev.settings, n8nSubmitWebhook: e.target.value }
               }));
             }}
-            placeholder="https://n8n.yourdomain.com/webhook/..."
+            placeholder="https://automation.yourdomain.com/..."
             style={{
               padding: "9px 12px",
               background: "#ffffff",
@@ -242,7 +242,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
           padding: "10px",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "11px", fontWeight: 600, color: "#064e3b" }}>📋 Submission Payload Schema</span>
+            <span style={{ fontSize: "11px", fontWeight: 600, color: "#064e3b" }}>Submission Details Sample</span>
             <button
               onClick={() => {
                 const payloadSchema = {
@@ -264,7 +264,7 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
                   timestamp: "<iso_timestamp>"
                 };
                 navigator.clipboard.writeText(JSON.stringify(payloadSchema, null, 2)).then(() => {
-                  addToast("Schema blueprint copied to clipboard!", "success");
+                  addToast("Submission sample copied to clipboard!", "success");
                 });
               }}
               style={{
@@ -277,37 +277,28 @@ export default function ShareSection({ form, updateForm, addToast }: Props) {
                 cursor: "pointer"
               }}
             >
-              Copy Schema
+              Copy Sample
             </button>
           </div>
           <p style={{ fontSize: "10px", color: "rgba(0,0,0,0.5)", marginTop: "4px", marginBottom: "8px", lineHeight: "1.3" }}>
-            Copy this schema payload blueprint to configure your Webhook Start node in n8n easily.
+            Copy this sample to align your operations flow with the form data.
           </p>
           <pre style={{
             margin: 0,
-            fontSize: "9.5px",
+            fontSize: "10.5px",
             color: "rgba(0,0,0,0.7)",
             background: "rgba(0,0,0,0.03)",
             padding: "8px",
             borderRadius: "6px",
             overflowX: "auto",
             maxHeight: "140px",
-            fontFamily: "monospace",
+            fontFamily: "'Inter', sans-serif",
           }}>
-{`{
-  "event": "guest_feedback_submitted",
-  "submissionId": "<uuid-from-submissions>",
-  "formId": "${form.id}",
-  "propertyName": "${form.settings.propertyName}",
-  "propertyId": "${form.settings.propertyId}",
-  "guestName": "<guest_name>",
-  "guestEmail": "<guest_email>",
-  "guestPhone": "<guest_phone>",
-  "roomNumber": "<room_number>",
-  "answers": [
-    { "questionId": "<question_id>", "value": "<answer_value>" }
-  ]
-}`}
+{`Property: ${form.settings.propertyName}
+Guest details: name, email, phone, room
+Answers: all submitted question responses
+Routing: manager alerts and review-link actions
+Submitted time: included with every response`}
           </pre>
         </div>
       </div>

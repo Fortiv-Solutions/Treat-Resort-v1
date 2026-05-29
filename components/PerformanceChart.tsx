@@ -35,7 +35,7 @@ export default function PerformanceChart({ properties }: { properties: Property[
             Performance Overview
           </h2>
           <p style={{ fontSize: "12px", color: "var(--text-3)", marginTop: "3px" }}>
-            Occupancy, response rate, and review score from Supabase aggregates
+            Occupancy, response rate, and review score across properties
           </p>
         </div>
       </div>
