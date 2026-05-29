@@ -58,6 +58,7 @@ export type AISentiment = "Positive" | "Neutral" | "Negative" | "Critical";
 
 export interface Email {
   id: number;
+  dbId: string;
   priority: EmailPriority;
   property: string;
   propertyId: string;

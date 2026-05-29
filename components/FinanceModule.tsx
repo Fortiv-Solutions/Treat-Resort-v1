@@ -543,7 +543,7 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
   const [entityFilter, setEntityFilter] = useState<EntityFilter>("all");
   const allProperties = data?.financeProperties ?? FINANCE_PROPERTIES;
   const isGM = role.startsWith("GM_");
-  const gmProperty = role === "GM_SILVASSA" ? "silvassa" : role === "GM_DAHANU" ? "dahanu" : role === "GM_KUMBHALGARH" ? "kumbhalgarh" : null;
+  const gmProperty = role === "GM_SILVASSA" ? "treat-silvassa" : role === "GM_DAHANU" ? "treat-gokarna" : role === "GM_KUMBHALGARH" ? "kumbhalgarh" : null;
 
   const properties = useMemo(() => {
     let rows = allProperties;
