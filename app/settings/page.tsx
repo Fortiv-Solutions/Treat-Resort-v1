@@ -111,12 +111,11 @@ export default function SettingsPage() {
                     <p className="text-brand-text-3 text-[14px]">Choose what you want to be notified about.</p>
                   </div>
                   <div className="space-y-6">
-                    {/* Dummy switches */}
                     {[
-                      { title: "Guest Reviews", desc: "Get notified when a new review is posted." },
-                      { title: "Daily Digest", desc: "Receive a daily summary of key metrics." },
-                      { title: "Financial Alerts", desc: "Alerts for sudden revenue drops or spikes." },
-                      { title: "System Updates", desc: "News about product and feature updates." },
+                      { title: "Review Link Events", desc: "Alert when a guest is shown a public review link." },
+                      { title: "Daily Digest", desc: "Planned digest for executive KPIs and open operational risks." },
+                      { title: "Financial Alerts", desc: "Planned alerts for revenue, occupancy, receivables, and stale imports." },
+                      { title: "System Updates", desc: "Planned product and automation reliability notifications." },
                     ].map((item, i) => (
                       <div key={i} className="flex items-center justify-between pb-6 border-b border-brand-border-soft last:border-0">
                         <div>

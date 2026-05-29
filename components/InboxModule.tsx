@@ -8,10 +8,10 @@ import {
 import type { DashboardPayload } from "@/lib/dashboardData";
 import StatCard from "./StatCard";
 import {
-  Mail, Clock, AlertCircle, Timer,
+  Mail, AlertCircle, Timer,
   X, Reply, ArrowUpCircle, AlertTriangle,
   ChevronRight, Sparkles, Bell, StickyNote,
-  CheckCircle2, Target, MailWarning,
+  CheckCircle2, MailWarning,
 } from "lucide-react";
 
 const ROLE_MAP: Record<Role, string> = {
@@ -48,47 +48,6 @@ const AI_SENTIMENT_STYLE: Record<string, { badge: string; dot: string }> = {
 };
 
 /* ── Inbox Business KPIs ─────────────────────────────── */
-function InboxKPIs({
-  leadsSaved, avgSLA, revenueAtRisk, escalationsPrevented,
-}: {
-  leadsSaved: number; avgSLA: number; revenueAtRisk: string; escalationsPrevented: number;
-}) {
-  const kpis = [
-    { icon: Target, label: "Leads Saved",         value: `${leadsSaved}`, sub: "wedding + booking leads", colorClass: "text-brand-gold-rich", bgClass: "bg-brand-gold-light" },
-    { icon: Clock,      label: "Avg Response SLA",     value: `${avgSLA}h`,    sub: "target: under 2h",         colorClass: avgSLA > 2 ? "text-red-600" : "text-emerald-600", bgClass: avgSLA > 2 ? "bg-red-50" : "bg-emerald-50" },
-    { icon: AlertTriangle, label: "Urgent Open",       value: revenueAtRisk,   sub: "urgent unread threads", colorClass: "text-red-600", bgClass: "bg-red-50" },
-    { icon: CheckCircle2,        label: "Replied Threads",       value: `${escalationsPrevented}`, sub: "status from email_threads", colorClass: "text-amber-600", bgClass: "bg-amber-50" },
-  ];
-
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-      {kpis.map(({ icon: Icon, label, value, sub, colorClass, bgClass }) => {
-        const match = String(value).match(/^([^0-9.-]*)([0-9.,]+)([^0-9]*)$/);
-        const prefix = match ? match[1].trim() : "";
-        const num = match ? match[2] : value;
-        const suffix = match ? match[3].trim() : "";
-
-        return (
-          <div key={label} className="glass-card p-6 flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shrink-0 ${bgClass} shadow-sm`}>
-              <Icon className={`w-5 h-5 ${colorClass}`} strokeWidth={2.5} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-medium text-brand-text-2 mb-1">{label}</p>
-              <div className="flex items-baseline leading-tight">
-                {prefix && <span className="text-lg font-bold text-brand-text-3 mr-0.5">{prefix}</span>}
-                <span className="text-3xl xl:text-4xl font-bold text-brand-text-1 tabular-nums tracking-tight">{num}</span>
-                {suffix && <span className="text-base font-bold text-brand-text-3 ml-0.5">{suffix}</span>}
-              </div>
-              <p className="text-[11px] text-brand-text-3 mt-1 truncate">{sub}</p>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 /* ── Side Panel ─────────────────────────────────────── */
 function SidePanel({ email, onClose }: { email: Email; onClose: () => void }) {
   const [note, setNote] = useState("");
@@ -233,26 +192,10 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
   const unread      = allScope.filter(e => e.status === "Unread").length;
   const highPriUr   = allScope.filter(e => e.status === "Unread" && e.priority === "Urgent").length;
   const pending2h   = allScope.filter(e => e.status === "Unread" && e.receivedHoursAgo >= 2);
-  const pendingUnread = allScope.filter(e => e.status === "Unread");
-  const avgResp = pendingUnread.length
-    ? Math.round((pendingUnread.reduce((sum, email) => sum + email.receivedHoursAgo, 0) / pendingUnread.length) * 10) / 10
-    : 0;
-  const leadEmails  = allScope.filter(e => e.category === "Wedding Lead" || e.category === "Booking Inquiry");
-  const urgentUnread = allScope.filter(e => e.status === "Unread" && e.priority === "Urgent").length;
-  const repliedThreads = allScope.filter(e => e.status === "Replied").length;
+  const inboxAnalytics = data?.analytics.inbox;
 
   return (
     <div className="flex flex-col gap-6 w-full">
-
-      {/* Business KPIs */}
-      <div className="anim-fade-up">
-        <InboxKPIs
-          leadsSaved={leadEmails.filter(e => e.status === "Replied" || e.status === "Read").length}
-          avgSLA={avgResp}
-          revenueAtRisk={String(urgentUnread)}
-          escalationsPrevented={repliedThreads}
-        />
-      </div>
 
       {/* Operational Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 anim-fade-up" style={{ animationDelay: "50ms" }}>
@@ -287,14 +230,14 @@ export default function InboxModule({ role, data }: InboxModuleProps) {
         />
         <StatCard
           title="Avg Response Time"
-          value={`${avgResp}h`}
-          subtitle="Target: under 2 hours"
+          value={`${inboxAnalytics?.avgActualResponseHours ?? 0}h`}
+          subtitle="Actual replied_at - received_at"
           icon={Timer}
-          accent={avgResp > 3 ? "red" : avgResp > 2 ? "amber" : "green"}
+          accent={(inboxAnalytics?.avgActualResponseHours ?? 0) > 3 ? "red" : (inboxAnalytics?.avgActualResponseHours ?? 0) > 2 ? "amber" : "green"}
           trend={{
-            label: avgResp > 2 ? `${(avgResp - 2).toFixed(1)}h over target` : "Within target",
-            direction: avgResp > 2 ? "up" : "down",
-            positive: false,
+            label: (inboxAnalytics?.emailSlaBreaches ?? 0) > 0 ? `${inboxAnalytics?.emailSlaBreaches} SLA breaches` : "Within target",
+            direction: (inboxAnalytics?.emailSlaBreaches ?? 0) > 0 ? "up" : "down",
+            positive: (inboxAnalytics?.emailSlaBreaches ?? 0) === 0,
           }}
           animateNumber={false}
           delay={150}

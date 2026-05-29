@@ -787,4 +787,141 @@ SELECT
 FROM public.finance_records
 GROUP BY entity, record_date
 ORDER BY record_date DESC;
+
+-- ============================================================
+-- ANALYTICS LAYER EXTENSIONS
+-- These tables make dashboards decision-grade instead of proxy-only.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.app_users (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name     VARCHAR(255) NOT NULL,
+  email         VARCHAR(255) UNIQUE NOT NULL,
+  role          VARCHAR(50) NOT NULL CHECK (role IN ('md', 'gm', 'agent', 'finance', 'admin')),
+  property_id   VARCHAR(50) REFERENCES public.properties(id),
+  is_active     BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.ticket_events (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_id   UUID NOT NULL REFERENCES public.complaint_tickets(id) ON DELETE CASCADE,
+  actor_id    UUID REFERENCES public.app_users(id),
+  actor_name  VARCHAR(255),
+  event_type  VARCHAR(50) NOT NULL CHECK (event_type IN ('created', 'assigned', 'status_changed', 'commented', 'escalated', 'resolved', 'reopened')),
+  old_status  public.ticket_status,
+  new_status  public.ticket_status,
+  note        TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.email_thread_events (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  thread_id   UUID NOT NULL REFERENCES public.email_threads(id) ON DELETE CASCADE,
+  actor_id    UUID REFERENCES public.app_users(id),
+  actor_name  VARCHAR(255),
+  event_type  VARCHAR(50) NOT NULL CHECK (event_type IN ('received', 'assigned', 'read', 'replied', 'snoozed', 'archived', 'escalated', 'note_added', 'category_corrected')),
+  note        TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.google_review_events (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  submission_id  UUID REFERENCES public.submissions(id),
+  property_id    VARCHAR(50) NOT NULL REFERENCES public.properties(id),
+  guest_email    VARCHAR(255),
+  review_url     TEXT,
+  rating         NUMERIC(3,1),
+  review_text    TEXT,
+  posted_at      TIMESTAMPTZ,
+  detected_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  source         VARCHAR(50) NOT NULL DEFAULT 'manual'
+);
+
+CREATE TABLE IF NOT EXISTS public.lead_outcomes (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email_thread_id UUID REFERENCES public.email_threads(id),
+  property_id     VARCHAR(50) REFERENCES public.properties(id),
+  lead_type       public.email_category NOT NULL,
+  stage           VARCHAR(50) NOT NULL CHECK (stage IN ('new', 'qualified', 'quoted', 'follow_up', 'won', 'lost')),
+  estimated_value NUMERIC(14,2) NOT NULL DEFAULT 0,
+  actual_value    NUMERIC(14,2) NOT NULL DEFAULT 0,
+  lost_reason     TEXT,
+  owner_id        UUID REFERENCES public.app_users(id),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.metric_targets (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  property_id    VARCHAR(50) REFERENCES public.properties(id),
+  entity         public.entity_name,
+  metric_name    VARCHAR(100) NOT NULL,
+  target_date    DATE NOT NULL,
+  target_value   NUMERIC(14,2) NOT NULL,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(property_id, entity, metric_name, target_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_app_users_property ON public.app_users(property_id);
+CREATE INDEX IF NOT EXISTS idx_ticket_events_ticket ON public.ticket_events(ticket_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_email_events_thread ON public.email_thread_events(thread_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_google_reviews_property ON public.google_review_events(property_id, posted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_lead_outcomes_property ON public.lead_outcomes(property_id, stage);
+CREATE INDEX IF NOT EXISTS idx_metric_targets_lookup ON public.metric_targets(metric_name, target_date DESC);
+
+DROP TRIGGER IF EXISTS trg_app_users_updated_at ON public.app_users;
+CREATE TRIGGER trg_app_users_updated_at
+  BEFORE UPDATE ON public.app_users
+  FOR EACH ROW EXECUTE FUNCTION public.fn_set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_lead_outcomes_updated_at ON public.lead_outcomes;
+CREATE TRIGGER trg_lead_outcomes_updated_at
+  BEFORE UPDATE ON public.lead_outcomes
+  FOR EACH ROW EXECUTE FUNCTION public.fn_set_updated_at();
+
+CREATE OR REPLACE VIEW public.vw_automation_health AS
+SELECT
+  workflow_name,
+  COUNT(*) AS received,
+  COUNT(*) FILTER (WHERE status = 'processed') AS processed,
+  COUNT(*) FILTER (WHERE status = 'failed') AS failed,
+  COUNT(*) FILTER (WHERE status = 'skipped') AS skipped,
+  ROUND(
+    COUNT(*) FILTER (WHERE status = 'processed')::NUMERIC / NULLIF(COUNT(*), 0) * 100,
+    2
+  ) AS success_rate_pct,
+  ROUND(AVG(EXTRACT(EPOCH FROM (processed_at - received_at))) FILTER (WHERE processed_at IS NOT NULL), 2) AS avg_processing_seconds,
+  MAX(received_at) AS last_received_at
+FROM public.n8n_webhook_logs
+GROUP BY workflow_name;
+
+CREATE OR REPLACE VIEW public.vw_feedback_funnel AS
+SELECT
+  s.property_id,
+  COUNT(*) AS submissions,
+  COUNT(*) FILTER (WHERE s.guest_email IS NOT NULL OR s.guest_phone IS NOT NULL) AS identified_guests,
+  COUNT(*) FILTER (WHERE s.review_link_shown) AS review_links_shown,
+  COUNT(*) FILTER (WHERE s.sentiment = 'excellent') AS positive_feedback,
+  COUNT(*) FILTER (WHERE s.sentiment = 'average') AS neutral_feedback,
+  COUNT(*) FILTER (WHERE s.sentiment = 'poor') AS negative_feedback,
+  COUNT(*) FILTER (WHERE gre.id IS NOT NULL) AS posted_google_reviews,
+  ROUND(COUNT(*) FILTER (WHERE s.review_link_shown)::NUMERIC / NULLIF(COUNT(*), 0) * 100, 2) AS review_link_rate_pct,
+  ROUND(COUNT(*) FILTER (WHERE gre.id IS NOT NULL)::NUMERIC / NULLIF(COUNT(*) FILTER (WHERE s.review_link_shown), 0) * 100, 2) AS posted_review_conversion_pct
+FROM public.submissions s
+LEFT JOIN public.google_review_events gre ON gre.submission_id = s.id
+GROUP BY s.property_id;
+
+CREATE OR REPLACE VIEW public.vw_agent_productivity AS
+SELECT
+  COALESCE(au.full_name, te.actor_name, ct.assigned_to, 'Unassigned') AS agent_name,
+  COUNT(DISTINCT ct.id) AS touched_tickets,
+  COUNT(DISTINCT ct.id) FILTER (WHERE ct.status IN ('resolved', 'closed')) AS resolved_tickets,
+  COUNT(DISTINCT ct.id) FILTER (WHERE ct.sla_deadline < COALESCE(ct.resolved_at, NOW()) AND ct.status NOT IN ('resolved', 'closed')) AS sla_breaches,
+  ROUND(AVG(EXTRACT(EPOCH FROM (ct.resolved_at - ct.created_at))/3600) FILTER (WHERE ct.resolved_at IS NOT NULL), 2) AS avg_resolution_hours
+FROM public.complaint_tickets ct
+LEFT JOIN public.ticket_events te ON te.ticket_id = ct.id
+LEFT JOIN public.app_users au ON au.id = te.actor_id
+GROUP BY COALESCE(au.full_name, te.actor_name, ct.assigned_to, 'Unassigned');
 ```

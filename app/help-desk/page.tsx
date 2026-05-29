@@ -12,9 +12,9 @@ export default function HelpDeskPage() {
 
   const FAQS = [
     { q: "How do I add a new team member?", a: "Go to Settings > Account Profile and click 'Invite Member'. They will receive an email invitation to join." },
-    { q: "Can I export my finance data?", a: "Yes, navigate to the Finance Intelligence module and click the 'Export' button in the top right to download a CSV or PDF." },
-    { q: "How are Google Reviews synced?", a: "Our system automatically pulls new reviews from your connected Google Business Profile every 6 hours." },
-    { q: "What happens to unresolved complaints?", a: "Complaints not marked as resolved within 24 hours are automatically escalated to the Managing Director via email and SMS." },
+    { q: "Can I export my finance data?", a: "Finance export is planned. Today, the Finance Intelligence module shows live imported records, revenue mix, entity health, receivables, and Tally import status." },
+    { q: "How are Google Reviews tracked?", a: "The dashboard currently tracks when a Google review link is shown to a guest. Posted review sync requires a Google Business Profile integration." },
+    { q: "What happens to unresolved complaints?", a: "Low-rating submissions create complaint tickets with SLA deadlines. Open SLA breaches are surfaced in the operations dashboard for manager follow-up." },
   ];
 
   return (

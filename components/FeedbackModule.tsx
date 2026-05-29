@@ -247,8 +247,14 @@ export default function FeedbackModule({ role, data }: Props) {
   const totalFeedback    = allProps.reduce((s, p) => s + p.feedbackSent, 0);
   const totalReviews     = allProps.reduce((s, p) => s + p.googleReviews, 0);
   const totalComplaints  = allProps.reduce((s, p) => s + p.negativeComplaints, 0);
-  const feedbackPct      = totalCheckouts > 0 ? (totalFeedback / totalCheckouts) * 100 : 0;
-  const automationPct    = feedbackPct;
+  const feedbackFunnel = data?.analytics.feedbackFunnel;
+  const operations = data?.analytics.operations;
+  const automation = data?.analytics.automation;
+  const systemHealth = data?.analytics.systemHealth;
+  const contactCapturePct = feedbackFunnel?.contactCaptureRate ?? 0;
+  const reviewLinksShown = feedbackFunnel?.reviewLinksShown ?? totalReviews;
+  const activeComplaints = operations?.activeTickets ?? totalComplaints;
+  const slaBreaches = operations?.slaBreaches ?? 0;
   const visibleFeed = (role === "MD"
     ? dbFeedback
     : dbFeedback.filter(f => f.propertyId === ROLE_MAP[role])
@@ -258,7 +264,7 @@ export default function FeedbackModule({ role, data }: Props) {
     ? dbFeedback
     : dbFeedback.filter(f => f.propertyId === ROLE_MAP[role]);
   const resolvedFeedback = totalFeedSource.filter(entry => entry.responseStatus === "Resolved").length;
-  const complaintRecovery = totalFeedSource.length > 0 ? Math.round((resolvedFeedback / totalFeedSource.length) * 100) : 0;
+  const complaintRecovery = operations?.complaintRecoveryPct ?? (totalFeedSource.length > 0 ? Math.round((resolvedFeedback / totalFeedSource.length) * 100) : 0);
 
   function toggleSort(col: string) {
     if (sortCol === col) setSortDir(d => d === "desc" ? "asc" : "desc");
@@ -290,21 +296,21 @@ export default function FeedbackModule({ role, data }: Props) {
       {/* ── Bento Grid Dashboard Top ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 anim-fade-up">
         
-        {/* 1. Hero Card: Guest Automation (col-span-2, row-span-2) */}
+        {/* 1. Hero Card: Guest feedback funnel */}
         <div className="col-span-1 md:col-span-2 xl:col-span-2 xl:row-span-2 glass-card relative overflow-hidden group">
           <div className="absolute inset-x-0 top-0 h-1 bg-brand-gold pointer-events-none" />
           <div className="p-6 sm:p-8 flex flex-col justify-between h-full relative z-10">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-green-900 text-brand-gold text-xs font-bold mb-6 border border-brand-gold/30 shadow-sm">
-                <Bot className="w-4 h-4" /> Guest Automation
+                <Bot className="w-4 h-4" /> Guest Intelligence
               </div>
-              <p className="text-[15px] font-medium text-brand-text-2 mb-2">Automated Checkouts</p>
+              <p className="text-[15px] font-medium text-brand-text-2 mb-2">Contact Capture Rate</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-black text-brand-text-1 tracking-tighter">{automationPct.toFixed(1)}</span>
+                <span className="text-6xl font-black text-brand-text-1 tracking-tighter">{contactCapturePct.toFixed(1)}</span>
                 <span className="text-3xl font-bold text-brand-gold-rich">%</span>
               </div>
               <p className="text-sm text-brand-text-3 mt-4 max-w-xs leading-relaxed">
-                Successfully automated checkout workflows through the WhatsApp funnel, reducing manual front-desk effort.
+                Share of feedback submissions with a usable guest email or phone number for recovery and follow-up.
               </p>
             </div>
             
@@ -314,15 +320,15 @@ export default function FeedbackModule({ role, data }: Props) {
                    <FileText className="w-4 h-4 text-brand-green-800" />
                    <p className="text-xs text-brand-text-3 font-medium">Submissions</p>
                  </div>
-                 <p className="text-2xl font-bold text-brand-text-1">{totalCheckouts}</p>
+                 <p className="text-2xl font-bold text-brand-text-1">{feedbackFunnel?.submissions ?? totalCheckouts}</p>
                </div>
                <div className="w-px h-10 bg-brand-border-soft" />
                <div className="flex-1">
                  <div className="flex items-center gap-2 mb-1">
                    <MessageSquare className="w-4 h-4 text-brand-green-800" />
-                   <p className="text-xs text-brand-text-3 font-medium">Feedback</p>
+                   <p className="text-xs text-brand-text-3 font-medium">Identified</p>
                  </div>
-                 <p className="text-2xl font-bold text-brand-text-1">{totalFeedback}</p>
+                 <p className="text-2xl font-bold text-brand-text-1">{feedbackFunnel?.identifiedGuests ?? totalFeedback}</p>
                </div>
             </div>
           </div>
@@ -333,9 +339,9 @@ export default function FeedbackModule({ role, data }: Props) {
           <div className="absolute inset-x-0 top-0 h-1 bg-brand-gold pointer-events-none" />
           <div className="flex justify-between items-start mb-4 relative z-10">
             <div>
-              <p className="text-[15px] font-medium text-brand-text-2 mb-1">Google Reviews</p>
+              <p className="text-[15px] font-medium text-brand-text-2 mb-1">Review Links Shown</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{totalReviews}</span>
+                <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{reviewLinksShown}</span>
               </div>
             </div>
             <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-100 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
@@ -344,7 +350,7 @@ export default function FeedbackModule({ role, data }: Props) {
           </div>
           <div className="relative z-10">
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 text-amber-700 text-xs font-semibold">
-              <ArrowUpRight className="w-3.5 h-3.5" /> via WhatsApp funnel
+              <ArrowUpRight className="w-3.5 h-3.5" /> {feedbackFunnel?.reviewLinkRate.toFixed(1) ?? "0.0"}% of submissions
             </span>
           </div>
         </div>
@@ -354,9 +360,9 @@ export default function FeedbackModule({ role, data }: Props) {
           <div className={`absolute top-0 right-0 w-32 h-32 ${totalComplaints > 0 ? "bg-red-500/10" : "bg-emerald-500/10"} blur-2xl rounded-full pointer-events-none`} />
           <div className="flex justify-between items-start mb-4 relative z-10">
             <div>
-              <p className="text-[15px] font-medium text-brand-text-2 mb-1">Open Complaints</p>
+              <p className="text-[15px] font-medium text-brand-text-2 mb-1">Active Complaints</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{totalComplaints}</span>
+                <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{activeComplaints}</span>
               </div>
             </div>
             <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center shadow-sm border group-hover:scale-105 transition-transform ${totalComplaints > 0 ? "bg-gradient-to-br from-red-100 to-red-50 border-red-100" : "bg-gradient-to-br from-emerald-100 to-emerald-50 border-emerald-100"}`}>
@@ -365,7 +371,7 @@ export default function FeedbackModule({ role, data }: Props) {
           </div>
           <div className="relative z-10">
             <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold ${totalComplaints > 0 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
-              {totalComplaints > 0 ? <><ArrowUpRight className="w-3.5 h-3.5" /> Require attention</> : <><CheckCircle2 className="w-3.5 h-3.5" /> All clear</>}
+              {activeComplaints > 0 ? <><ArrowUpRight className="w-3.5 h-3.5" /> Require attention</> : <><CheckCircle2 className="w-3.5 h-3.5" /> All clear</>}
             </span>
           </div>
         </div>
@@ -395,24 +401,23 @@ export default function FeedbackModule({ role, data }: Props) {
            </div>
         </div>
 
-        {/* 5. Repeat Guest Est. */}
+        {/* 5. SLA Breaches */}
         <div className="col-span-1 glass-card p-6 flex flex-col justify-between group relative overflow-hidden">
            <div className="absolute inset-x-0 top-0 h-1 bg-brand-gold pointer-events-none" />
            <div className="flex justify-between items-start mb-6 relative z-10">
              <div>
-               <p className="text-[15px] font-medium text-brand-text-2 mb-1">Repeat Guests</p>
+               <p className="text-[15px] font-medium text-brand-text-2 mb-1">SLA Breaches</p>
                <div className="flex items-baseline gap-1">
-                 <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">0</span>
-                 <span className="text-xl font-bold text-brand-gold-rich">%</span>
+                 <span className="text-4xl font-extrabold text-brand-text-1 tracking-tight">{slaBreaches}</span>
                </div>
              </div>
              <div className="w-12 h-12 rounded-[14px] bg-gradient-to-br from-brand-gold-light to-brand-surface border border-brand-gold/25 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-               <UserCheck className="w-6 h-6 text-brand-gold-rich" />
+               <Clock className="w-6 h-6 text-brand-gold-rich" />
              </div>
            </div>
            <div className="relative z-10">
              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-brand-gold-light text-brand-gold-rich text-xs font-semibold">
-               <Clock className="w-3.5 h-3.5" /> 30-day returning est.
+               <ShieldAlert className="w-3.5 h-3.5" /> Open tickets past deadline
              </span>
            </div>
         </div>
@@ -420,6 +425,51 @@ export default function FeedbackModule({ role, data }: Props) {
       </div>
 
       {/* ── Sync error alert ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 anim-fade-up" style={{ animationDelay: "90ms" }}>
+        <div className="glass-card overflow-hidden">
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 bg-brand-champagne/55">
+            <h2 className="text-sm font-bold text-brand-text-1">Feedback Funnel</h2>
+            <p className="text-xs text-brand-text-3 mt-0.5">Submission quality, review-routing, and sentiment mix</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-5 sm:p-6">
+            {[
+              { label: "Submissions", value: feedbackFunnel?.submissions ?? totalCheckouts, tone: "text-brand-text-1" },
+              { label: "Identified", value: feedbackFunnel?.identifiedGuests ?? totalFeedback, tone: "text-brand-green-800" },
+              { label: "Positive", value: feedbackFunnel?.positive ?? 0, tone: "text-emerald-700" },
+              { label: "Negative", value: feedbackFunnel?.negative ?? 0, tone: "text-red-700" },
+            ].map(item => (
+              <div key={item.label} className="rounded-lg border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-brand-text-3">{item.label}</p>
+                <p className={`mt-2 text-2xl font-black tabular-nums ${item.tone}`}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card overflow-hidden">
+          <div className="p-5 sm:p-6 border-b border-brand-border-soft/60 bg-brand-champagne/55">
+            <h2 className="text-sm font-bold text-brand-text-1">Automation Health</h2>
+            <p className="text-xs text-brand-text-3 mt-0.5">n8n workflow reliability, processing speed, and data freshness</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-5 sm:p-6">
+            {[
+              { label: "Received", value: automation?.received ?? 0, tone: "text-brand-text-1" },
+              { label: "Processed", value: automation?.processed ?? 0, tone: "text-emerald-700" },
+              { label: "Failed", value: automation?.failed ?? 0, tone: "text-red-700" },
+              { label: "Success", value: `${automation?.successRate ?? 0}%`, tone: "text-brand-green-800" },
+            ].map(item => (
+              <div key={item.label} className="rounded-lg border border-brand-border-soft bg-brand-ivory p-4 shadow-premium-sm">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-brand-text-3">{item.label}</p>
+                <p className={`mt-2 text-2xl font-black tabular-nums ${item.tone}`}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-brand-border-soft px-5 py-3 text-xs font-semibold text-brand-text-3">
+            Audit events: {systemHealth?.auditEvents ?? 0} / Finance freshness: {systemHealth?.financeFreshnessHours === null || systemHealth?.financeFreshnessHours === undefined ? "No import timestamp" : `${systemHealth.financeFreshnessHours}h`}
+          </div>
+        </div>
+      </div>
+
       {syncFailProps.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-3 shadow-sm anim-fade-up">
           <AlertTriangle className="w-5 h-5 text-amber-600" />

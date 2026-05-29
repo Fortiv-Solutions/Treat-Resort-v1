@@ -62,12 +62,53 @@ export type EmailRow = {
   ai_sentiment: string | null;
   assigned_to: string | null;
   received_at: string;
+  replied_at?: string | null;
+  sla_deadline?: string | null;
+  sla_breached?: boolean | null;
   updated_at: string;
-  property_hint: string | null;
-  ai_score: number | null;
-  ai_confidence: number | null;
-  ai_note: string | null;
-  internal_notes: string | null;
+  property_hint?: string | null;
+  ai_score?: number | null;
+  ai_confidence?: number | null;
+  ai_note?: string | null;
+  internal_notes?: string | null;
+};
+
+export type SubmissionRow = {
+  id: string;
+  property_id: string;
+  guest_email: string | null;
+  guest_phone: string | null;
+  overall_rating: number | string | null;
+  nps_score: number | string | null;
+  sentiment: string | null;
+  review_link_shown: boolean;
+  submitted_at: string;
+};
+
+export type TicketRow = {
+  id: string;
+  property_id: string;
+  status: string;
+  assigned_to: string | null;
+  sla_deadline: string;
+  resolved_at: string | null;
+  escalated_at: string | null;
+  created_at: string;
+};
+
+export type WebhookLogRow = {
+  id: string;
+  workflow_name: string;
+  status: string;
+  error_message: string | null;
+  received_at: string;
+  processed_at: string | null;
+};
+
+export type AuditLogRow = {
+  table_name: string;
+  action: string;
+  changed_at: string;
 };
 
 export type FinanceRow = {
@@ -103,12 +144,80 @@ export type DashboardPayload = {
   latestTallyImports: Array<{ property: string; fileName: string; receivedAt: string; source: string }>;
   financeKpis: {
     totalRevenueToday: number;
+    revenueChangePct: number;
     occupancy: number;
     occupiedRooms: number;
     totalRooms: number;
     adr: number;
     revpar: number;
     outstandingReceivables: number;
+  };
+  analytics: {
+    executive: {
+      portfolioRevenue: number;
+      revenueChangePct: number;
+      occupancy: number;
+      adr: number;
+      revpar: number;
+      avgRating: number;
+      nps: number;
+      openComplaints: number;
+      slaBreaches: number;
+      automationSuccessRate: number;
+      reviewLinksShown: number;
+      healthScore: number;
+    };
+    feedbackFunnel: {
+      submissions: number;
+      identifiedGuests: number;
+      contactCaptureRate: number;
+      positive: number;
+      neutral: number;
+      negative: number;
+      promoters: number;
+      passives: number;
+      detractors: number;
+      reviewLinksShown: number;
+      reviewLinkRate: number;
+    };
+    operations: {
+      totalTickets: number;
+      openTickets: number;
+      activeTickets: number;
+      resolvedTickets: number;
+      escalatedTickets: number;
+      slaBreaches: number;
+      complaintRecoveryPct: number;
+      avgResolutionHours: number;
+      unassignedTickets: number;
+    };
+    inbox: {
+      totalThreads: number;
+      unreadThreads: number;
+      urgentUnread: number;
+      leadThreads: number;
+      handledLeadThreads: number;
+      repliedThreads: number;
+      avgUnreadAgeHours: number;
+      avgActualResponseHours: number;
+      emailSlaBreaches: number;
+      unassignedThreads: number;
+    };
+    automation: {
+      received: number;
+      processed: number;
+      failed: number;
+      skipped: number;
+      successRate: number;
+      avgProcessingSeconds: number;
+      recentFailures: Array<{ workflow: string; error: string; received: string }>;
+    };
+    systemHealth: {
+      auditEvents: number;
+      lastAuditAt: string | null;
+      financeFreshnessHours: number | null;
+      staleFinanceProperties: number;
+    };
   };
 };
 
@@ -180,6 +289,16 @@ function entitySlug(value: string): FinanceProperty["entity"] {
   return "mundra";
 }
 
+function pct(numerator: number, denominator: number) {
+  return denominator > 0 ? Math.round((numerator / denominator) * 1000) / 10 : 0;
+}
+
+function hoursBetween(start: string, end: string) {
+  const diff = new Date(end).getTime() - new Date(start).getTime();
+  if (!Number.isFinite(diff)) return 0;
+  return Math.max(0, Math.round((diff / 3_600_000) * 10) / 10);
+}
+
 export function buildDashboardPayload(input: {
   configured: boolean;
   properties: DbProperty[];
@@ -187,6 +306,10 @@ export function buildDashboardPayload(input: {
   feedback: FeedbackRow[];
   emails: EmailRow[];
   finance: FinanceRow[];
+  submissions?: SubmissionRow[];
+  tickets?: TicketRow[];
+  webhookLogs?: WebhookLogRow[];
+  auditLogs?: AuditLogRow[];
 }): DashboardPayload {
   const leaderboardById = new Map(input.leaderboard.map(row => [row.id, row]));
   const propertyById = new Map(input.properties.map(row => [row.id, row]));
@@ -198,7 +321,14 @@ export function buildDashboardPayload(input: {
     const complaints = num(leader?.open_complaints);
     const occupancy = num(leader?.today_occupancy_pct);
     const reviews = num(leader?.google_reviews);
-    const responseRate = submissions > 0 ? 100 : 0;
+    const propertySubmissions = (input.submissions ?? []).filter(submission => submission.property_id === row.id);
+    const identifiedSubmissions = propertySubmissions.filter(submission => submission.guest_email || submission.guest_phone).length;
+    const responseRate = pct(identifiedSubmissions, propertySubmissions.length || submissions);
+    const propertyTickets = (input.tickets ?? []).filter(ticket => ticket.property_id === row.id);
+    const resolvedTickets = propertyTickets.filter(ticket => ticket.resolved_at);
+    const avgResolutionHours = resolvedTickets.length
+      ? Math.round((resolvedTickets.reduce((sum, ticket) => sum + hoursBetween(ticket.created_at, ticket.resolved_at ?? ticket.created_at), 0) / resolvedTickets.length) * 10) / 10
+      : 0;
 
     return {
       id: row.id,
@@ -212,7 +342,7 @@ export function buildDashboardPayload(input: {
       status: propertyStatus(avgRating || 0, complaints),
       occupancyRate: occupancy,
       avgRating,
-      responseSLAHours: complaints > 0 ? 2 : 0,
+      responseSLAHours: avgResolutionHours,
       lastComplaint: complaints > 0 ? "Open" : null,
       gmName: row.gm_name ?? row.gm_email,
       lastSync: row.updated_at ? relTime(row.updated_at) : "No sync",
@@ -351,11 +481,73 @@ export function buildDashboardPayload(input: {
   }
 
   const latestFinanceRows = Array.from(latestFinanceByProperty.values());
+  const sortedFinanceDates = Array.from(financeByDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+  const latestDateBucket = sortedFinanceDates.at(-1);
+  const previousDateBucket = sortedFinanceDates.at(-2);
+  const revenueChangePct = latestDateBucket && previousDateBucket && previousDateBucket.totalRevenue > 0
+    ? Math.round(((latestDateBucket.totalRevenue - previousDateBucket.totalRevenue) / previousDateBucket.totalRevenue) * 1000) / 10
+    : 0;
   const roomRevenue = latestFinanceRows.reduce((sum, row) => sum + num(row.room_revenue), 0);
   const fnbRevenue = latestFinanceRows.reduce((sum, row) => sum + num(row.fnb_revenue), 0);
   const eventsRevenue = latestFinanceRows.reduce((sum, row) => sum + num(row.events_revenue), 0);
   const adventureRevenue = latestFinanceRows.reduce((sum, row) => sum + num(row.adventure_revenue), 0);
   const otherRevenue = latestFinanceRows.reduce((sum, row) => sum + num(row.other_revenue), 0);
+
+  const submissions = input.submissions ?? [];
+  const tickets = input.tickets ?? [];
+  const webhookLogs = input.webhookLogs ?? [];
+  const auditLogs = input.auditLogs ?? [];
+  const positive = submissions.filter(row => row.sentiment === "excellent" || num(row.overall_rating) >= 4).length;
+  const negative = submissions.filter(row => row.sentiment === "poor" || (row.overall_rating !== null && num(row.overall_rating) < 3)).length;
+  const neutral = Math.max(0, submissions.length - positive - negative);
+  const promoters = submissions.filter(row => num(row.nps_score) >= 9).length;
+  const passives = submissions.filter(row => num(row.nps_score) >= 7 && num(row.nps_score) <= 8).length;
+  const detractors = submissions.filter(row => row.nps_score !== null && num(row.nps_score) <= 6).length;
+  const reviewLinksShown = submissions.filter(row => row.review_link_shown).length;
+  const avgRating = submissions.length
+    ? Math.round((submissions.reduce((sum, row) => sum + num(row.overall_rating), 0) / submissions.length) * 10) / 10
+    : 0;
+  const npsRespondents = promoters + passives + detractors;
+  const nps = npsRespondents ? Math.round(((promoters - detractors) / npsRespondents) * 100) : 0;
+  const resolvedTickets = tickets.filter(row => row.status === "resolved" || row.status === "closed" || row.resolved_at);
+  const activeTickets = tickets.filter(row => row.status !== "resolved" && row.status !== "closed");
+  const slaBreaches = tickets.filter(row => new Date(row.sla_deadline).getTime() < Date.now() && row.status !== "resolved" && row.status !== "closed").length;
+  const avgResolutionHours = resolvedTickets.length
+    ? Math.round((resolvedTickets.reduce((sum, row) => sum + hoursBetween(row.created_at, row.resolved_at ?? row.created_at), 0) / resolvedTickets.length) * 10) / 10
+    : 0;
+  const unreadEmails = emails.filter(row => emailStatus(row.status) === "Unread");
+  const repliedEmails = input.emails.filter(row => row.replied_at);
+  const avgActualResponseHours = repliedEmails.length
+    ? Math.round((repliedEmails.reduce((sum, row) => sum + hoursBetween(row.received_at, row.replied_at ?? row.received_at), 0) / repliedEmails.length) * 10) / 10
+    : 0;
+  const emailSlaBreaches = input.emails.filter(row =>
+    row.sla_breached ||
+    (row.sla_deadline && new Date(row.sla_deadline).getTime() < Date.now() && row.status !== "replied" && row.status !== "archived")
+  ).length;
+  const processedWebhooks = webhookLogs.filter(row => row.status === "processed").length;
+  const failedWebhooks = webhookLogs.filter(row => row.status === "failed").length;
+  const skippedWebhooks = webhookLogs.filter(row => row.status === "skipped").length;
+  const automationSuccessRate = pct(processedWebhooks, webhookLogs.length);
+  const webhookDurations = webhookLogs
+    .filter(row => row.processed_at)
+    .map(row => hoursBetween(row.received_at, row.processed_at ?? row.received_at) * 3600);
+  const avgProcessingSeconds = webhookDurations.length
+    ? Math.round(webhookDurations.reduce((sum, value) => sum + value, 0) / webhookDurations.length)
+    : 0;
+  const financeFreshnessHours = latestFinanceRows.length
+    ? Math.min(...latestFinanceRows.map(row => row.tally_received_at ? hoursAgo(String(row.tally_received_at)) : hoursAgo(`${row.record_date}T00:00:00`)))
+    : null;
+  const staleFinanceProperties = latestFinanceRows.filter(row => {
+    const freshness = row.tally_received_at ? hoursAgo(String(row.tally_received_at)) : hoursAgo(`${row.record_date}T00:00:00`);
+    return freshness > 30;
+  }).length;
+  const healthScore = Math.max(0, Math.min(100, Math.round(
+    (pct(processedWebhooks, webhookLogs.length || 1) * 0.2) +
+    ((100 - pct(slaBreaches, Math.max(tickets.length, 1))) * 0.25) +
+    (pct(positive, Math.max(submissions.length, 1)) * 0.2) +
+    (Math.min(100, financeKpiOccupancy(totalRooms, occupiedRooms)) * 0.2) +
+    ((100 - Math.max(0, -revenueChangePct)) * 0.15)
+  )));
 
   return {
     configured: input.configured,
@@ -363,9 +555,7 @@ export function buildDashboardPayload(input: {
     feedback,
     emails,
     financeProperties,
-    financeTrend: Array.from(financeByDate.values())
-      .sort((a, b) => a.date.localeCompare(b.date))
-      .slice(-30),
+    financeTrend: sortedFinanceDates.slice(-30),
     revenueMix: [
       { name: "Room Revenue", value: roomRevenue, color: "#C9A96E" },
       { name: "F&B", value: fnbRevenue, color: "#1B4332" },
@@ -391,12 +581,92 @@ export function buildDashboardPayload(input: {
       })),
     financeKpis: {
       totalRevenueToday,
+      revenueChangePct,
       occupancy: totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0,
       occupiedRooms,
       totalRooms,
-      adr: financeProperties.length ? Math.round(financeProperties.reduce((sum, row) => sum + row.adr, 0) / financeProperties.length) : 0,
-      revpar: financeProperties.length ? Math.round(financeProperties.reduce((sum, row) => sum + row.revpar, 0) / financeProperties.length) : 0,
-      outstandingReceivables: input.finance.reduce((sum, row) => sum + num(row.outstanding_receivables), 0),
+      adr: totalRooms ? Math.round(roomRevenue / Math.max(occupiedRooms, 1)) : 0,
+      revpar: totalRooms ? Math.round(roomRevenue / totalRooms) : 0,
+      outstandingReceivables: latestFinanceRows.reduce((sum, row) => sum + num(row.outstanding_receivables), 0),
+    },
+    analytics: {
+      executive: {
+        portfolioRevenue: totalRevenueToday,
+        revenueChangePct,
+        occupancy: totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0,
+        adr: totalRooms ? Math.round(roomRevenue / Math.max(occupiedRooms, 1)) : 0,
+        revpar: totalRooms ? Math.round(roomRevenue / totalRooms) : 0,
+        avgRating,
+        nps,
+        openComplaints: activeTickets.length,
+        slaBreaches,
+        automationSuccessRate,
+        reviewLinksShown,
+        healthScore,
+      },
+      feedbackFunnel: {
+        submissions: submissions.length,
+        identifiedGuests: submissions.filter(row => row.guest_email || row.guest_phone).length,
+        contactCaptureRate: pct(submissions.filter(row => row.guest_email || row.guest_phone).length, submissions.length),
+        positive,
+        neutral,
+        negative,
+        promoters,
+        passives,
+        detractors,
+        reviewLinksShown,
+        reviewLinkRate: pct(reviewLinksShown, submissions.length),
+      },
+      operations: {
+        totalTickets: tickets.length,
+        openTickets: tickets.filter(row => row.status === "open").length,
+        activeTickets: activeTickets.length,
+        resolvedTickets: resolvedTickets.length,
+        escalatedTickets: tickets.filter(row => row.status === "escalated" || row.escalated_at).length,
+        slaBreaches,
+        complaintRecoveryPct: pct(resolvedTickets.length, tickets.length),
+        avgResolutionHours,
+        unassignedTickets: tickets.filter(row => !row.assigned_to && row.status !== "resolved" && row.status !== "closed").length,
+      },
+      inbox: {
+        totalThreads: emails.length,
+        unreadThreads: unreadEmails.length,
+        urgentUnread: emails.filter(row => row.priority === "Urgent" && row.status === "Unread").length,
+        leadThreads: emails.filter(row => row.category === "Wedding Lead" || row.category === "Booking Inquiry").length,
+        handledLeadThreads: emails.filter(row => (row.category === "Wedding Lead" || row.category === "Booking Inquiry") && (row.status === "Read" || row.status === "Replied")).length,
+        repliedThreads: emails.filter(row => row.status === "Replied").length,
+        avgUnreadAgeHours: unreadEmails.length ? Math.round((unreadEmails.reduce((sum, row) => sum + row.receivedHoursAgo, 0) / unreadEmails.length) * 10) / 10 : 0,
+        avgActualResponseHours,
+        emailSlaBreaches,
+        unassignedThreads: emails.filter(row => row.assignedTo === "Unassigned").length,
+      },
+      automation: {
+        received: webhookLogs.length,
+        processed: processedWebhooks,
+        failed: failedWebhooks,
+        skipped: skippedWebhooks,
+        successRate: automationSuccessRate,
+        avgProcessingSeconds,
+        recentFailures: webhookLogs
+          .filter(row => row.status === "failed")
+          .sort((a, b) => b.received_at.localeCompare(a.received_at))
+          .slice(0, 5)
+          .map(row => ({
+            workflow: row.workflow_name,
+            error: row.error_message ?? "Unknown failure",
+            received: relTime(row.received_at),
+          })),
+      },
+      systemHealth: {
+        auditEvents: auditLogs.length,
+        lastAuditAt: auditLogs[0]?.changed_at ? relTime(auditLogs[0].changed_at) : null,
+        financeFreshnessHours,
+        staleFinanceProperties,
+      },
     },
   };
+}
+
+function financeKpiOccupancy(totalRooms: number, occupiedRooms: number) {
+  return totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
 }

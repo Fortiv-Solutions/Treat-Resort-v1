@@ -149,21 +149,21 @@ function PropertyFilters({
   setEntityFilter: (value: EntityFilter) => void;
 }) {
   const selectClass =
-    "h-10 rounded-xl border border-brand-gold/35 bg-brand-green-950/70 px-3 text-[13px] font-bold text-white outline-none transition focus:border-brand-gold";
+    "h-10 rounded-xl border border-brand-border-soft bg-brand-ivory px-3 text-[13px] font-bold text-brand-text-1 outline-none transition focus:border-brand-gold";
 
   return (
     <div className="flex flex-wrap gap-2">
       <select value={propertyFilter} onChange={event => setPropertyFilter(event.target.value)} className={selectClass}>
-        <option value="all" className="bg-brand-green-950 text-white">All properties</option>
+        <option value="all">All properties</option>
         {properties.map(property => (
-          <option key={property.id} value={property.id} className="bg-brand-green-950 text-white">{property.name}</option>
+          <option key={property.id} value={property.id}>{property.name}</option>
         ))}
       </select>
       <select value={entityFilter} onChange={event => setEntityFilter(event.target.value as EntityFilter)} className={selectClass}>
-        <option value="all" className="bg-brand-green-950 text-white">All entities</option>
-        <option value="mundra" className="bg-brand-green-950 text-white">Mundra Hotels & Resorts</option>
-        <option value="tirupati" className="bg-brand-green-950 text-white">Tirupati Shelters</option>
-        <option value="ras" className="bg-brand-green-950 text-white">RAS Resorts</option>
+        <option value="all">All entities</option>
+        <option value="mundra">Mundra Hotels & Resorts</option>
+        <option value="tirupati">Tirupati Shelters</option>
+        <option value="ras">RAS Resorts</option>
       </select>
     </div>
   );
@@ -193,16 +193,16 @@ function FinanceCommandHeader({
   totalOutstanding: number;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-brand-gold/30 bg-brand-green-950 shadow-premium-lg">
-      <div className="border-b border-brand-gold/20 px-5 py-5 sm:px-6">
+    <section className="overflow-hidden rounded-2xl border border-brand-border-soft bg-brand-surface/95 shadow-premium-card">
+      <div className="border-b border-brand-border-soft/70 bg-brand-champagne/55 px-5 py-5 sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-gold/25 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-gold">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-border-soft bg-brand-ivory px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-gold-rich">
               <Landmark className="h-3.5 w-3.5" />
               Finance command center
             </div>
-            <h1 className="m-0 font-display text-2xl font-bold text-white sm:text-3xl">Finance Intelligence</h1>
-            <p className="m-0 mt-2 max-w-2xl text-sm leading-relaxed text-white/65">
+            <h1 className="m-0 font-display text-2xl font-bold text-brand-text-1 sm:text-3xl">Finance Intelligence</h1>
+            <p className="m-0 mt-2 max-w-2xl text-sm leading-relaxed text-brand-text-3">
               Revenue, occupancy, receivables, and Tally import health across the Treat portfolio.
             </p>
           </div>
@@ -218,7 +218,7 @@ function FinanceCommandHeader({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 divide-y divide-brand-gold/20 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      <div className="grid grid-cols-1 divide-y divide-brand-border-soft sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {[
           { label: "Scoped revenue", value: fmtINR(totalRevenue), icon: WalletCards },
           { label: "Portfolio occupancy", value: pct(avgOccupancy), icon: Percent },
@@ -226,20 +226,20 @@ function FinanceCommandHeader({
         ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="flex items-center justify-between gap-4 px-5 py-4 sm:px-6">
             <div>
-              <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-white/45">{label}</p>
-              <p className="m-0 mt-1 text-xl font-black tabular-nums text-brand-gold">{value}</p>
+              <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-brand-text-3">{label}</p>
+              <p className="m-0 mt-1 text-xl font-black tabular-nums text-brand-gold-rich">{value}</p>
             </div>
-            <Icon className="h-5 w-5 text-brand-gold/70" />
+            <Icon className="h-5 w-5 text-brand-gold-rich" />
           </div>
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-black/16 px-5 py-3 text-xs sm:px-6">
-        <span className="inline-flex items-center gap-2 font-semibold text-white/60">
-          <Sparkles className="h-3.5 w-3.5 text-brand-gold" />
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-border-soft bg-brand-surface-2 px-5 py-3 text-xs sm:px-6">
+        <span className="inline-flex items-center gap-2 font-semibold text-brand-text-3">
+          <Sparkles className="h-3.5 w-3.5 text-brand-gold-rich" />
           {data?.configured ? "Connected to Supabase finance_records" : "Waiting for Supabase environment variables"}
         </span>
-        <span className="font-bold text-white/45">{properties.length} property records in current scope</span>
+        <span className="font-bold text-brand-text-3">{properties.length} property records in current scope</span>
       </div>
     </section>
   );
@@ -262,16 +262,16 @@ function ExecutiveMetrics({
   totalRooms: number;
   occupiedRooms: number;
 }) {
-  const revpar = properties.length ? Math.round(properties.reduce((sum, property) => sum + property.revpar, 0) / properties.length) : 0;
   const roomRevenue = properties.reduce((sum, property) => sum + property.roomRev, 0);
   const roomShare = totalRevenue ? Math.round((roomRevenue / totalRevenue) * 100) : 0;
+  const revpar = totalRooms ? Math.round(roomRevenue / totalRooms) : 0;
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <MetricTile label="Total revenue" value={fmtINR(totalRevenue)} sub={`${properties.length} active property records`} icon={CircleDollarSign} tone="gold" />
       <MetricTile label="Occupancy" value={pct(avgOccupancy)} sub={`${occupiedRooms}/${totalRooms} rooms occupied`} icon={Hotel} tone="green" />
       <MetricTile label="ADR / RevPAR" value={`${fmtINR(avgAdr)} / ${fmtINR(revpar)}`} sub={`${roomShare}% revenue from rooms`} icon={Banknote} tone="teal" />
-      <MetricTile label="Receivables" value={fmtINR(totalOutstanding)} sub="Outstanding across imported records" icon={ReceiptText} tone={totalOutstanding > 0 ? "red" : "green"} />
+      <MetricTile label="Receivables" value={fmtINR(totalOutstanding)} sub="Latest snapshot by property" icon={ReceiptText} tone={totalOutstanding > 0 ? "red" : "green"} />
     </div>
   );
 }
@@ -557,7 +557,8 @@ export default function FinanceModule({ role, data }: { role: string; data: Dash
   const totalRooms = properties.reduce((sum, property) => sum + property.rooms, 0);
   const occupiedRooms = properties.reduce((sum, property) => sum + Math.round((property.rooms * property.occ) / 100), 0);
   const avgOccupancy = totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
-  const avgAdr = properties.length ? Math.round(properties.reduce((sum, property) => sum + property.adr, 0) / properties.length) : 0;
+  const roomRevenue = properties.reduce((sum, property) => sum + property.roomRev, 0);
+  const avgAdr = occupiedRooms ? Math.round(roomRevenue / occupiedRooms) : 0;
   const totalOutstanding = data?.financeKpis.outstandingReceivables ?? 0;
   const hasFinanceData = properties.length > 0 || (data?.financeTrend.length ?? 0) > 0 || (data?.entitySummary.length ?? 0) > 0;
 
