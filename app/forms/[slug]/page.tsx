@@ -426,16 +426,22 @@ export default function GuestFormPage() {
             <div style={{
               background: `linear-gradient(160deg, ${primColor} 0%, ${primColor}dd 100%)`,
               padding: "24px 18px 20px",
+              textAlign: "center",
             }}>
-              {branding.logoUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={branding.logoUrl} alt="Logo" style={{ height: "36px", marginBottom: "10px", objectFit: "contain" }} />
-              )}
-              {!branding.logoUrl && (
-                <div style={{ marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{
+                margin: "0 auto 16px",
+                display: "inline-flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "7px",
+              }}>
+                {branding.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={branding.logoUrl} alt="Logo" style={{ height: "44px", maxWidth: "160px", objectFit: "contain" }} />
+                ) : (
                   <div style={{
-                    width: "32px",
-                    height: "32px",
+                    width: "44px",
+                    height: "44px",
                     backgroundColor: accColor,
                     WebkitMaskImage: `url(/treat-resort-logo.webp)`,
                     WebkitMaskSize: "contain",
@@ -445,23 +451,22 @@ export default function GuestFormPage() {
                     maskSize: "contain",
                     maskRepeat: "no-repeat",
                     maskPosition: "center",
-                    flexShrink: 0,
                   }} />
-                  <span style={{ fontSize: "12.5px", fontWeight: 700, color: accColor }}>
-                    {branding.headerText}
-                  </span>
-                </div>
-              )}
+                )}
+                <span style={{ fontSize: "13px", fontWeight: 800, color: accColor, letterSpacing: "0.01em" }}>
+                  {branding.headerText}
+                </span>
+              </div>
               <h1 style={{ fontSize: "18px", fontWeight: 800, color: "#FFFFFF", margin: 0, lineHeight: 1.3 }}>
                 {settings.title}
               </h1>
               {settings.description && (
-                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)", margin: "6px 0 0", lineHeight: 1.5 }}>
+                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.78)", margin: "7px auto 0", lineHeight: 1.5, maxWidth: "400px" }}>
                   {settings.description}
                 </p>
               )}
               {branding.showPropertyName && (
-                <div style={{ marginTop: "8px", display: "inline-flex", alignItems: "center", gap: "5px", padding: "3px 9px", borderRadius: "20px", background: "rgba(201,169,110,0.2)", border: "1px solid rgba(201,169,110,0.3)" }}>
+                <div style={{ marginTop: "12px", display: "inline-flex", alignItems: "center", gap: "5px", padding: "5px 11px", borderRadius: "20px", background: "rgba(201,169,110,0.16)", border: "1px solid rgba(201,169,110,0.28)" }}>
                   <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: accColor, flexShrink: 0 }} />
                   <span style={{ fontSize: "10.5px", fontWeight: 600, color: accColor }}>{settings.propertyName}</span>
                 </div>

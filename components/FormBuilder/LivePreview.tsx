@@ -288,15 +288,22 @@ export default function LivePreview({ form }: Props) {
               <div style={{
                 background: `linear-gradient(160deg, ${branding.primaryColor} 0%, ${branding.primaryColor}dd 100%)`,
                 padding: "20px 18px 16px",
+                textAlign: "center",
               }}>
-                {branding.logoUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={branding.logoUrl} alt="Logo" style={{ height: "32px", marginBottom: "10px", objectFit: "contain" }} />
-                )}
-                {!branding.logoUrl && (
-                  <div style={{ marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <div style={{ 
-                      width: "32px", height: "32px", 
+                <div style={{
+                  margin: "0 auto 14px",
+                  display: "inline-flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "7px",
+                }}>
+                  {branding.logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={branding.logoUrl} alt="Logo" style={{ height: "40px", maxWidth: "150px", objectFit: "contain" }} />
+                  ) : (
+                    <div style={{
+                      width: "42px",
+                      height: "42px",
                       backgroundColor: branding.accentColor,
                       WebkitMaskImage: `url(/treat-resort-logo.webp)`,
                       WebkitMaskSize: "contain",
@@ -306,23 +313,22 @@ export default function LivePreview({ form }: Props) {
                       maskSize: "contain",
                       maskRepeat: "no-repeat",
                       maskPosition: "center",
-                      flexShrink: 0
                     }} />
-                    <span style={{ fontSize: "12.5px", fontWeight: 700, color: branding.accentColor, fontFamily: branding.fontFamily + ", Inter, sans-serif" }}>
-                      {branding.headerText}
-                    </span>
-                  </div>
-                )}
+                  )}
+                  <span style={{ fontSize: "12.5px", fontWeight: 800, color: branding.accentColor, letterSpacing: "0.01em", fontFamily: branding.fontFamily + ", Inter, sans-serif" }}>
+                    {branding.headerText}
+                  </span>
+                </div>
                 <h1 style={{ fontSize: "17px", fontWeight: 800, color: "#FFFFFF", margin: 0, lineHeight: 1.3, fontFamily: branding.fontFamily + ", Inter, sans-serif" }}>
                   {settings.title}
                 </h1>
                 {settings.description && (
-                  <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)", margin: "6px 0 0", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.78)", margin: "7px auto 0", lineHeight: 1.5, maxWidth: "320px" }}>
                     {settings.description}
                   </p>
                 )}
                 {branding.showPropertyName && (
-                  <div style={{ marginTop: "8px", display: "inline-flex", alignItems: "center", gap: "5px", padding: "3px 9px", borderRadius: "20px", background: "rgba(5,150,105,0.2)", border: "1px solid rgba(5,150,105,0.3)" }}>
+                  <div style={{ marginTop: "12px", display: "inline-flex", alignItems: "center", gap: "5px", padding: "5px 11px", borderRadius: "20px", background: "rgba(201,169,110,0.16)", border: "1px solid rgba(201,169,110,0.28)" }}>
                     <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: branding.accentColor, flexShrink: 0 }} />
                     <span style={{ fontSize: "10.5px", fontWeight: 600, color: branding.accentColor }}>{settings.propertyName}</span>
                   </div>
